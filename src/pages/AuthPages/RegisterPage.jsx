@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MdMenuBook, MdOutlineEmail, MdOutlineLock } from 'react-icons/md';
 import { FiEye, FiEyeOff, FiUser } from 'react-icons/fi';
 import { HiSparkles } from 'react-icons/hi';
 import { FaGoogle, FaApple } from 'react-icons/fa';
+import { authService } from '../../services/authService';
+import { ROUTES } from '../../config/routes';
 import './AuthPages.css';
 
-
 function RegisterPage() {
+  const navigate = useNavigate();
+
   // State quản lý form
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -15,11 +18,39 @@ function RegisterPage() {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // State quản lý UI
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
   // Xử lý submit form
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Gọi API đăng ký ở đây
-    console.log('Register:', { fullName, email, password, agreeTerms });
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    if (!fullName || !email || !password) {
+      setErrorMessage('Vui lòng nhập đầy đủ thông tin');
+      return;
+    }
+
+
+    setIsLoading(true);
+    try {
+      const res = await authService.register(fullName, email, password);
+      if (res.code === 200) {
+        setSuccessMessage('Đăng ký thành công! Chuyển hướng đến đăng nhập...');
+        setTimeout(() => {
+          navigate(ROUTES.LOGIN);
+        }, 1500);
+      } else {
+        setErrorMessage(res.result || 'Đăng ký thất bại. Vui lòng thử lại.');
+      }
+    } catch (error) {
+      setErrorMessage(error.response?.data?.result || 'Đã xảy ra lỗi hệ thống');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -27,7 +58,7 @@ function RegisterPage() {
 
       {/* Header: Logo + Badge */}
       <div className="auth-header">
-        <Link to="/" className="auth-logo">
+        <Link to={ROUTES.HOME} className="auth-logo">
           <span className="auth-logo-icon">
             <MdMenuBook />
           </span>
@@ -100,52 +131,32 @@ function RegisterPage() {
             <p className="auth-input-hint">Phải có ít nhất 8 ký tự, 1 chữ viết hoa, 1 chữ thường, 1 kí tự đặc biệt.</p>
           </div>
 
-          {/* Checkbox đồng ý điều khoản */}
-          <div className="auth-checkbox-row">
-            <input
-              type="checkbox"
-              className="auth-checkbox"
-              id="agree-terms"
-              checked={agreeTerms}
-              onChange={(e) => setAgreeTerms(e.target.checked)}
-            />
-            <label htmlFor="agree-terms" className="auth-checkbox-label">
-              Tôi đồng ý với{' '}
-              <Link to="/terms">Điều khoản dịch vụ</Link> và{' '}
-              <Link to="/privacy">Chính sách bảo mật</Link>
-            </label>
-          </div>
+
+
+          {/* Error / Success Messages */}
+          {errorMessage && (
+            <div className="auth-error-message">
+              {errorMessage}
+            </div>
+          )}
+          {successMessage && (
+            <div className="auth-success-message">
+              {successMessage}
+            </div>
+          )}
 
           {/* Nút submit */}
-          <button type="submit" className="auth-submit-btn">
-            Đăng ký
+          <button type="submit" className="auth-submit-btn" disabled={isLoading}>
+            {isLoading ? 'Đang xử lý...' : 'Đăng ký'}
           </button>
-
         </form>
 
-        {/* Divider */}
-        <div className="auth-divider">
-          <span className="auth-divider-text">Hoặc đăng ký với</span>
-        </div>
-
-        {/* Social login */}
-        <div className="auth-social-buttons">
-          <button type="button" className="auth-social-btn">
-            <FaGoogle className="auth-social-btn-icon" />
-            Google
-          </button>
-          <button type="button" className="auth-social-btn">
-            <FaApple className="auth-social-btn-icon" />
-            Apple
-          </button>
+        {/* Link chuyển sang Login */}
+        <div className="auth-switch">
+          Đã có tài khoản? <Link to={ROUTES.LOGIN}>Đăng nhập</Link>
         </div>
 
       </div>
-
-      {/* Link chuyển sang Login */}
-      <p className="auth-switch">
-        Đã có tài khoản? <Link to="/login">Đăng nhập</Link>
-      </p>
 
     </div>
   );

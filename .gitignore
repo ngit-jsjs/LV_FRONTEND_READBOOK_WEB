@@ -30,3 +30,8 @@ dist
 .env.*
 !.env.example
 
+# Test coverage and cache
+coverage/
+.eslintcache
+*.md
+*.txt

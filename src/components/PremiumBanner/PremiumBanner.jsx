@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { FaCrown } from 'react-icons/fa';
 import { MdMenuBook } from 'react-icons/md';
 import { HiSparkles } from 'react-icons/hi';
+import { ROUTES } from '../../config/routes';
 import './PremiumBanner.css';
 
 /**

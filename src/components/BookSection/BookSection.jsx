@@ -35,9 +35,8 @@ function BookSection({ title, icon, books = [], viewAllLink = '#' }) {
               <BookCard key={book.id || index} book={book} />
             ))
           ) : (
-            // Nếu chưa có sách → hiện empty state
             <div className="book-section-empty">
-              Chưa có sách nào. Dữ liệu sẽ được tải từ API.
+              Chưa có API
             </div>
           )}
         </div>

@@ -1,10 +1,14 @@
-.navbar {
+.header-wrapper {
   position: sticky;
   top: 0;
   z-index: 100;
   background-color: var(--bg-navbar);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
+}
+
+.navbar {
+  /* wrapper cho navbar row 1 */
 }
 
 .navbar-inner {
@@ -17,22 +21,20 @@
 .navbar-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  font-family: 'Outfit', sans-serif;
 }
 
 .navbar-logo-icon {
-  width: 36px;
-  height: 36px;
-  background: var(--accent-gradient);
-  border-radius: var(--radius-md);
+  font-size: 1.6rem;
+  color: var(--accent-purple);
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.1rem;
 }
 
 .navbar-menu {
@@ -126,5 +128,118 @@
 
   .navbar-inner {
     height: 56px;
+  }
+}
+
+/* User Profile Link */
+.navbar-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.navbar-avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.navbar-username {
+  font-weight: 500;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+.navbar-username::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent-gradient);
+  transition: width var(--transition-normal);
+}
+
+.navbar-user-profile:hover .navbar-username::after {
+  width: 100%;
+}
+
+/* Login Button */
+.navbar-login-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  transition: color 0.2s;
+  padding: 6px 12px;
+}
+
+.navbar-login-btn:hover {
+  color: var(--accent-purple);
+}
+
+/* Search Bar in Sub Header */
+.navbar-sub-search {
+  padding: 10px 0;
+  background: rgba(0, 0, 0, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sub-search-container {
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-search {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  gap: 8px;
+  width: 100%;
+  max-width: 600px;
+  transition: all 0.3s ease;
+}
+
+.navbar-search:focus-within {
+  border-color: var(--accent-purple);
+  background: var(--bg-secondary);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
+}
+
+.navbar-search-icon {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.navbar-search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.navbar-search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 992px) {
+  .navbar-search {
+    display: none;
   }
 }

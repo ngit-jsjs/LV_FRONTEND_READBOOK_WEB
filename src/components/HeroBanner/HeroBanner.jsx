@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { HiSparkles } from 'react-icons/hi';
 import { MdMenuBook } from 'react-icons/md';
 import { FaCrown } from 'react-icons/fa';
+import { ROUTES } from '../../config/routes';
 import './HeroBanner.css';
 
 /**
@@ -34,11 +35,11 @@ function HeroBanner() {
 
         {/* 2 nút CTA */}
         <div className="hero-buttons">
-          <Link to="/browse" className="hero-btn-primary">
+          <Link to={ROUTES.BROWSE} className="hero-btn-primary">
             <MdMenuBook />
             Bắt đầu đọc miễn phí →
           </Link>
-          <Link to="/premium" className="hero-btn-secondary">
+          <Link to={ROUTES.PREMIUM} className="hero-btn-secondary">
             <FaCrown />
             Khám phá các gói xu
           </Link>

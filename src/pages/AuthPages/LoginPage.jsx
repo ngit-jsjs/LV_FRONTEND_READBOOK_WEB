@@ -1,23 +1,50 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MdMenuBook, MdOutlineEmail, MdOutlineLock } from 'react-icons/md';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { HiSparkles } from 'react-icons/hi';
 import { FaGoogle, FaApple } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
+import { ROUTES } from '../../config/routes';
 import './AuthPages.css';
 
 function LoginPage() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  
   // State quản lý form
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  
+  // State quản lý UI khi submit
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Xử lý submit form
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Gọi API đăng nhập ở đây
-    console.log('Login:', { email, password, rememberMe });
+    setErrorMessage('');
+    
+    if (!email || !password) {
+      setErrorMessage('Vui lòng nhập đầy đủ email và mật khẩu');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await login(email, password);
+      if (res.code === 200) {
+        // Đăng nhập thành công
+        navigate(ROUTES.HOME);
+      } else {
+        setErrorMessage(res.result || 'Đăng nhập thất bại. Vui lòng thử lại.');
+      }
+    } catch (error) {
+      setErrorMessage(error.response?.data?.result || 'Đã xảy ra lỗi hệ thống');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -25,7 +52,7 @@ function LoginPage() {
 
       {/* Header: Logo + Badge */}
       <div className="auth-header">
-        <Link to="/" className="auth-logo">
+        <Link to={ROUTES.HOME} className="auth-logo">
           <span className="auth-logo-icon">
             <MdMenuBook />
           </span>
@@ -82,51 +109,32 @@ function LoginPage() {
             </div>
           </div>
 
-          {/* Remember me + Forgot password */}
-          <div className="auth-options-row">
-            <div className="auth-checkbox-row" style={{ marginBottom: 0 }}>
-              <input
-                type="checkbox"
-                className="auth-checkbox"
-                id="remember-me"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <label htmlFor="remember-me" className="auth-checkbox-label">
-                Ghi nhớ tài khoản
-              </label>
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="auth-error-message">
+              {errorMessage}
             </div>
-            <Link to="/forgot-password" className="auth-forgot-link">
+          )}
+
+          {/* Forgot password */}
+          <div className="auth-options-row" style={{ justifyContent: 'flex-end' }}>
+            <Link to={ROUTES.FORGOT_PASSWORD} className="auth-forgot-link">
               Quên mật khẩu?
             </Link>
           </div>
 
           {/* Nút submit */}
-          <button type="submit" className="auth-submit-btn">
-            Đăng nhập
+          <button type="submit" className="auth-submit-btn" disabled={isLoading}>
+            {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </button>
-
         </form>
 
-        {/* Divider */}
-        <div className="auth-divider">
-          <span className="auth-divider-text">Hoặc đăng nhập với</span>
-        </div>
-
-        {/* Social login */}
-        <div className="auth-social-buttons">
-          <button type="button" className="auth-social-btn">
-            <FaGoogle className="auth-social-btn-icon" />
-            Google
-          </button>
+        {/* Link chuyển sang Register */}
+        <div className="auth-switch">
+          Chưa có tài khoản? <Link to={ROUTES.REGISTER}>Đăng ký</Link>
         </div>
 
       </div>
-
-      {/* Link chuyển sang Register */}
-      <p className="auth-switch">
-        Chưa có tài khoản? <Link to="/register">Đăng ký</Link>
-      </p>
 
     </div>
   );

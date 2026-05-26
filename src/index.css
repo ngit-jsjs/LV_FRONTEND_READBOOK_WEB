@@ -6,20 +6,20 @@
 /* --- CSS Variables (biến màu sắc, font, spacing) --- */
 :root {
   /* Màu nền */
-  --bg-primary: #0b0d17;        /* Nền chính (tối nhất) */
+  --bg-primary: #272d4a;        /* Nền chính (tối nhất) */
   --bg-secondary: #111328;      /* Nền card, section */
   --bg-tertiary: #1a1d35;       /* Nền hover, active */
-  --bg-navbar: rgba(11, 13, 23, 0.95); /* Nền navbar (trong suốt nhẹ) */
+  --bg-navbar: rgba(46, 51, 74, 0.95); 
 
   /* Màu chữ */
-  --text-primary: #ffffff;       /* Chữ chính (trắng) */
-  --text-secondary: #a0a3b1;    /* Chữ phụ (xám sáng) */
-  --text-muted: #6b6f80;        /* Chữ mờ */
+  --text-primary: #ffffff;       
+  --text-secondary: #ffffff;    
+  --text-muted: #6b6f80;        
 
   /* Màu accent (tím - xanh) */
-  --accent-purple: #8b5cf6;     /* Tím chính */
-  --accent-blue: #06b6d4;       /* Xanh dương */
-  --accent-gradient: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  --accent-purple: #8b5cf6;    
+  --accent-blue: #ffffff;       
+  --accent-gradient: linear-gradient(135deg, #ff48f3, #3131f9);
 
   /* Màu sao rating */
   --star-color: #fbbf24;

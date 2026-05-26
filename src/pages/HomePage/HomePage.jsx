@@ -55,7 +55,7 @@ function HomePage({ trendingBooks = [], recommendedBooks = [] }) {
               ))
             ) : (
               <div className="recommend-section-empty">
-                Chưa có sách đề xuất. Dữ liệu sẽ được tải từ API.
+                Chưa có API
               </div>
             )}
           </div>

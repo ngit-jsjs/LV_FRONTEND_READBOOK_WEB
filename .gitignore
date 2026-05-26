@@ -29,4 +29,9 @@ dist
 .env
 .env.*
 !.env.example
-.md
+
+# Test coverage and cache
+coverage/
+.eslintcache
+*.md
+*.txt

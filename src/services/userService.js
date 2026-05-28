@@ -24,6 +24,19 @@ export const userService = {
   },
 
   /**
+   * Lấy thông tin người dùng theo ID
+   * @param {number|string} userId ID của người dùng
+   */
+  getUserById: async (userId) => {
+    try {
+      const response = await fetchApi.get(API_ENDPOINTS.USER.GET_BY_ID(userId));
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
    * Cập nhật thông tin cá nhân
    * @param {number} userId ID người dùng
    * @param {object} data Dữ liệu cập nhật (vd: { name, email })
@@ -45,6 +58,18 @@ export const userService = {
   deleteUser: async (userId) => {
     try {
       const response = await fetchApi.delete(API_ENDPOINTS.USER.DELETE(userId));
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Yêu cầu nâng cấp tài khoản thành tác giả
+   */
+  upgradeToAuthor: async () => {
+    try {
+      const response = await fetchApi.post(API_ENDPOINTS.USER.UPGRADE_AUTHOR);
       return response;
     } catch (error) {
       throw error;

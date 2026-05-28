@@ -21,6 +21,10 @@
   gap: 20px;
 }
 
+.search-books-grid {
+  margin-top: 30px;
+}
+
 .search-user-card {
   display: flex;
   align-items: center;
@@ -42,7 +46,8 @@
 .search-user-actions {
   display: flex;
   gap: 8px;
-  margin-left: auto; /* Push buttons to the right */
+  margin-left: auto;
+  /* Push buttons to the right */
 }
 
 .action-btn {
@@ -266,6 +271,13 @@
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -1,0 +1,21 @@
+.edit-book-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 64px);
+}
+
+.edit-book-loading-text {
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.edit-book-header-actions {
+  margin-left: auto;
+}
+
+.btn-save-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

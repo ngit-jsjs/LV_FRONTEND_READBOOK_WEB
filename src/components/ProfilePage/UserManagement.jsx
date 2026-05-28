@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { FiSearch, FiEdit2, FiTrash2, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiSearch, FiEdit2, FiTrash2, FiEye, FiEyeOff, FiFileText } from 'react-icons/fi';
 import { useUserManagement } from '../../hooks/useUserManagement';
+import UserDetailView from './UserDetailView';
 import './UserManagement.css';
 
 function UserManagement() {
@@ -9,11 +10,16 @@ function UserManagement() {
     results, loading, error,
     page, setPage, totalPages,
     editingUser, editForm, setEditForm,
-    handleSearchSubmit, handleDelete, 
+    handleSearchSubmit, handleDelete,
     handleEditClick, handleCloseEdit, handleEditSubmit
   } = useUserManagement();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [viewingUser, setViewingUser] = useState(null);
+
+  if (viewingUser) {
+    return <UserDetailView user={viewingUser} onBack={() => setViewingUser(null)} />;
+  }
 
   return (
     <div className="user-management">
@@ -22,10 +28,10 @@ function UserManagement() {
         <form className="um-search-form" onSubmit={handleSearchSubmit}>
           <div className="um-search-input-wrapper">
             <FiSearch className="um-search-icon" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               className="um-search-input"
-              placeholder="Tìm kiếm theo tên..." 
+              placeholder="Tìm kiếm theo tên..."
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
@@ -57,15 +63,22 @@ function UserManagement() {
                       <td className="user-name-cell">{user.name}</td>
                       <td>
                         <div className="um-actions">
-                          <button 
-                            className="um-action-btn edit-btn" 
+                          <button
+                            className="um-action-btn detail-btn"
+                            onClick={() => setViewingUser(user)}
+                            title="Chi tiết"
+                          >
+                            <FiFileText /> Chi tiết
+                          </button>
+                          <button
+                            className="um-action-btn edit-btn"
                             onClick={() => handleEditClick(user)}
                             title="Sửa"
                           >
                             <FiEdit2 /> Sửa
                           </button>
-                          <button 
-                            className="um-action-btn delete-btn" 
+                          <button
+                            className="um-action-btn delete-btn"
                             onClick={() => handleDelete(user)}
                             title="Xóa"
                           >
@@ -79,32 +92,32 @@ function UserManagement() {
               </table>
             </div>
 
-            {totalPages > 1 && (
+            {totalPages > 0 && (
               <div className="um-pagination">
-                <button 
-                  disabled={page <= 1} 
+                <button
+                  disabled={page <= 1}
                   onClick={() => setPage(1)}
                   title="Trang Đầu"
                 >
                   &laquo; Đầu
                 </button>
-                <button 
-                  disabled={page <= 1} 
+                <button
+                  disabled={page <= 1}
                   onClick={() => setPage(page - 1)}
                 >
                   Trước
                 </button>
-                
+
                 <span>Trang {page} / {totalPages}</span>
-                
-                <button 
-                  disabled={page >= totalPages} 
+
+                <button
+                  disabled={page >= totalPages}
                   onClick={() => setPage(page + 1)}
                 >
                   Sau
                 </button>
-                <button 
-                  disabled={page >= totalPages} 
+                <button
+                  disabled={page >= totalPages}
                   onClick={() => setPage(totalPages)}
                   title="Trang Cuối"
                 >
@@ -126,34 +139,34 @@ function UserManagement() {
             <form onSubmit={handleEditSubmit}>
               <div className="um-modal-group">
                 <label>Họ và Tên</label>
-                <input 
-                  type="text" 
-                  value={editForm.name} 
-                  onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                   required
                 />
               </div>
               <div className="um-modal-group">
                 <label>Email Address</label>
-                <input 
-                  type="email" 
-                  value={editForm.email} 
-                  onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+                <input
+                  type="email"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
                   required
                 />
               </div>
               <div className="um-modal-group">
                 <label>Mật khẩu mới (Tùy chọn)</label>
                 <div className="password-input-wrapper">
-                  <input 
-                    type={showPassword ? "text" : "password"} 
+                  <input
+                    type={showPassword ? "text" : "password"}
                     placeholder="Để trống nếu không muốn đổi"
-                    value={editForm.password || ''} 
-                    onChange={(e) => setEditForm({...editForm, password: e.target.value})}
+                    value={editForm.password || ''}
+                    onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
                     className="password-input-field"
                   />
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="password-toggle-btn"
                     onClick={() => setShowPassword(!showPassword)}
                   >

@@ -243,3 +243,131 @@
     display: none;
   }
 }
+
+/* Navbar link as button (for Sáng tác) */
+button.navbar-link {
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* AUTHOR GATE MODAL */
+.author-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.2s ease;
+}
+
+.author-modal {
+  background: linear-gradient(180deg, #1e1b4b 0%, #111328 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 24px;
+  padding: 40px;
+  width: 420px;
+  max-width: 90%;
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+.author-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #a0a3b1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.author-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.author-modal-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: #fff;
+  margin: 0 auto 20px;
+}
+
+.author-modal-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.author-modal-desc {
+  font-size: 0.95rem;
+  color: #a0a3b1;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.author-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.author-modal-btn {
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.author-modal-btn.cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: #a0a3b1;
+}
+
+.author-modal-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.author-modal-btn.confirm {
+  background: var(--accent-gradient);
+  color: #fff;
+}
+
+.author-modal-btn.confirm:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

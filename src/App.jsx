@@ -9,6 +9,11 @@ import SearchPage from './pages/SearchPage/SearchPage';
 import PremiumPage from './pages/PremiumPage/PremiumPage';
 import AuthorStudioPage from './pages/AuthorStudioPage/AuthorStudioPage';
 import AuthorDashboardPage from './pages/AuthorDashboardPage/AuthorDashboardPage';
+import CreateBookPage from './pages/CreateBookPage/CreateBookPage';
+import EditBookPage from './pages/EditBookPage/EditBookPage';
+import BookDetailPage from './pages/BookDetailPage/BookDetailPage';
+import AuthorProfilePage from './pages/AuthorProfilePage/AuthorProfilePage';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import { ROUTES } from './config/routes';
 import './App.css';
 
@@ -25,13 +30,14 @@ function App() {
 
   // Kiểm tra có đang ở trang auth không (login, register)
   const isAuthPage = [ROUTES.LOGIN, ROUTES.REGISTER].includes(location.pathname);
-  
+
   // Kiểm tra có đang ở Author Studio không
   const isStudioPage = location.pathname.startsWith(ROUTES.AUTHOR_STUDIO);
+  const isCreateBookPage = location.pathname === ROUTES.CREATE_BOOK;
+  const isEditBookPage = location.pathname.startsWith('/author/edit');
 
   // Trang profile có layout riêng (full height), ẩn footer
-  const isAuthorDashboard = location.pathname === ROUTES.AUTHOR_DASHBOARD;
-  const hideFooter = isAuthPage || isStudioPage || isAuthorDashboard || location.pathname === ROUTES.PROFILE;
+  const hideFooter = isAuthPage || isStudioPage || location.pathname === ROUTES.PROFILE;
   const hideNavbar = isAuthPage;
 
   return (
@@ -48,8 +54,42 @@ function App() {
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
           <Route path={ROUTES.SEARCH} element={<SearchPage />} />
           <Route path={ROUTES.PREMIUM} element={<PremiumPage />} />
-          <Route path={ROUTES.AUTHOR_DASHBOARD} element={<AuthorDashboardPage />} />
-          <Route path={ROUTES.AUTHOR_STUDIO} element={<AuthorStudioPage />} />
+          <Route path={ROUTES.BOOK_DETAIL} element={<BookDetailPage />} />
+          <Route path={ROUTES.AUTHOR_PROFILE} element={<AuthorProfilePage />} />
+          
+          {/* Protected Routes for Author/Admin */}
+          <Route 
+            path={ROUTES.AUTHOR_DASHBOARD} 
+            element={
+              <ProtectedRoute allowedRoles={['AUTHOR', 'ADMIN']}>
+                <AuthorDashboardPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path={ROUTES.AUTHOR_STUDIO} 
+            element={
+              <ProtectedRoute allowedRoles={['AUTHOR', 'ADMIN']}>
+                <AuthorStudioPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path={ROUTES.CREATE_BOOK} 
+            element={
+              <ProtectedRoute allowedRoles={['AUTHOR', 'ADMIN']}>
+                <CreateBookPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path={ROUTES.EDIT_BOOK} 
+            element={
+              <ProtectedRoute allowedRoles={['AUTHOR', 'ADMIN']}>
+                <EditBookPage />
+              </ProtectedRoute>
+            } 
+          />
           {/* Thêm các route khác ở đây sau */}
         </Routes>
       </main>

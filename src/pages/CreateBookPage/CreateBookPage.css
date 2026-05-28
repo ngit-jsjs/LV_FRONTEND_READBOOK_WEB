@@ -1,0 +1,247 @@
+.create-book-page {
+  min-height: 100vh;
+  background-color: var(--bg-primary, #0b0f19);
+  color: var(--text-primary, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.create-book-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: var(--bg-secondary, #131722);
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  gap: 16px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary, #ffffff);
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #94a3b8);
+  margin-bottom: 4px;
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary, #ffffff);
+}
+
+/* Main Content */
+.create-book-content {
+  display: flex;
+  flex: 1;
+  padding: 32px 48px;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Left Column - Cover Upload */
+.create-book-left {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.cover-upload-box {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background-color: var(--bg-secondary, #131722);
+  border: 1px dashed var(--border-color, rgba(255, 255, 255, 0.2));
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cover-upload-box:hover {
+  border-color: var(--accent-purple, #a855f7);
+}
+
+.cover-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.cover-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.cover-info-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Right Column - Details Form */
+.create-book-right {
+  flex: 1;
+  background-color: var(--bg-secondary, #131722);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.form-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  padding: 0 24px;
+}
+
+.form-tab {
+  padding: 16px 20px;
+  font-weight: 600;
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
+  position: relative;
+}
+
+.form-tab.active {
+  color: var(--text-primary, #ffffff);
+}
+
+.form-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent-gradient, linear-gradient(90deg, #a855f7, #6366f1));
+}
+
+.form-body {
+  padding: 24px;
+}
+
+.form-row {
+  display: flex;
+  gap: 24px;
+}
+
+.form-row > .form-group {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: var(--text-primary, #ffffff);
+}
+
+.label-icon {
+  margin-left: 6px;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.form-input, .form-textarea {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  color: var(--text-primary, #ffffff);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.form-input:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--accent-purple, #a855f7);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+.required {
+  color: #ef4444; /* red */
+  margin-left: 4px;
+}
+
+.form-input.error, .form-textarea.error {
+  border-color: #ef4444;
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .create-book-content {
+    flex-direction: column;
+    padding: 24px;
+  }
+  
+  .create-book-left {
+    width: 200px;
+    margin: 0 auto;
+  }
+}

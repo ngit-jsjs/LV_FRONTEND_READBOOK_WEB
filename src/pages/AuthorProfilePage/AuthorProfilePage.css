@@ -1,0 +1,238 @@
+.author-profile-page {
+  min-height: 100vh;
+  background-color: var(--bg-color, #0f172a);
+  color: var(--text-color, #f1f5f9);
+  padding-bottom: 4rem;
+}
+
+/* Header & Back Button */
+.ap-header {
+  padding: 1.5rem 0;
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.9), transparent);
+}
+
+.ap-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.ap-back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: translateX(-2px);
+}
+
+/* Main Layout */
+.ap-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+/* Profile Card */
+.ap-profile-card {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 2.5rem;
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.ap-avatar-wrapper {
+  flex-shrink: 0;
+}
+
+.ap-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color, #3b82f6), #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2), 0 10px 20px -5px rgba(0, 0, 0, 0.4);
+}
+
+.ap-info {
+  flex-grow: 1;
+}
+
+.ap-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(to right, #fff, #cbd5e1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+
+.ap-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ap-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.ap-meta-item svg {
+  color: var(--primary-color, #3b82f6);
+}
+
+.ap-bio p {
+  color: #cbd5e1;
+  line-height: 1.6;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.no-bio {
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Books Section */
+.ap-books-section {
+  margin-top: 1rem;
+}
+
+.ap-section-header {
+  margin-bottom: 1.5rem;
+}
+
+.ap-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.ap-section-title svg {
+  color: var(--primary-color, #3b82f6);
+}
+
+.ap-empty {
+  background: rgba(30, 41, 59, 0.3);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+/* Pagination */
+.ap-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 3rem;
+}
+
+.ap-pagination-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.ap-pagination-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.ap-pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ap-pagination-info {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  padding: 0 1rem;
+}
+
+/* Loading & Error States */
+.ap-loading, .ap-error {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.ap-error h3 {
+  font-size: 2rem;
+  color: #f87171;
+  margin-bottom: 0.5rem;
+}
+
+.ap-btn {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: var(--primary-color, #3b82f6);
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.ap-btn:hover {
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ap-profile-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  .ap-meta {
+    justify-content: center;
+  }
+}

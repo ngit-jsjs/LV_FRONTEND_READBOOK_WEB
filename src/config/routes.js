@@ -2,6 +2,7 @@ export const ROUTES = {
   // Main
   HOME: '/',
   SEARCH: '/search',
+  BOOK_DETAIL: '/book/:id',
   CATEGORIES: '/categories',
   PREMIUM: '/premium',
   BROWSE: '/browse', // Leftover or future use
@@ -17,6 +18,9 @@ export const ROUTES = {
   // Author
   AUTHOR_DASHBOARD: '/author',
   AUTHOR_STUDIO: '/author/studio',
+  AUTHOR_PROFILE: '/user/:id',
+  CREATE_BOOK: '/author/create',
+  EDIT_BOOK: '/author/edit/:id',
 
   // Footer / Static
   TERMS: '/terms',

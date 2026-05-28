@@ -11,7 +11,7 @@ import './BookSection.css';
  *   - books: array           // Mảng các object sách (truyền xuống BookCard)
  *   - viewAllLink: string    // Link "View All" (vd: "/trending")
  */
-function BookSection({ title, icon, books = [], viewAllLink = '#' }) {
+function BookSection({ title, icon, books = [], viewAllLink = '#', showRank = false }) {
   return (
     <section className="book-section">
       <div className="container">
@@ -28,15 +28,19 @@ function BookSection({ title, icon, books = [], viewAllLink = '#' }) {
         </div>
 
         {/* Grid các sách */}
-        <div className="book-section-grid">
+        <div className="books-grid-minimal">
           {books.length > 0 ? (
             // Nếu có sách → render BookCard cho mỗi cuốn
             books.map((book, index) => (
-              <BookCard key={book.id || index} book={book} />
+              <BookCard 
+                key={book.id || index} 
+                book={book} 
+                rank={showRank ? index + 1 : undefined}
+              />
             ))
           ) : (
             <div className="book-section-empty">
-              Chưa có API
+              Chưa có sách nào
             </div>
           )}
         </div>

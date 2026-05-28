@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlus, FiEdit3, FiTrendingUp, FiEye, FiClock } from 'react-icons/fi';
-import CreateBookModal from '../../components/AuthorPage/CreateBookModal';
-import { ROUTES } from '../../config/routes';
+import { FiPlus, FiEdit3, FiClock, FiImage, FiTrash2 } from 'react-icons/fi';
+import { useAuthorDashboard } from '../../hooks/useAuthorDashboard';
+import BookCard from '../../components/BookCard/BookCard';
 import './AuthorDashboardPage.css';
 
-
-
 function AuthorDashboardPage() {
-  const [showModal, setShowModal] = useState(false);
-  const [books, setBooks] = useState([]); // Chờ API
+  const {
+    books,
+    isLoading,
+    page,
+    setPage,
+    totalPages,
+    handleDeleteBook,
+    navigate,
+    ROUTES
+  } = useAuthorDashboard();
 
   return (
     <div className="author-dashboard-page container">
@@ -17,33 +23,42 @@ function AuthorDashboardPage() {
         <h1 className="dashboard-title-minimal">
           Tác phẩm của tôi <span className="book-count">({books.length})</span>
         </h1>
-        <button className="btn-create-minimal" onClick={() => setShowModal(true)}>
+        <button className="btn-create-minimal" onClick={() => navigate(ROUTES.CREATE_BOOK)}>
           <FiPlus /> Mới
         </button>
       </div>
 
-      <div className="books-grid-minimal">
-        {books.length > 0 ? (
-          books.map(book => (
-            <Link to={ROUTES.AUTHOR_STUDIO} key={book.id} className="book-card-minimal">
-              <div className="book-card-top">
-                <h3 className="book-title-minimal">{book.title}</h3>
-                <button className="btn-more-options">...</button>
+      {isLoading ? (
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>Đang tải dữ liệu...</div>
+      ) : (
+        <>
+          <div className="books-grid-minimal">
+            {books.length > 0 ? (
+              books.map(book => (
+                <BookCard 
+                  key={book.id} 
+                  book={book} 
+                  onDelete={() => handleDeleteBook(book.id, book.title)} 
+                />
+              ))
+            ) : (
+              <div className="empty-state-minimal">
+                Bạn chưa có tác phẩm nào. Hãy bấm nút "Mới" để tạo tiểu thuyết đầu tiên nhé!
               </div>
-              
-              <div className="book-card-bottom">
-                <span className="book-time-minimal"><FiClock /> {book.lastUpdated}</span>
-              </div>
-            </Link>
-          ))
-        ) : (
-          <div className="empty-state-minimal">
-            Bạn chưa có tác phẩm nào. Hãy bấm nút "Mới" để tạo tiểu thuyết đầu tiên nhé!
+            )}
           </div>
-        )}
-      </div>
-
-      {showModal && <CreateBookModal onClose={() => setShowModal(false)} />}
+          
+          {totalPages > 0 && (
+            <div className="dashboard-pagination">
+              <button disabled={page <= 0} onClick={() => setPage(0)}>&laquo; Đầu</button>
+              <button disabled={page <= 0} onClick={() => setPage(p => p - 1)}>Trước</button>
+              <span>Trang {page + 1} / {totalPages}</span>
+              <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}>Sau</button>
+              <button disabled={page >= totalPages - 1} onClick={() => setPage(totalPages - 1)}>Cuối &raquo;</button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

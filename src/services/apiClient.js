@@ -11,9 +11,13 @@ const fetchClient = async (endpoint, options = {}) => {
   // Tự động gắn token vào header Authorization
   const token = localStorage.getItem('token');
   const headers = {
-    'Content-Type': 'application/json',
     ...options.headers,
   };
+
+  // Tự động set Content-Type là application/json nếu body không phải FormData
+  if (options.body && !(options.body instanceof FormData) && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -80,10 +84,14 @@ export const fetchApi = {
     }
     return fetchClient(url, { ...options, method: 'GET' });
   },
-  post: (endpoint, body, options) => 
-    fetchClient(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) }),
-  put: (endpoint, body, options) => 
-    fetchClient(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) }),
+  post: (endpoint, body, options) => {
+    const isFormData = body instanceof FormData;
+    return fetchClient(endpoint, { ...options, method: 'POST', body: isFormData ? body : JSON.stringify(body) });
+  },
+  put: (endpoint, body, options) => {
+    const isFormData = body instanceof FormData;
+    return fetchClient(endpoint, { ...options, method: 'PUT', body: isFormData ? body : JSON.stringify(body) });
+  },
   delete: (endpoint, options) => 
     fetchClient(endpoint, { ...options, method: 'DELETE' }),
 };

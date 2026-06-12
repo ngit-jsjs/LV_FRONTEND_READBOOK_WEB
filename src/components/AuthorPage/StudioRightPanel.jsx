@@ -1,8 +1,20 @@
 import React from 'react';
-import { FiChevronDown, FiImage } from 'react-icons/fi';
-import './StudioRightPanel.css';
+import { FiChevronDown, FiImage, FiSave, FiTrash2 } from 'react-icons/fi';
 
-function StudioRightPanel() {
+
+function StudioRightPanel({ studioData }) {
+  const { 
+    title, 
+    chapterNumber, setChapterNumber,
+    isFree, setIsFree,
+    isPublished, setIsPublished,
+    price, setPrice,
+    handleSave,
+    saving,
+    error,
+    selectedChapter,
+    handleDelete
+  } = studioData || {};
   return (
     <aside className="studio-right-panel">
       {/* Tabs */}
@@ -17,72 +29,84 @@ function StudioRightPanel() {
 
           <div className="form-group">
             <div className="label-row">
-              <label>Tiêu đề</label>
-              <span className="char-count">28/100</span>
+              <label>Số thứ tự chương</label>
             </div>
-            <input type="text" className="panel-input" value="Chương 5: Ánh Sao Rơi" readOnly />
+            <input 
+              type="number" 
+              className="panel-input" 
+              value={chapterNumber} 
+              onChange={(e) => setChapterNumber(e.target.value)} 
+              min="1"
+            />
+          </div>
+
+          <div className="form-group">
+            <div className="label-row">
+              <label>Tiêu đề</label>
+            </div>
+            <input type="text" className="panel-input" value={title || ''} readOnly />
           </div>
 
 
         </div>
 
         {/* Status */}
-        <div className="panel-section">
           <div className="form-group">
             <label>Trạng thái</label>
-            <div className="custom-select">
-              <div className="select-value">
-                <span className="status-dot draft"></span> Bản nháp
-              </div>
-              <FiChevronDown />
-            </div>
+            <select 
+              className="panel-input" 
+              value={isPublished ? 'published' : 'draft'}
+              onChange={(e) => setIsPublished(e.target.value === 'published')}
+            >
+              <option value="draft">Bản nháp</option>
+              <option value="published">Xuất bản</option>
+            </select>
           </div>
-
-          <div className="form-group">
-            <label>Lịch đăng</label>
-            <div className="custom-input-with-icon">
-              <span className="input-icon">📅</span>
-              <input type="text" className="panel-input" placeholder="Chọn ngày và giờ (không bắt buộc)" />
-            </div>
-          </div>
-        </div>
-
-
-        {/* Cover Image */}
-        <div className="panel-section">
-          <label>Ảnh bìa chương</label>
-          <div className="cover-upload-area">
-            <img
-              src="https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
-              alt="Cover"
-              className="chapter-cover-preview"
-            />
-            <div className="cover-upload-btn">
-              <FiImage />
-              Thay đổi ảnh
-            </div>
-          </div>
-        </div>
 
         {/* Settings */}
         <div className="panel-section">
           <label>Thiết lập khác</label>
           <div className="checkbox-group">
             <label className="checkbox-label">
-              <input type="checkbox" defaultChecked />
-              <span className="checkmark"></span>
-              Cho phép bình luận
-            </label>
-            <label className="checkbox-label">
-              <input type="checkbox" defaultChecked />
+              <input 
+                type="checkbox" 
+                checked={!isFree}
+                onChange={(e) => setIsFree(!e.target.checked)}
+              />
               <span className="checkmark"></span>
               Yêu cầu VIP/Trả phí
             </label>
-            <label className="checkbox-label">
-              <input type="checkbox" />
-              <span className="checkmark"></span>
-              Ẩn chương
-            </label>
+          </div>
+          
+          {!isFree && (
+            <div className="form-group panel-price-group">
+              <label>Giá (Xu)</label>
+              <input 
+                type="number" 
+                className="panel-input" 
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                min="0"
+              />
+            </div>
+          )}
+          <div className="form-group-actions">
+           {error && <div className="panel-error-msg">{error}</div>}
+           <button 
+             className="btn-create-minimal btn-panel-save" 
+             onClick={handleSave} 
+             disabled={saving}
+           >
+              {saving ? 'Đang lưu...' : 'Lưu chương'}
+           </button>
+           {selectedChapter && (
+             <button 
+               className="btn-action-minimal delete btn-panel-delete" 
+               onClick={() => handleDelete(selectedChapter.id)}
+             >
+               Xóa chương
+             </button>
+           )}
           </div>
         </div>
       </div>

@@ -3,14 +3,9 @@ import { HiSparkles } from 'react-icons/hi';
 import { MdMenuBook } from 'react-icons/md';
 import { FaCrown } from 'react-icons/fa';
 import { ROUTES } from '../../config/routes';
-import './HeroBanner.css';
 
-/**
- * HeroBanner - Banner chính trên trang chủ
- * 
- * Hiển thị tiêu đề lớn, mô tả, và 2 nút kêu gọi hành động.
- * Không cần props - nội dung cố định.
- */
+
+
 function HeroBanner() {
   return (
     <section className="hero-banner">
@@ -35,7 +30,7 @@ function HeroBanner() {
 
         {/* 2 nút CTA */}
         <div className="hero-buttons">
-          <Link to={ROUTES.BROWSE} className="hero-btn-primary">
+          <Link to={ROUTES.HOME} className="hero-btn-primary">
             <MdMenuBook />
             Bắt đầu đọc miễn phí →
           </Link>

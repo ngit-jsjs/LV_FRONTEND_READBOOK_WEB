@@ -1,61 +1,38 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { MdMenuBook } from 'react-icons/md';
 import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
-import { FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 import { ROUTES } from '../../config/routes';
-import './Footer.css';
 
 /**
- * Footer - Chân trang
- * 
- * Bao gồm: Logo + mô tả, social links, 3 cột links, copyright.
- * Không cần props - nội dung cố định.
+ * Footer - Chân trang tối giản
+ * Bao gồm: Logo, mô tả và liên kết mạng xã hội (tất cả được căn giữa).
  */
 function Footer() {
   return (
-    <footer className="footer">
+    <footer className="footer footer-custom">
       <div className="container">
-
-        {/* Nội dung chính: 4 cột */}
-        <div className="footer-content">
-
-          {/* Cột 1: Thương hiệu */}
-          <div className="footer-brand">
-            <Link to={ROUTES.HOME} className="footer-logo">
-              <span className="footer-logo-icon">
-                <MdMenuBook />
-              </span>
-              ReadVerse
-            </Link>
-            <p className="footer-brand-desc">
-              Điểm đến hàng đầu của bạn cho việc đọc sách kỹ thuật số. Khám phá hàng triệu sách và truyện.
-            </p>
-            <div className="footer-social">
-              <a href="#" className="footer-social-link" aria-label="Facebook">
-                <FaFacebookF />
-              </a>
-              <a href="#" className="footer-social-link" aria-label="Twitter">
-                <FaTwitter />
-              </a>
-              <a href="#" className="footer-social-link" aria-label="Instagram">
-                <FaInstagram />
-              </a>
-              <a href="#" className="footer-social-link" aria-label="YouTube">
-                <FaYoutube />
-              </a>
-            </div>
+        <div className="footer-brand footer-brand-custom">
+          <Link to={ROUTES.HOME} className="footer-logo footer-logo-custom">
+            ReadVerse
+          </Link>
+          <p className="footer-brand-desc footer-brand-desc-custom">
+            Điểm đến hàng đầu của bạn cho việc đọc sách kỹ thuật số. Khám phá hàng triệu sách và truyện.
+          </p>
+          <div className="footer-social footer-social-custom">
+            <a href="#" className="footer-social-link" aria-label="Facebook">
+              <FaFacebookF />
+            </a>
+            <a href="#" className="footer-social-link" aria-label="Twitter">
+              <FaTwitter />
+            </a>
+            <a href="#" className="footer-social-link" aria-label="Instagram">
+              <FaInstagram />
+            </a>
+            <a href="#" className="footer-social-link" aria-label="YouTube">
+              <FaYoutube />
+            </a>
           </div>
-
-         
-         
-         
-
         </div>
-
-        {/* Copyright */}
-        <div className="footer-bottom">
-        </div>
-
       </div>
     </footer>
   );

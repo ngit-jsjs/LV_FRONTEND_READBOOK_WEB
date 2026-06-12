@@ -1,33 +1,29 @@
 export const ROUTES = {
-  // Main
+ 
   HOME: '/',
   SEARCH: '/search',
+  BOOK_DETAIL: '/book/:id',
+  CHAPTER_READ: '/book/:bookId/chapter/:chapterId',
   CATEGORIES: '/categories',
   PREMIUM: '/premium',
-  BROWSE: '/browse', // Leftover or future use
 
-  // Auth
+ 
   LOGIN: '/login',
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
 
-  // User
-  PROFILE: '/profile',
   
-  // Author
+  PROFILE: '/profile',
+  PROFILE_EDIT: '/profile/edit',
+  RECENTLY_READ: '/profile/recently-read',
+  FOLLOWED_BOOKS: '/profile/followed-books',
+  
+  ADMIN: '/admin',
+  
   AUTHOR_DASHBOARD: '/author',
-  AUTHOR_STUDIO: '/author/studio',
-
-  // Footer / Static
-  TERMS: '/terms',
-  PRIVACY: '/privacy',
-  ABOUT: '/about',
-  CAREERS: '/careers',
-  PRESS: '/press',
-  BLOG: '/blog',
-  HELP: '/help',
-  CONTACT: '/contact',
-  MOBILE: '/mobile',
-  AUTHORS: '/authors',
-  GIFT: '/gift',
+  AUTHOR_STUDIO: '/author/studio/:bookId',
+  AUTHOR_STUDIO_CHAPTER_NEW: '/author/studio/:bookId/chapter/new',
+  AUTHOR_PROFILE: '/user/:id',
+  CREATE_BOOK: '/author/create',
+  EDIT_BOOK: '/author/edit/:id',
 };

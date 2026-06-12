@@ -1,68 +1,106 @@
-import { FiTrendingUp } from 'react-icons/fi';
-import { FaRegHeart } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FiSearch, FiFrown } from 'react-icons/fi';
 import HeroBanner from '../../components/HeroBanner/HeroBanner';
-import BookSection from '../../components/BookSection/BookSection';
 import PremiumBanner from '../../components/PremiumBanner/PremiumBanner';
-import RecommendCard from '../../components/RecommendCard/RecommendCard';
-import './HomePage.css';
+import BookCard from '../../components/BookCard/BookCard';
+import Pagination from '../../components/Pagination/Pagination';
+import { useSearchPage } from '../../hooks/useSearchPage';
 
-/**
- * HomePage - Trang chủ
- * 
- * Ghép tất cả các section lại:
- *   1. HeroBanner
- *   2. Trending Now (BookSection)
- *   3. PremiumBanner
- *   4. Recommended For You (RecommendCard)
- * 
- * Props:
- *   - trendingBooks: array   // Mảng sách trending (truyền vào BookSection)
- *   - recommendedBooks: array // Mảng sách đề xuất (truyền vào RecommendCard)
- */
-function HomePage({ trendingBooks = [], recommendedBooks = [] }) {
+function HomePage() {
+  const {
+    keyword,
+    setKeyword,
+    books,
+    loading,
+    page,
+    setPage,
+    totalPages
+  } = useSearchPage();
+
+  const [localKeyword, setLocalKeyword] = useState(keyword);
+
+  useEffect(() => {
+    setLocalKeyword(keyword);
+  }, [keyword]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setKeyword(localKeyword);
+    setPage(0);
+  };
+
+  const handleClear = () => {
+    setLocalKeyword('');
+    setKeyword('');
+    setPage(0);
+  };
+
   return (
     <div className="home-page">
-
-      {/* 1. Hero Banner */}
       <HeroBanner />
 
-      {/* 2. Trending Now */}
-      <BookSection
-        title="Xu hướng"
-        icon={<FiTrendingUp />}
-        books={trendingBooks}
-        viewAllLink="/trending"
-      />
+      <div className="container home-page-container">
+        <h2 className="section-title home-section-title">
+          {keyword ? (
+            <>Kết quả tìm kiếm cho <span className="highlight home-search-highlight">"{keyword}"</span></>
+          ) : (
+            "Khám phá tác phẩm"
+          )}
+        </h2>
 
-      {/* 3. Premium Banner */}
-      <PremiumBanner />
+        {/* Local Search Bar */}
+        <form className="search-bar-container" onSubmit={handleSearchSubmit}>
+          <FiSearch className="search-bar-icon" />
+          <input
+            type="text"
+            className="search-bar-input"
+            placeholder="Tìm tên tác phẩm, tác giả..."
+            value={localKeyword}
+            onChange={(e) => setLocalKeyword(e.target.value)}
+          />
+          {localKeyword && (
+            <button 
+              type="button" 
+              className="search-bar-clear" 
+              onClick={handleClear}
+              title="Xóa tìm kiếm"
+            >
+              &times;
+            </button>
+          )}
+        </form>
 
-      {/* 4. Recommended For You */}
-      <section className="recommend-section">
-        <div className="container">
-
-          {/* Header */}
-          <div className="recommend-section-header">
-            <FaRegHeart className="recommend-section-icon" />
-            <h2 className="recommend-section-title">Đề xuất cho bạn</h2>
-          </div>
-
-          {/* Grid các card */}
-          <div className="recommend-section-grid">
-            {recommendedBooks.length > 0 ? (
-              recommendedBooks.map((book, index) => (
-                <RecommendCard key={book.id || index} book={book} />
-              ))
-            ) : (
-              <div className="recommend-section-empty">
-                Chưa có API
+        {/* Results grid */}
+        <div className="search-results-section home-search-results">
+          {loading ? (
+            <div className="search-empty">
+              <p>Đang tìm kiếm...</p>
+            </div>
+          ) : books.length > 0 ? (
+            <>
+              <div className="books-grid-minimal search-books-grid">
+                {books.map((book, index) => (
+                  <BookCard key={book.id || index} book={book} />
+                ))}
               </div>
-            )}
-          </div>
 
+              <Pagination
+                currentPage={page + 1}
+                totalPages={totalPages}
+                onPageChange={(p) => setPage(p - 1)}
+              />
+            </>
+          ) : (
+            <div className="search-empty">
+              <FiFrown className="search-empty-icon" />
+              <h3>Không tìm thấy tác phẩm</h3>
+              <p>Vui lòng thử lại với từ khóa khác.</p>
+            </div>
+          )}
         </div>
-      </section>
+      </div>
 
+      <PremiumBanner />
     </div>
   );
 }

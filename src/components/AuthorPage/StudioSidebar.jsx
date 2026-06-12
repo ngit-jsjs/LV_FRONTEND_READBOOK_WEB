@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import { FiBook, FiSettings, FiPlus, FiChevronDown, FiChevronRight, FiCheck } from 'react-icons/fi';
-import './StudioSidebar.css';
+import { getFormattedImageUrl } from '../../utils/imageUtils';
 
-function StudioSidebar() {
-  const [expandedArcs, setExpandedArcs] = useState({
-    arc1: true,
-    arc2: false,
-    arc3: false
-  });
+
+function StudioSidebar({ studioData }) {
+  const { book, chapters, selectedChapter, handleSelectChapter, handleCreateNewChapter } = studioData || {};
   const [showChapters, setShowChapters] = useState(true);
-
-  const toggleArc = (arc) => {
-    setExpandedArcs(prev => ({ ...prev, [arc]: !prev[arc] }));
-  };
 
   return (
     <aside className="studio-sidebar">
@@ -20,14 +13,14 @@ function StudioSidebar() {
       <div className="sidebar-story-info">
         <div className="story-cover-row">
           <img 
-            src="https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
-            alt="Ký Ức Ngàn Sao" 
+            src={getFormattedImageUrl(book?.coverImage || book?.coverImageUrl) || "https://via.placeholder.com/100x150?text=No+Cover"} 
+            alt={book?.title || "Book Title"} 
             className="story-cover"
           />
           <div className="story-details">
-            <h3 className="story-title">Ký Ức Ngàn Sao <span>✎</span></h3>
+            <h3 className="story-title">{book?.title || "Đang tải..."} <span>✎</span></h3>
             <div className="story-status">
-              <span className="status-dot published"></span> Đã xuất bản
+              <span className={`status-dot ${book?.status?.toLowerCase() || 'draft'}`}></span> {book?.status || 'Draft'}
             </div>
           </div>
         </div>
@@ -57,70 +50,31 @@ function StudioSidebar() {
 
         {/* Chapters List */}
         <div className="sidebar-chapters">
-        <div className="chapters-header">
-          <h4>Danh sách chương</h4>
-          <button className="btn-new-chapter">
-            <FiPlus /> Chương mới
-          </button>
-        </div>
+          <div className="chapters-header">
+            <h4>Danh sách chương ({chapters?.length || 0})</h4>
+            <button className="btn-new-chapter" onClick={() => handleCreateNewChapter()}>
+              <FiPlus /> Chương mới
+            </button>
+          </div>
 
-        <div className="arc-list">
-          {/* Arc 1 */}
-          <div className="arc-item">
-            <div className="arc-header" onClick={() => toggleArc('arc1')}>
-              {expandedArcs.arc1 ? <FiChevronDown className="arc-toggle" /> : <FiChevronRight className="arc-toggle" />}
-              <span className="arc-title">Arc 1: Khởi Đầu</span>
-              <FiChevronRight className="arc-arrow" />
-            </div>
-            
-            {expandedArcs.arc1 && (
-              <div className="arc-chapters">
-                <div className="chapter-item">
-                  <span className="chapter-dot"></span>
-                  <span className="chapter-name">Chương 1: Gặp gỡ</span>
-                  <FiCheck className="chapter-status-icon published" />
-                </div>
-                <div className="chapter-item">
-                  <span className="chapter-dot"></span>
-                  <span className="chapter-name">Chương 2: Lời hứa</span>
-                </div>
-                <div className="chapter-item">
-                  <span className="chapter-dot"></span>
-                  <span className="chapter-name">Chương 3: Biến cố</span>
-                  <FiCheck className="chapter-status-icon published" />
-                </div>
-                <div className="chapter-item">
-                  <span className="chapter-dot"></span>
-                  <span className="chapter-name">Chương 4: Bóng tối</span>
-                </div>
-                <div className="chapter-item active">
-                  <span className="chapter-dot"></span>
-                  <span className="chapter-name">Chương 5: Ánh Sao Rơi</span>
-                </div>
+          <div className="arc-list">
+            <div className="arc-item">
+              <div className="arc-chapters arc-chapters-visible">
+                {chapters?.map(chapter => (
+                  <div 
+                    key={chapter.id} 
+                    className={`chapter-item ${selectedChapter?.id === chapter.id ? 'active' : ''}`}
+                    onClick={() => handleSelectChapter(chapter)}
+                  >
+                    <span className="chapter-dot"></span>
+                    <span className="chapter-name">{chapter.title}</span>
+                    {chapter.isPublished && <FiCheck className="chapter-status-icon published" />}
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
-
-          {/* Arc 2 */}
-          <div className="arc-item">
-            <div className="arc-header" onClick={() => toggleArc('arc2')}>
-              {expandedArcs.arc2 ? <FiChevronDown className="arc-toggle" /> : <FiChevronRight className="arc-toggle" />}
-              <span className="arc-title">Arc 2: Hành Trình</span>
-              <span className="arc-count">16</span>
             </div>
           </div>
-
-          {/* Arc 3 */}
-          <div className="arc-item">
-            <div className="arc-header" onClick={() => toggleArc('arc3')}>
-              {expandedArcs.arc3 ? <FiChevronDown className="arc-toggle" /> : <FiChevronRight className="arc-toggle" />}
-              <span className="arc-title">Arc 3: Sự Thật</span>
-              <span className="arc-count">21</span>
-            </div>
-          </div>
-
         </div>
-      </div>
       </>
       )}
     </aside>

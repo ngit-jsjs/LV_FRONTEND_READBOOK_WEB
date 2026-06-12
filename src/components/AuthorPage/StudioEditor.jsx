@@ -1,27 +1,18 @@
 import React, { useState } from 'react';
-import { FiMoon } from 'react-icons/fi';
-import './StudioEditor.css';
+import { FiMoon, FiSave, FiTrash2 } from 'react-icons/fi';
 
-function StudioEditor({ isFocusMode, setIsFocusMode }) {
-  const [content, setContent] = useState(`Bầu trời đêm ấy, sao rơi như những giọt nước mắt.
 
-Linh Vân đứng trên đỉnh tháp, gió thổi tung mái tóc bạc tím của nàng. Ánh mắt nàng hướng lên khoảng không vô tận, nơi có một vì sao sáng rực đang rơi xuống.
-
-"Có lẽ... vận mệnh của chúng ta cũng giống như ngôi sao ấy."
-
-Phía sau, một giọng nói trầm khàn vang lên.
-
-Nàng quay người lại, thấy Hạ Vũ đang bước đến. Ánh trăng chiếu lên gương mặt anh, nửa sáng nửa tối, như che giấu điều gì đó trong lòng.
-
-"Em có từng tin vào vận mệnh không?" anh hỏi.
-
-Linh Vân im lặng một lúc, rồi khẽ lắc đầu.
-"Em chỉ tin vào những gì em có thể nắm giữ."
-
-Hạ Vũ mỉm cười, mắt anh ánh lên tia ấm áp.
-"Vậy thì, hãy để em trở thành điều em có thể nắm giữ."
-
-...`);
+function StudioEditor({ studioData }) {
+  const { 
+    title, setTitle, 
+    content, setContent,
+    isPublished, setIsPublished,
+    isFree, setIsFree,
+    price, setPrice,
+    handleSave, saving, error,
+    selectedChapter, handleDelete,
+    handleBack
+  } = studioData || {};
 
   return (
     <main className="studio-editor">
@@ -34,25 +25,77 @@ Hạ Vũ mỉm cười, mắt anh ánh lên tia ấm áp.
           <input 
             type="text" 
             className="editor-title-input" 
-            value="Chương 5: Ánh Sao Rơi"
-            readOnly
+            value={title || ''}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Nhập tiêu đề chương"
           />
           
           <textarea 
             className="editor-textarea"
-            value={content}
+            value={content || ''}
             onChange={(e) => setContent(e.target.value)}
+            placeholder="Nhập nội dung chương..."
           />
         </div>
       </div>
 
       {/* Editor Bottom Bar */}
       <div className="editor-bottombar">
-        <div className="bottombar-right">
-          <button className="btn-dark-mode">
-            <FiMoon /> Chế độ: Tối <span>▼</span>
+        <div className="bottombar-left">
+          <select 
+            className="bottombar-select"
+            value={isPublished ? 'published' : 'draft'}
+            onChange={(e) => setIsPublished(e.target.value === 'published')}
+          >
+            <option value="draft">Bản nháp</option>
+            <option value="published">Xuất bản</option>
+          </select>
+          
+          <label className="bottombar-label">
+            <input type="checkbox" checked={!isFree} onChange={(e) => setIsFree(!e.target.checked)} /> Trả phí
+          </label>
+          
+          {!isFree && (
+            <input 
+              type="number" 
+              placeholder="Giá (Xu)" 
+              value={price} 
+              onChange={(e) => setPrice(e.target.value)} 
+              className="bottombar-input"
+            />
+          )}
+
+          {handleBack && (
+            <button 
+              className="bottombar-back-btn" 
+              onClick={handleBack}
+            >
+              Quay lại
+            </button>
+          )}
+
+          <button 
+            className="btn-create-minimal bottombar-save-btn" 
+            onClick={handleSave} 
+            disabled={saving}
+          >
+             {saving ? 'Đang lưu...' : <><FiSave /> Lưu chương</>}
           </button>
+          
+          {selectedChapter && (
+             <button 
+               className="bottombar-delete-btn" 
+               onClick={() => handleDelete(selectedChapter.id)}
+               title="Xóa chương"
+             >
+               <FiTrash2 />
+             </button>
+          )}
+          
+          {error && <span className="bottombar-error">{error}</span>}
         </div>
+
+       
       </div>
     </main>
   );

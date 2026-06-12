@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { userService } from '../services/userService';
+import userService from '../services/userService';
+import { getErrorMessage } from '../services/apiClient';
 
 export const useUserManagement = () => {
   const [keyword, setKeyword] = useState('');
@@ -29,9 +30,10 @@ export const useUserManagement = () => {
       
       try {
         const response = await userService.searchUsers(keyword, page - 1, size);
-        if (response.code === 200 && response.result) {
-          setResults(response.result.content || []);
-          setTotalPages(response.result.totalPages || (response.result.content?.length > 0 ? 1 : 0));
+        const data = response.result;
+        if (data) {
+          setResults(data.content || []);
+          setTotalPages(data.totalPages || (data.content?.length > 0 ? 1 : 0));
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
           setResults([]);
@@ -54,8 +56,7 @@ export const useUserManagement = () => {
         alert(`Đã xóa tài khoản ${userToDelete.name} thành công!`);
         setResults(results.filter(u => u.id !== userToDelete.id));
       } catch (err) {
-        const errorMsg = err.response?.data?.message || err.response?.data?.result || err.message || 'Lỗi không xác định';
-        alert('Xóa thất bại: ' + errorMsg);
+        alert('Xóa thất bại: ' + getErrorMessage(err));
       }
     }
   };
@@ -70,25 +71,24 @@ export const useUserManagement = () => {
     setEditForm({ name: '', email: '', password: '' });
   };
 
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
+  const handleEditSubmit = async (formData) => {
     if (window.confirm(`Bạn có chắc chắn muốn cập nhật thông tin của người dùng này không?`)) {
       try {
         const payload = {
-          name: editForm.name,
-          email: editForm.email
+          name: formData.name,
+          email: formData.email
         };
-        if (editForm.password) {
-          payload.password = editForm.password;
+        if (formData.password) {
+          payload.password = formData.password;
         }
         
         await userService.updateUser(editingUser.id, payload);
         alert("Cập nhật thông tin thành công!");
-        setResults(results.map(u => u.id === editingUser.id ? { ...u, name: editForm.name, email: editForm.email } : u));
+        setResults(results.map(u => u.id === editingUser.id ? { ...u, name: formData.name, email: formData.email } : u));
         handleCloseEdit();
       } catch (error) {
-        const errorMsg = error.response?.data?.message || error.response?.data?.result || error.message || 'Lỗi không xác định';
-        alert('Cập nhật thất bại: ' + errorMsg);
+        alert('Cập nhật thất bại: ' + getErrorMessage(error));
+        throw error;
       }
     }
   };

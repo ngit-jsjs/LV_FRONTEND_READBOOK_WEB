@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../config/routes';
 import bookService from '../services/bookService';
+import { getErrorMessage } from '../services/apiClient';
 
 export const useAuthorDashboard = () => {
   const navigate = useNavigate();
@@ -9,19 +10,19 @@ export const useAuthorDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [keyword, setKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
 
   useEffect(() => {
     const fetchBooks = async () => {
       setIsLoading(true);
+      console.log(`[AuthorDashboard] Fetching books - Keyword: "${searchKeyword}", Page: ${page}`);
       try {
-        const res = await bookService.getMyBooks(page, 10);
-        const success = res.code === 200 || res.code === 1000 || !res.code;
-        if (success && res.result && res.result.content) {
-          setBooks(res.result.content);
-          setTotalPages(res.result.totalPages || 0);
-        } else if (res.content) {
-          setBooks(res.content);
-          setTotalPages(res.totalPages || 0);
+        const res = await bookService.getMyUploadBooks(searchKeyword, page, 12);
+        const data = res.result;
+        if (data && data.content) {
+          setBooks(data.content);
+          setTotalPages(data.totalPages || 0);
         } else {
           setBooks([]);
           setTotalPages(0);
@@ -35,24 +36,25 @@ export const useAuthorDashboard = () => {
     };
     
     fetchBooks();
-  }, [page]);
+  }, [page, searchKeyword]);
+
+  const handleSearchSubmit = (e) => {
+    if (e) e.preventDefault();
+    setPage(0);
+    setSearchKeyword(keyword);
+  };
 
   const handleDeleteBook = async (id, title) => {
     const confirmDelete = window.confirm(`Bạn có chắc chắn muốn xóa tác phẩm "${title}" không? Hành động này không thể hoàn tác.`);
     if (!confirmDelete) return;
 
     try {
-      const res = await bookService.deleteBook(id);
-      if (res.code === 200 || res.code === 1000 || res.result) {
-        alert('Xóa tác phẩm thành công!');
-        setBooks(prev => prev.filter(book => book.id !== id));
-      } else {
-        alert('Có lỗi xảy ra khi xóa: ' + (res.message || 'Không rõ nguyên nhân'));
-      }
+      await bookService.deleteBook(id);
+      alert('Xóa tác phẩm thành công!');
+      setBooks(prev => prev.filter(book => book.id !== id));
     } catch (error) {
       console.error("Failed to delete book", error);
-      const errorDetail = error.response?.data?.message || error.response?.data?.result || error.message || "Lỗi mạng hoặc máy chủ không phản hồi";
-      alert(`Không thể xóa tác phẩm. Chi tiết: ${errorDetail}`);
+      alert(`Không thể xóa tác phẩm. Chi tiết: ${getErrorMessage(error)}`);
     }
   };
 
@@ -64,6 +66,9 @@ export const useAuthorDashboard = () => {
     totalPages,
     handleDeleteBook,
     navigate,
-    ROUTES
+    ROUTES,
+    keyword,
+    setKeyword,
+    handleSearchSubmit
   };
 };

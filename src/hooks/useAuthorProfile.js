@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { userService } from '../services/userService';
+import userService from '../services/userService';
 import bookService from '../services/bookService';
 
 export const useAuthorProfile = (userId) => {
@@ -20,25 +20,14 @@ export const useAuthorProfile = (userId) => {
       setError(null);
       
       try {
-        // Fetch Author Profile
         const userRes = await userService.getUserById(userId);
-        let userData = null;
-        if (userRes.code === 200 || userRes.code === 1000 || !userRes.code) {
-          userData = userRes.result || userRes.data || userRes;
-        } else {
-          userData = userRes;
-        }
-        setAuthor(userData);
+        setAuthor(userRes.result);
 
-        // Fetch Author's Books
-        const booksRes = await bookService.getAuthorBooks(userId, page, 10);
-        const booksSuccess = booksRes.code === 200 || booksRes.code === 1000 || !booksRes.code;
-        if (booksSuccess && booksRes.result && booksRes.result.content) {
-          setBooks(booksRes.result.content);
-          setTotalPages(booksRes.result.totalPages || 0);
-        } else if (booksRes.content) {
-          setBooks(booksRes.content);
-          setTotalPages(booksRes.totalPages || 0);
+        const booksRes = await bookService.getAuthorBooks(userId, page, 12);
+        const booksData = booksRes.result;
+        if (booksData && booksData.content) {
+          setBooks(booksData.content);
+          setTotalPages(booksData.totalPages || 0);
         } else {
           setBooks([]);
           setTotalPages(0);

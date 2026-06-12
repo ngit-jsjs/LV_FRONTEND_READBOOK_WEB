@@ -13,19 +13,30 @@ export const useSearchPage = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
+    const urlKeyword = searchParams.get('keyword') || '';
+    if (urlKeyword !== keyword) {
+      setKeyword(urlKeyword);
+      setPage(0);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     const fetchBooks = async () => {
       const queryKeyword = keyword || '';
       
       setLoading(true);
       try {
-        const res = await bookService.searchBooks(queryKeyword, page, 10);
-        const success = res.code === 200 || res.code === 1000 || !res.code;
-        if (success && res.result && res.result.content) {
-          setBooks(res.result.content);
-          setTotalPages(res.result.totalPages || 0);
-        } else if (res.content) {
-          setBooks(res.content);
-          setTotalPages(res.totalPages || 0);
+        let res;
+        if (!queryKeyword) {
+          res = await bookService.getPublicBooks(page, 12);
+        } else {
+          res = await bookService.searchBooks(queryKeyword, page, 12);
+        }
+        
+        const data = res.result;
+        if (data && data.content) {
+          setBooks(data.content);
+          setTotalPages(data.totalPages || 0);
         } else {
           setBooks([]);
           setTotalPages(0);

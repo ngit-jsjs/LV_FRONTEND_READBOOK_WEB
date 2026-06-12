@@ -1,43 +1,38 @@
-import fetchApi from './apiClient';
+import apiClient from './apiClient';
 import { API_ENDPOINTS } from './apiEndpoints';
 import { parseJwt } from '../utils/jwtUtils';
 
-export const authService = {
-  // Đăng ký tài khoản
-  register: async (name, email, password) => {
-    return fetchApi.post(API_ENDPOINTS.AUTH.REGISTER, {
+const authService = {
+  register: (name, email, password) => {
+    return apiClient.post(API_ENDPOINTS.AUTH.REGISTER, {
       name,
       email,
       password,
     });
   },
 
-  // Đăng nhập
   login: async (email, password) => {
-    const response = await fetchApi.post(API_ENDPOINTS.AUTH.LOGIN, {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
       email,
       password,
     });
     
-    // Lưu token nếu thành công
-    if (response.code === 200 && response.result?.token) {
+    if (response.result?.token) {
       localStorage.setItem('token', response.result.token);
     }
     
     return response;
   },
 
-  // Lấy thông tin cá nhân hiện tại
-  getMyInfo: async () => {
-    return fetchApi.get(API_ENDPOINTS.USER.MY_INFO);
+  getMyInfo: () => {
+    return apiClient.get(API_ENDPOINTS.USER.MY_INFO);
   },
 
-  // Đăng xuất
   logout: async () => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        await fetchApi.post(API_ENDPOINTS.AUTH.LOGOUT, { token });
+        await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT, { token });
       } catch (error) {
         console.error("Lỗi khi đăng xuất từ server:", error);
       }
@@ -45,17 +40,14 @@ export const authService = {
     localStorage.removeItem('token');
   },
 
-  // Lấy token từ local storage
   getToken: () => {
     return localStorage.getItem('token');
   },
 
-  // Kiểm tra user có đăng nhập hay chưa (có token)
   isLoggedIn: () => {
     return !!localStorage.getItem('token');
   },
 
-  // Lấy dữ liệu user từ token đã lưu
   getUserFromToken: () => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -64,3 +56,8 @@ export const authService = {
     return null;
   }
 };
+//ly do tai sao su dung jwt
+//uu nhuoc diem
+//nhu nao thi hop le, khong hop le
+
+export default authService;

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { FiPlus, FiEdit3, FiClock, FiImage, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiSearch } from 'react-icons/fi';
 import { useAuthorDashboard } from '../../hooks/useAuthorDashboard';
 import BookCard from '../../components/BookCard/BookCard';
-import './AuthorDashboardPage.css';
+import Pagination from '../../components/Pagination/Pagination';
+
 
 function AuthorDashboardPage() {
   const {
@@ -14,18 +14,39 @@ function AuthorDashboardPage() {
     totalPages,
     handleDeleteBook,
     navigate,
-    ROUTES
+    ROUTES,
+    keyword,
+    setKeyword,
+    handleSearchSubmit
   } = useAuthorDashboard();
 
   return (
     <div className="author-dashboard-page container">
-      <div className="dashboard-header-minimal">
-        <h1 className="dashboard-title-minimal">
-          Tác phẩm của tôi <span className="book-count">({books.length})</span>
+      <div className="dashboard-header-minimal" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', justifyContent: 'space-between', marginBottom: '30px' }}>
+        <h1 className="dashboard-title-minimal" style={{ margin: 0 }}>
+          Tác phẩm của tôi 
         </h1>
-        <button className="btn-create-minimal" onClick={() => navigate(ROUTES.CREATE_BOOK)}>
-          <FiPlus /> Mới
-        </button>
+        
+        {/* Search bar inside header */}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flex: 1, justifyContent: 'flex-end', minWidth: '300px' }}>
+          <form className="um-search-form admin-search-form" onSubmit={handleSearchSubmit} style={{ margin: 0, flex: 1, maxWidth: '400px' }}>
+            <div className="um-search-input-wrapper">
+              <FiSearch className="um-search-icon" />
+              <input
+                type="text"
+                className="um-search-input"
+                placeholder="Tìm kiếm tác phẩm..."
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+              />
+            </div>
+            <button type="submit" className="um-search-btn">Tìm kiếm</button>
+          </form>
+          
+          <button className="btn-create-minimal" onClick={() => navigate(ROUTES.CREATE_BOOK)}>
+            <FiPlus /> Mới
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -35,10 +56,10 @@ function AuthorDashboardPage() {
           <div className="books-grid-minimal">
             {books.length > 0 ? (
               books.map(book => (
-                <BookCard 
-                  key={book.id} 
-                  book={book} 
-                  onDelete={() => handleDeleteBook(book.id, book.title)} 
+                <BookCard
+                  key={book.id}
+                  book={book}
+                  onDelete={() => handleDeleteBook(book.id, book.title)}
                 />
               ))
             ) : (
@@ -47,16 +68,12 @@ function AuthorDashboardPage() {
               </div>
             )}
           </div>
-          
-          {totalPages > 0 && (
-            <div className="dashboard-pagination">
-              <button disabled={page <= 0} onClick={() => setPage(0)}>&laquo; Đầu</button>
-              <button disabled={page <= 0} onClick={() => setPage(p => p - 1)}>Trước</button>
-              <span>Trang {page + 1} / {totalPages}</span>
-              <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}>Sau</button>
-              <button disabled={page >= totalPages - 1} onClick={() => setPage(totalPages - 1)}>Cuối &raquo;</button>
-            </div>
-          )}
+
+          <Pagination
+            currentPage={page + 1}
+            totalPages={totalPages}
+            onPageChange={(p) => setPage(p - 1)}
+          />
         </>
       )}
     </div>

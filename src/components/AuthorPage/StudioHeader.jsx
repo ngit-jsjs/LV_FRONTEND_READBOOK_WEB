@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { MdMenuBook } from 'react-icons/md';
 import { FiEye, FiSave, FiSend, FiMenu, FiSettings } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
-import './StudioHeader.css';
+
 
 function StudioHeader({ toggleSidebar, toggleRightPanel }) {
   const { user } = useAuth();
@@ -12,7 +12,7 @@ function StudioHeader({ toggleSidebar, toggleRightPanel }) {
     <header className="studio-header">
       {/* Logo & Breadcrumb */}
       <div className="studio-header-left">
-        <button className="icon-btn" style={{ marginRight: '4px' }} onClick={toggleSidebar}>
+        <button className="icon-btn sidebar-toggle-btn" onClick={toggleSidebar}>
           <FiMenu />
         </button>
         <div className="studio-breadcrumb">

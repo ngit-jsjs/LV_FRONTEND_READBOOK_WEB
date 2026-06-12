@@ -9,11 +9,9 @@ export const useHomePage = () => {
     const fetchBooks = async () => {
       try {
         const res = await bookService.getPublicBooks(0, 10);
-        const success = res.code === 200 || res.code === 1000 || !res.code;
-        if (success && res.result && res.result.content) {
-          setBooks(res.result.content);
-        } else if (res.content) {
-          setBooks(res.content);
+        const data = res.result;
+        if (data && data.content) {
+          setBooks(data.content);
         } else {
           setBooks([]);
         }

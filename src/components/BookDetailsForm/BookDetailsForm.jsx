@@ -8,7 +8,10 @@ const BookDetailsForm = ({
   status, setStatus,
   publisher, setPublisher,
   description, setDescription,
-  errors
+  errors,
+  allCategories = [],
+  categoryIds = [],
+  setCategoryIds
 }) => {
   return (
     <div className="create-book-right">
@@ -77,6 +80,47 @@ const BookDetailsForm = ({
             onChange={(e) => setPublisher(e.target.value)}
             className="form-input"
           />
+        </div>
+
+        <div className="form-group">
+          <label>Thể loại</label>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', 
+            gap: '12px',
+            marginTop: '8px',
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-md)',
+            padding: '16px',
+            maxHeight: '180px',
+            overflowY: 'auto'
+          }}>
+            {allCategories && allCategories.length > 0 ? (
+              allCategories.map(cat => {
+                const isChecked = categoryIds.includes(cat.id);
+                return (
+                  <label key={cat.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => {
+                        if (isChecked) {
+                          setCategoryIds(categoryIds.filter(id => id !== cat.id));
+                        } else {
+                          setCategoryIds([...categoryIds, cat.id]);
+                        }
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <span>{cat.name}</span>
+                  </label>
+                );
+              })
+            ) : (
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Không có thể loại nào</span>
+            )}
+          </div>
         </div>
 
         <div className="form-group">

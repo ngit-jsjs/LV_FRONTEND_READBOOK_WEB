@@ -6,13 +6,14 @@ export const API_ENDPOINTS = {
   },
   BOOKS: {
     CREATE_BOOK: '/books',
-    MY_BOOKS: '/books/my-books',
+    MY_UPLOAD_BOOKS: '/books/my-upload-books',
     SEARCH_BOOKS: '/books/search',
     GET_BOOKS_PUBLIC: '/books',
     GET_BOOK: (bookId) => `/books/${bookId}`,
     UPDATE_BOOK: (bookId) => `/books/${bookId}`,
     DELETE_BOOK: (bookId) => `/books/${bookId}`,
     GET_AUTHOR_BOOKS: (authorId) => `/books/authors/${authorId}`,
+    IMPORT_EPUB: (bookId) => `/books/${bookId}/import-epub`,
   },
   USER: {
     MY_INFO: '/user/myInfo',
@@ -21,5 +22,40 @@ export const API_ENDPOINTS = {
     UPDATE: (userId) => `/user/${userId}`,
     DELETE: (userId) => `/user/${userId}`,
     UPGRADE_AUTHOR: '/user/upgrade-author',
+  },
+  CHAPTERS: {
+    CREATE_CHAPTER: (bookId) => `/chapters/book/${bookId}`,
+    GET_CHAPTERS_BY_BOOK: (bookId, page = 0, size = 100) => `/chapters/book/${bookId}?page=${page}&size=${size}`,
+    GET_CHAPTER: (chapterId) => `/chapters/${chapterId}`,
+    UPDATE_CHAPTER: (chapterId) => `/chapters/${chapterId}`,
+    DELETE_CHAPTER: (chapterId) => `/chapters/${chapterId}`,
+    UNLOCK_CHAPTER: (chapterId) => `/chapters/${chapterId}/unlock`,
+  },
+  CATEGORIES: {
+    GET_ALL: '/categories',
+    GET_ONE: (id) => `/categories/${id}`,
+    CREATE: '/categories',
+    UPDATE: (id) => `/categories/${id}`,
+    DELETE: (id) => `/categories/${id}`,
+  },
+  RATINGS: {
+    CREATE: (bookId) => `/ratings/book/${bookId}`,
+    UPDATE: (ratingId) => `/ratings/${ratingId}`,
+    DELETE: (ratingId) => `/ratings/${ratingId}`,
+    GET_BY_BOOK: (bookId, page = 0, size = 10) => `/ratings/book/${bookId}?page=${page}&size=${size}`,
+  },
+  BOOKLISTS: {
+    CREATE: '/booklists',
+    GET_MY: '/booklists',
+    GET_BY_ID: (id) => `/booklists/${id}`,
+    UPDATE: (id) => `/booklists/${id}`,
+    DELETE: (id) => `/booklists/${id}`,
+    ADD_BOOK: (id, bookId) => `/booklists/${id}/books/${bookId}`,
+    REMOVE_BOOK: (id, bookId) => `/booklists/${id}/books/${bookId}`,
+    GET_BOOKS: (id, page = 0, size = 10) => `/booklists/${id}/books?page=${page}&size=${size}`,
+  },
+  READING_HISTORY: {
+    SAVE: '/reading-history',
+    GET_MY: (page = 0, size = 10) => `/reading-history?page=${page}&size=${size}`,
   }
 };

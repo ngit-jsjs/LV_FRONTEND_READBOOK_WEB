@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiBookOpen, FiUser, FiMail, FiAward } from 'react-icons/fi';
 import BookCard from '../../components/BookCard/BookCard';
 import { useAuthorProfile } from '../../hooks/useAuthorProfile';
-import './AuthorProfilePage.css';
+
 
 function AuthorProfilePage() {
   const { id } = useParams();
@@ -44,11 +44,7 @@ function AuthorProfilePage() {
       <div className="container ap-main">
         {/* Profile Card */}
         <div className="ap-profile-card">
-          <div className="ap-avatar-wrapper">
-            <div className="ap-avatar">
-              {author.name ? author.name.charAt(0).toUpperCase() : 'U'}
-            </div>
-          </div>
+          
           
           <div className="ap-info">
             <h1 className="ap-name">{author.name || 'Người dùng ẩn danh'}</h1>

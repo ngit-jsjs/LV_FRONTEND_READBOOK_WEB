@@ -1,13 +1,22 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiEdit3, FiClock, FiImage, FiTrash2 } from 'react-icons/fi';
+import { FiEdit3, FiClock, FiImage, FiTrash2, FiBookOpen } from 'react-icons/fi';
 import { getFormattedImageUrl } from '../../utils/imageUtils';
 import { useAuth } from '../../context/AuthContext';
 import bookService from '../../services/bookService';
 import { ROUTES } from '../../config/routes';
-import './BookCard.css';
 
-function BookCard({ book, onDelete, rank, showActions = false }) {
+
+function BookCard({ 
+  book, 
+  onDelete, 
+  onEdit, 
+  rank, 
+  showActions = false,
+  showEdit = true,
+  showDelete = true,
+  showManageChapters = true
+}) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -18,36 +27,23 @@ function BookCard({ book, onDelete, rank, showActions = false }) {
   const isAdmin = user?.isAdmin;
   const isManageMode = showActions || location.pathname.startsWith('/author');
 
-  const handleDelete = async (e) => {
+  const handleDelete = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const confirmDelete = window.confirm(`Bạn có chắc chắn muốn xóa tác phẩm "${book.title}" không? Hành động này không thể hoàn tác.`);
-    if (!confirmDelete) return;
-
-    try {
-      const res = await bookService.deleteBook(book.id);
-      if (res.code === 200 || res.code === 1000 || res.result) {
-        alert('Xóa tác phẩm thành công!');
-        if (onDelete) {
-          onDelete(book.id);
-        } else {
-          window.location.reload();
-        }
-      } else {
-        alert('Có lỗi xảy ra khi xóa: ' + (res.message || 'Không rõ nguyên nhân'));
-      }
-    } catch (error) {
-      console.error("Failed to delete book", error);
-      const errorDetail = error.response?.data?.message || error.response?.data?.result || error.message || "Lỗi mạng hoặc máy chủ không phản hồi";
-      alert(`Không thể xóa tác phẩm. Chi tiết: ${errorDetail}`);
+    if (onDelete) {
+      onDelete();
     }
   };
 
   const handleEdit = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate(ROUTES.EDIT_BOOK.replace(':id', book.id));
+    if (onEdit) {
+      onEdit();
+    } else {
+      navigate(ROUTES.EDIT_BOOK.replace(':id', book.id));
+    }
   };
 
   return (
@@ -76,35 +72,65 @@ function BookCard({ book, onDelete, rank, showActions = false }) {
       <div className="book-card-content">
         <div className="book-card-top">
           <h3 className="book-title-minimal">{book.title || 'Untitled'}</h3>
-          {isManageMode && (
+          {isManageMode && (showEdit || showDelete) && (
             <div className="book-card-actions" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-              <button
-                className="btn-action-minimal edit"
-                onClick={handleEdit}
-                title="Sửa sách"
-              >
-                <FiEdit3 />
-              </button>
-              <button
-                className="btn-action-minimal delete"
-                onClick={handleDelete}
-                title="Xóa sách"
-              >
-                <FiTrash2 />
-              </button>
+              {showEdit && (
+                <button
+                  className="btn-action-minimal edit"
+                  onClick={handleEdit}
+                  title="Sửa sách"
+                >
+                  <FiEdit3 />
+                </button>
+              )}
+              {showDelete && (
+                <button
+                  className="btn-action-minimal delete"
+                  onClick={handleDelete}
+                  title="Xóa sách"
+                >
+                  <FiTrash2 />
+                </button>
+              )}
             </div>
           )}
         </div>
 
         <div className="book-card-meta">
           {book.author && <span className="book-author-minimal">Tác giả: {book.author}</span>}
-          {book.uploaderName && <span className="book-uploader-minimal">Người đăng: {book.uploaderName}</span>}
+          {book.year && <span className="book-year-minimal">Năm: {book.year}</span>}
+          {book.status && (
+            <span className="book-status-minimal">
+              Trạng thái: {book.status === 'PUBLISHED' ? 'Đã xuất bản' : book.status === 'DRAFT' ? 'Bản nháp' : book.status}
+            </span>
+          )}
+          {book.totalChapters !== undefined && book.totalChapters !== null && (
+            <span className="book-chapters-minimal">
+              Số chương: {book.totalChapters}
+            </span>
+          )}
+          {book.averageRating && Number(book.averageRating) > 0 && (
+            <span className="book-rating-minimal-display" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ffb300', fontWeight: 'bold', fontSize: '0.85rem', marginTop: '2px' }}>
+              ★ {Number(book.averageRating).toFixed(1)}
+            </span>
+          )}
         </div>
 
         <div className="book-card-bottom">
           {book.createdAt && <span className="book-time-minimal">Tạo: {new Date(book.createdAt).toLocaleDateString('vi-VN')}</span>}
           {book.updatedAt && <span className="book-time-minimal"><FiClock /> Cập nhật: {new Date(book.updatedAt).toLocaleDateString('vi-VN')}</span>}
         </div>
+
+        {isManageMode && showManageChapters && (
+          <div className="book-card-bottom-actions" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+            <button
+              className="btn-manage-chapters"
+              onClick={() => navigate(ROUTES.AUTHOR_STUDIO.replace(':bookId', book.id))}
+            >
+              <FiBookOpen /> Quản lý chương
+            </button>
+          </div>
+        )}
       </div>
     </Link>
   );

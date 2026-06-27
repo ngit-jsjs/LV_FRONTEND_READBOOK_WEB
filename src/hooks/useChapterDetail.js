@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import chapterService from '../services/chapterService';
+import { getErrorMessage } from '../services/apiClient';
 
 export const useChapterDetail = (chapterId) => {
   const [chapter, setChapter] = useState(null);
@@ -15,7 +16,7 @@ export const useChapterDetail = (chapterId) => {
       setChapter(res.result);
     } catch (err) {
       console.error("Failed to fetch chapter:", err);
-      setError("Không thể tải thông tin chương.");
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

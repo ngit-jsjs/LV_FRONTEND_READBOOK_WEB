@@ -9,7 +9,6 @@ import { useAuth } from '../../context/AuthContext';
 import { getErrorMessage } from '../../services/apiClient';
 import { FiArrowLeft, FiUnlock, FiAlertCircle } from 'react-icons/fi';
 
-// Thành phần sử dụng Shadow DOM để hiển thị nội dung chương EPUB cô lập CSS gốc
 function ChapterContent({ html }) {
   const hostRef = useRef(null);
 
@@ -37,7 +36,6 @@ function ChapterContent({ html }) {
       </style>
     `;
 
-    // Đưa mã HTML và CSS override vào Shadow DOM
     shadow.innerHTML = overrideStyle + html;
   }, [html]);
 

@@ -40,7 +40,7 @@ export const useUserManagement = () => {
           setTotalPages(0);
         }
       } catch (err) {
-        setError('Có lỗi xảy ra khi lấy danh sách người dùng. Vui lòng thử lại.');
+        setError(getErrorMessage(err));
       } finally {
         setLoading(false);
       }

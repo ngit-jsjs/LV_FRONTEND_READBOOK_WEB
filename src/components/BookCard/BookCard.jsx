@@ -49,7 +49,7 @@ function BookCard({
   return (
     <Link
       to={ROUTES.BOOK_DETAIL.replace(':id', book.id)}
-      className={`book-card-minimal status-${book.status ? book.status.toLowerCase() : 'ongoing'}`}
+      className={`book-card-minimal status-${book.status ? book.status.toLowerCase() : ''}`}
     >
       <div className="book-card-cover-wrapper">
         {rank !== undefined && (
@@ -101,7 +101,7 @@ function BookCard({
           {book.year && <span className="book-year-minimal">Năm: {book.year}</span>}
           {book.status && (
             <span className="book-status-minimal">
-              Trạng thái: {book.status === 'PUBLISHED' ? 'Đã xuất bản' : book.status === 'DRAFT' ? 'Bản nháp' : book.status}
+              Trạng thái: {(book.status === 'AVAILABLE') ? 'Sẵn sàng' : 'Chưa sẵn sàng'}
             </span>
           )}
           {book.totalChapters !== undefined && book.totalChapters !== null && (
@@ -125,7 +125,7 @@ function BookCard({
           <div className="book-card-bottom-actions" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
             <button
               className="btn-manage-chapters"
-              onClick={() => navigate(ROUTES.AUTHOR_STUDIO.replace(':bookId', book.id))}
+              onClick={() => navigate(ROUTES.CHAPTER_MANAGEMENT.replace(':bookId', book.id))}
             >
               <FiBookOpen /> Quản lý chương
             </button>

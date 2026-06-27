@@ -76,7 +76,7 @@ export const useUserDetailView = (user) => {
 
   const handleSaveBook = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !author.trim() || !description.trim()) {
+    if (!title.trim() || !author.trim()) {
       alert("Vui lòng điền đầy đủ các thông tin bắt buộc!");
       return;
     }

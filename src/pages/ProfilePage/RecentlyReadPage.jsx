@@ -6,6 +6,8 @@ import { ROUTES } from '../../config/routes';
 import { FiArrowLeft, FiClock, FiBookOpen, FiBook } from 'react-icons/fi';
 import { getFormattedImageUrl } from '../../utils/imageUtils';
 
+import { getErrorMessage } from '../../services/apiClient';
+
 function RecentlyReadPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ function RecentlyReadPage() {
       }
     } catch (err) {
       console.error("Lỗi khi tải lịch sử đọc:", err);
-      setError("Không thể tải lịch sử đọc sách của bạn.");
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

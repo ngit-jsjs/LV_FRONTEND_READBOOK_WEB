@@ -27,7 +27,7 @@ export const useChapterEditor = () => {
 
   useEffect(() => {
     if (!bookId) {
-      navigate(ROUTES.AUTHOR_DASHBOARD);
+      navigate(ROUTES.BOOK_MANAGEMENT);
       return;
     }
     fetchData();
@@ -102,12 +102,11 @@ export const useChapterEditor = () => {
     try {
       if (selectedChapter) {
         await chapterService.updateChapter(selectedChapter.id, payload);
+        alert('Lưu thành công!');
+        navigate(ROUTES.CHAPTER_MANAGEMENT.replace(':bookId', bookId));
       } else {
-        await chapterService.createChapter(bookId, payload);
+        alert('Chức năng thêm chương thủ công không khả dụng. Vui lòng import file EPUB.');
       }
-
-      alert('Lưu thành công!');
-      navigate(ROUTES.AUTHOR_STUDIO.replace(':bookId', bookId));
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -120,14 +119,14 @@ export const useChapterEditor = () => {
     try {
       await chapterService.deleteChapter(chapId);
       alert("Xóa thành công!");
-      navigate(ROUTES.AUTHOR_STUDIO.replace(':bookId', bookId));
+      navigate(ROUTES.CHAPTER_MANAGEMENT.replace(':bookId', bookId));
     } catch (err) {
       alert("Xóa thất bại");
     }
   };
 
   const handleBack = () => {
-    navigate(ROUTES.AUTHOR_STUDIO.replace(':bookId', bookId));
+    navigate(ROUTES.CHAPTER_MANAGEMENT.replace(':bookId', bookId));
   };
 
   return {

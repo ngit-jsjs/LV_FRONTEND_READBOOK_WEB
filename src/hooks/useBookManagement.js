@@ -4,7 +4,7 @@ import { ROUTES } from '../config/routes';
 import bookService from '../services/bookService';
 import { getErrorMessage } from '../services/apiClient';
 
-export const useAuthorDashboard = () => {
+export const useBookManagement = () => {
   const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,7 +16,6 @@ export const useAuthorDashboard = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       setIsLoading(true);
-      console.log(`[AuthorDashboard] Fetching books - Keyword: "${searchKeyword}", Page: ${page}`);
       try {
         const res = await bookService.getMyUploadBooks(searchKeyword, page, 12);
         const data = res.result;

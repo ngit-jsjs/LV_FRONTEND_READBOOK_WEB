@@ -11,6 +11,29 @@ const authService = {
     });
   },
 
+  verifyEmail: (email, otp) => {
+    return apiClient.post(API_ENDPOINTS.AUTH.VERIFY_EMAIL, {
+      email,
+      otp,
+    });
+  },
+
+  resendOtp: (email) => {
+    return apiClient.post(`${API_ENDPOINTS.AUTH.RESEND_OTP}?email=${encodeURIComponent(email)}`);
+  },
+
+  forgotPassword: (email) => {
+    return apiClient.post(`${API_ENDPOINTS.AUTH.FORGOT_PASSWORD}?email=${encodeURIComponent(email)}`);
+  },
+
+  resetPassword: (email, otp, newPassword) => {
+    return apiClient.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, {
+      email,
+      otp,
+      newPassword,
+    });
+  },
+
   login: async (email, password) => {
     const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
       email,
@@ -56,8 +79,6 @@ const authService = {
     return null;
   }
 };
-//ly do tai sao su dung jwt
-//uu nhuoc diem
-//nhu nao thi hop le, khong hop le
+
 
 export default authService;

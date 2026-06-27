@@ -23,13 +23,6 @@ const bookService = {
       params: { keyword, page, size }
     });
   },
-
-  getAuthorBooks: (authorId, page = 0, size = 12) => {
-    return apiClient.get(API_ENDPOINTS.BOOKS.GET_AUTHOR_BOOKS(authorId), {
-      params: { page, size }
-    });
-  },
-
   getBookById: (id) => {
     return apiClient.get(API_ENDPOINTS.BOOKS.GET_BOOK(id));
   },

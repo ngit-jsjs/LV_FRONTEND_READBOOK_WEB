@@ -39,7 +39,7 @@ function BookEditorPage() {
     <div className="create-book-page">
       {/* Header */}
       <header className="create-book-header">
-        <button className="back-btn" onClick={() => navigate(ROUTES.AUTHOR_DASHBOARD)}>
+        <button className="back-btn" onClick={() => navigate(ROUTES.BOOK_MANAGEMENT)}>
           <FiChevronLeft />
         </button>
         <div className="header-titles">

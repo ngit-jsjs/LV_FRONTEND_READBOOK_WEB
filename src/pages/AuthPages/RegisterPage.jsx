@@ -35,9 +35,9 @@ function RegisterPage() {
     setIsLoading(true);
     try {
       await authService.register(fullName, email, password);
-      setSuccessMessage('Đăng ký thành công! Chuyển hướng đến đăng nhập...');
+      setSuccessMessage('Đăng ký thành công! Đang chuyển hướng đến trang xác thực email...');
       setTimeout(() => {
-        navigate(ROUTES.LOGIN);
+        navigate(`${ROUTES.VERIFY_EMAIL}?email=${encodeURIComponent(email)}`);
       }, 1500);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));

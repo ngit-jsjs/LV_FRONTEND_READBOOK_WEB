@@ -5,12 +5,14 @@ import bookService from '../services/bookService';
 import { ROUTES } from '../config/routes';
 import { getErrorMessage } from '../services/apiClient';
 
-export const useAuthorStudio = () => {
+export const useChapterManagement = () => {
   const { bookId } = useParams();
   const navigate = useNavigate();
 
   const [book, setBook] = useState(null);
   const [chapters, setChapters] = useState([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [selectedChapter, setSelectedChapter] = useState(null);
   
   const [loading, setLoading] = useState(true);
@@ -35,27 +37,45 @@ export const useAuthorStudio = () => {
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [editError, setEditError] = useState('');
 
+  // States for Batch Update modal
+  const [isBatchUpdating, setIsBatchUpdating] = useState(false);
+  const [batchTarget, setBatchTarget] = useState('all'); // 'all' or 'selected'
+  const [batchIds, setBatchIds] = useState([]); // Selected chapter IDs
+  const [batchIsFreeMode, setBatchIsFreeMode] = useState('keep'); // 'keep', 'free', 'premium'
+  const [batchPrice, setBatchPrice] = useState('');
+  const [batchSubmitting, setBatchSubmitting] = useState(false);
+  const [batchError, setBatchError] = useState('');
+
   useEffect(() => {
     if (!bookId) {
-      navigate(ROUTES.AUTHOR_DASHBOARD);
+      navigate(ROUTES.BOOK_MANAGEMENT);
       return;
     }
-    fetchData();
+    fetchData(0);
   }, [bookId]);
 
-  const fetchData = async () => {
+  const fetchData = async (pageToFetch = page) => {
     setLoading(true);
     try {
       const bookRes = await bookService.getBookById(bookId);
       setBook(bookRes.result);
 
-      const chapRes = await chapterService.getChaptersByBookId(bookId);
+      const chapRes = await chapterService.getChaptersByBookId(bookId, pageToFetch, 12);
       const raw = chapRes.result;
       let chapData = [];
-      if (Array.isArray(raw)) chapData = raw;
-      else if (raw?.content) chapData = raw.content;
+      let totalP = 0;
+      if (Array.isArray(raw)) {
+        chapData = raw;
+        totalP = 1;
+      } else if (raw?.content) {
+        chapData = raw.content;
+        totalP = raw.totalPages || 0;
+      }
       
       setChapters(chapData);
+      setTotalPages(totalP);
+      setPage(pageToFetch);
+
       if (chapData.length > 0) {
         handleSelectChapter(chapData[0]);
       } else {
@@ -66,6 +86,11 @@ export const useAuthorStudio = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (newPage) => {
+    const zeroBasedPage = newPage - 1;
+    fetchData(zeroBasedPage);
   };
 
   const handleSelectChapter = (chapter) => {
@@ -116,12 +141,11 @@ export const useAuthorStudio = () => {
     try {
       if (selectedChapter) {
         await chapterService.updateChapter(selectedChapter.id, payload);
+        await fetchData();
+        alert('Lưu thành công!');
       } else {
-        await chapterService.createChapter(bookId, payload);
+        alert('Chức năng thêm chương thủ công không khả dụng. Vui lòng import file EPUB.');
       }
-
-      await fetchData();
-      alert('Lưu thành công!');
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -204,7 +228,98 @@ export const useAuthorStudio = () => {
     setEditingChapter(null);
   };
 
+  const openBatchModal = (initialSelectedIds = []) => {
+    setIsBatchUpdating(true);
+    if (initialSelectedIds && initialSelectedIds.length > 0) {
+      setBatchTarget('selected');
+      setBatchIds(initialSelectedIds);
+    } else {
+      setBatchTarget('all');
+      setBatchIds([]);
+    }
+    setBatchIsFreeMode('keep');
+    setBatchPrice('');
+    setBatchError('');
+  };
+
+  const closeBatchModal = () => {
+    setIsBatchUpdating(false);
+  };
+
+  const handleBatchSubmit = async (e) => {
+    e.preventDefault();
+    setBatchSubmitting(true);
+    setBatchError('');
+
+    const payload = {};
+
+    if (batchTarget === 'selected') {
+      if (batchIds.length === 0) {
+        setBatchError('Vui lòng chọn ít nhất một chương');
+        setBatchSubmitting(false);
+        return;
+      }
+      payload.chapterIds = batchIds;
+    }
+
+    if (batchIsFreeMode !== 'keep') {
+      const free = batchIsFreeMode === 'free';
+      payload.isFree = free;
+      
+      if (!free) {
+        if (!batchPrice || Number(batchPrice) <= 0) {
+          setBatchError('Chương trả phí phải có giá lớn hơn 0 xu');
+          setBatchSubmitting(false);
+          return;
+        }
+        payload.price = Number(batchPrice);
+      }
+    } else {
+      if (batchPrice !== '') {
+        if (Number(batchPrice) <= 0) {
+          setBatchError('Giá chương phải lớn hơn 0 xu');
+          setBatchSubmitting(false);
+          return;
+        }
+        payload.price = Number(batchPrice);
+      }
+    }
+
+    if (
+      payload.isFree === undefined &&
+      payload.price === undefined
+    ) {
+      setBatchError('Vui lòng chọn ít nhất một trường cần cập nhật (Loại chương)');
+      setBatchSubmitting(false);
+      return;
+    }
+
+    try {
+      await chapterService.batchUpdateChapters(bookId, payload);
+      alert('Cập nhật hàng loạt thành công!');
+      setIsBatchUpdating(false);
+      await fetchData();
+    } catch (err) {
+      setBatchError(getErrorMessage(err));
+    } finally {
+      setBatchSubmitting(false);
+    }
+  };
+
+
+  const handleDeleteAll = async () => {
+    if (!window.confirm("CẢNH BÁO: Bạn có chắc chắn muốn xóa TOÀN BỘ chương của cuốn sách này? Hành động này không thể hoàn tác!")) return;
+    try {
+      await chapterService.deleteAllChapters(bookId);
+      alert("Đã xóa toàn bộ chương thành công!");
+      fetchData();
+    } catch (err) {
+      alert("Xóa thất bại: " + getErrorMessage(err));
+    }
+  };
+
   return {
+    handleDeleteAll,
     book,
     bookId,
     chapters,
@@ -226,6 +341,9 @@ export const useAuthorStudio = () => {
     importing,
     handleImportEpub,
     fetchData,
+    page,
+    totalPages,
+    handlePageChange,
     // Quick Edit Popup exports
     editingChapter,
     setEditingChapter,
@@ -243,6 +361,22 @@ export const useAuthorStudio = () => {
     editError,
     handleEditClick,
     handleUpdateSubmit,
-    closeEditModal
+    closeEditModal,
+    // Batch Update exports
+    isBatchUpdating,
+    setIsBatchUpdating,
+    batchTarget,
+    setBatchTarget,
+    batchIds,
+    setBatchIds,
+    batchIsFreeMode,
+    setBatchIsFreeMode,
+    batchPrice,
+    setBatchPrice,
+    batchSubmitting,
+    batchError,
+    openBatchModal,
+    closeBatchModal,
+    handleBatchSubmit
   };
 };

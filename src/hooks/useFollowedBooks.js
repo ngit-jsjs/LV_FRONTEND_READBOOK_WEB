@@ -1,10 +1,21 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import bookListService from '../services/bookListService';
 import { ROUTES } from '../config/routes';
+import { getErrorMessage } from '../services/apiClient';
 
 export const useFollowedBooks = (user) => {
   const navigate = useNavigate();
+  const { listId } = useParams();
+  const selectedListId = listId ? Number(listId) : null;
+
+  const setSelectedListId = (id) => {
+    if (id === null) {
+      navigate(ROUTES.FOLLOWED_BOOKS);
+    } else {
+      navigate(ROUTES.FOLLOWED_BOOKS_DETAIL.replace(':listId', id));
+    }
+  };
 
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +23,6 @@ export const useFollowedBooks = (user) => {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [bookLists, setBookLists] = useState([]);
-  const [selectedListId, setSelectedListId] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -30,13 +40,8 @@ export const useFollowedBooks = (user) => {
       const lists = listsRes.result || listsRes || [];
       setBookLists(lists);
 
-      const activeListId = selectedListId || lists[0]?.id || null;
-      if (!selectedListId && activeListId) {
-        setSelectedListId(activeListId);
-      }
-
-      if (activeListId) {
-        const booksRes = await bookListService.getBooksInBookList(activeListId, page, 8);
+      if (selectedListId) {
+        const booksRes = await bookListService.getBooksInBookList(selectedListId, page, 8);
         if (booksRes.result) {
           setBooks(booksRes.result.content || []);
           setTotalPages(booksRes.result.totalPages || 0);
@@ -47,7 +52,7 @@ export const useFollowedBooks = (user) => {
       }
     } catch (err) {
       console.error("Lỗi khi tải danh sách theo dõi:", err);
-      setError("Không thể tải danh sách tác phẩm đang theo dõi.");
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -68,7 +73,71 @@ export const useFollowedBooks = (user) => {
       }
     } catch (err) {
       console.error("Hủy theo dõi thất bại:", err);
-      alert("Không thể hủy theo dõi lúc này. Vui lòng thử lại.");
+      alert(getErrorMessage(err));
+    }
+  };
+
+  const handleCreateList = async () => {
+    const name = window.prompt("Nhập tên danh sách theo dõi mới:");
+    if (!name || !name.trim()) return;
+    try {
+      setLoading(true);
+      await bookListService.createBookList({ name: name.trim() });
+      alert("Đã tạo danh sách mới thành công.");
+      await fetchFollowedBooks();
+    } catch (err) {
+      console.error("Tạo danh sách thất bại:", err);
+      alert(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRenameList = async (listId) => {
+    const targetId = listId || selectedListId;
+    if (!targetId) return;
+    const currentList = bookLists.find(l => l.id === targetId);
+    const newName = window.prompt("Nhập tên mới cho danh sách theo dõi:", currentList?.name || "");
+    if (!newName || !newName.trim() || newName.trim() === currentList?.name) return;
+
+    try {
+      setLoading(true);
+      await bookListService.updateBookList(targetId, { name: newName.trim() });
+      alert("Đã đổi tên danh sách thành công.");
+      await fetchFollowedBooks();
+    } catch (err) {
+      console.error("Đổi tên thất bại:", err);
+      alert(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteList = async (listId) => {
+    const targetId = listId || selectedListId;
+    if (!targetId) return;
+    if (bookLists.length <= 1) {
+      alert("Bạn phải giữ lại ít nhất một danh sách theo dõi.");
+      return;
+    }
+    const currentList = bookLists.find(l => l.id === targetId);
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa toàn bộ danh sách "${currentList?.name}"? Các sách đang theo dõi trong danh sách này sẽ bị bỏ theo dõi.`)) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await bookListService.deleteBookList(targetId);
+      alert("Đã xóa danh sách thành công.");
+      if (targetId === selectedListId) {
+        setSelectedListId(null);
+      }
+      await fetchFollowedBooks();
+    } catch (err) {
+      console.error("Xóa danh sách thất bại:", err);
+      alert(getErrorMessage(err));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,6 +152,9 @@ export const useFollowedBooks = (user) => {
     selectedListId,
     setSelectedListId,
     handleUnfollow,
+    handleCreateList,
+    handleRenameList,
+    handleDeleteList,
     fetchFollowedBooks
   };
 };

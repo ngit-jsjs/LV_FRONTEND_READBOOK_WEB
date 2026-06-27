@@ -1,17 +1,7 @@
 import React from 'react';
 import { FiEdit2, FiTrash2, FiFileText } from 'react-icons/fi';
 
-/**
- * Component hiển thị nhóm nút Hành động (Chi tiết, Sửa, Xóa) có thể tái sử dụng.
- * 
- * @param {Function} onView - Callback khi nhấn Chi tiết. Nếu không truyền, nút Chi tiết sẽ ẩn.
- * @param {Function} onEdit - Callback khi nhấn Sửa. Nếu không truyền, nút Sửa sẽ ẩn.
- * @param {Function} onDelete - Callback khi nhấn Xóa. Nếu không truyền, nút Xóa sẽ ẩn.
- * @param {boolean} showText - Hiển thị nhãn text bên cạnh icon (mặc định: false).
- * @param {string} viewTitle - Tooltip nút Chi tiết.
- * @param {string} editTitle - Tooltip nút Sửa.
- * @param {string} deleteTitle - Tooltip nút Xóa.
- */
+
 function ActionButtons({
   onView,
   onEdit,

@@ -4,21 +4,24 @@ import Footer from './components/Footer/Footer';
 import HomePage from './pages/HomePage/HomePage';
 import LoginPage from './pages/AuthPages/LoginPage';
 import RegisterPage from './pages/AuthPages/RegisterPage';
+import ForgotPasswordPage from './pages/AuthPages/ForgotPasswordPage';
+import VerifyEmailPage from './pages/AuthPages/VerifyEmailPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import ProfileEditPage from './pages/ProfilePage/ProfileEditPage';
 import RecentlyReadPage from './pages/ProfilePage/RecentlyReadPage';
 import FollowedBooksPage from './pages/ProfilePage/FollowedBooksPage';
 import PremiumPage from './pages/PremiumPage/PremiumPage';
-import AuthorStudioPage from './pages/AuthorStudioPage/AuthorStudioPage';
-import ChapterEditorPage from './pages/AuthorStudioPage/ChapterEditorPage';
-import AuthorDashboardPage from './pages/AuthorDashboardPage/AuthorDashboardPage';
+import ChapterManagementPage from './pages/ChapterManagementPage/ChapterManagementPage';
+import BookManagementPage from './pages/BookManagementPage/BookManagementPage';
 import BookEditorPage from './pages/BookEditorPage/BookEditorPage';
 import BookDetailPage from './pages/BookDetailPage/BookDetailPage';
 import ChapterReadPage from './pages/ChapterReadPage/ChapterReadPage';
-import AuthorProfilePage from './pages/AuthorProfilePage/AuthorProfilePage';
+
 import AdminPage from './pages/AdminPage/AdminPage';
 import CategoriesPage from './pages/CategoriesPage/CategoriesPage';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import SubscriptionHistoryPage from './pages/ProfilePage/SubscriptionHistoryPage';
+import PaymentResultPage from './pages/PremiumPage/PaymentResultPage';
 import { ROUTES } from './config/routes';
 
 function App() {
@@ -32,6 +35,8 @@ function App() {
           <Route path={ROUTES.HOME} element={<HomePage />} />
           <Route path={ROUTES.LOGIN} element={<LoginPage />} />
           <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+          <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+          <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
           <Route path={ROUTES.PROFILE_EDIT} element={<ProfileEditPage />} />
           <Route 
@@ -50,12 +55,36 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path={ROUTES.FOLLOWED_BOOKS_DETAIL} 
+            element={
+              <ProtectedRoute allowedRoles={['USER', 'ADMIN']}>
+                <FollowedBooksPage />
+              </ProtectedRoute>
+            } 
+          />
           <Route path={ROUTES.SEARCH} element={<HomePage />} />
           <Route path={ROUTES.CATEGORIES} element={<CategoriesPage />} />
           <Route path={ROUTES.PREMIUM} element={<PremiumPage />} />
           <Route path={ROUTES.BOOK_DETAIL} element={<BookDetailPage />} />
           <Route path={ROUTES.CHAPTER_READ} element={<ChapterReadPage />} />
-          <Route path={ROUTES.AUTHOR_PROFILE} element={<AuthorProfilePage />} />
+
+          <Route 
+            path={ROUTES.SUBSCRIPTIONS} 
+            element={
+              <ProtectedRoute allowedRoles={['USER', 'ADMIN']}>
+                <SubscriptionHistoryPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path={ROUTES.PAYMENT_RESULT} 
+            element={
+              <ProtectedRoute allowedRoles={['USER', 'ADMIN']}>
+                <PaymentResultPage />
+              </ProtectedRoute>
+            } 
+          />
           
           <Route 
             path={ROUTES.ADMIN} 
@@ -67,26 +96,18 @@ function App() {
           />
 
           <Route 
-            path={ROUTES.AUTHOR_DASHBOARD} 
+            path={ROUTES.BOOK_MANAGEMENT} 
             element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
-                <AuthorDashboardPage />
+                <BookManagementPage />
               </ProtectedRoute>
             } 
           />
           <Route 
-            path={ROUTES.AUTHOR_STUDIO} 
+            path={ROUTES.CHAPTER_MANAGEMENT} 
             element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
-                <AuthorStudioPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path={ROUTES.AUTHOR_STUDIO_CHAPTER_NEW} 
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <ChapterEditorPage />
+                <ChapterManagementPage />
               </ProtectedRoute>
             } 
           />

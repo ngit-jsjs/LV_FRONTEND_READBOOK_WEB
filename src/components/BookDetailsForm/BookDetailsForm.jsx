@@ -10,8 +10,7 @@ const BookDetailsForm = ({
   description, setDescription,
   errors,
   allCategories = [],
-  categoryIds = [],
-  setCategoryIds
+  categoryIds = []
 }) => {
   return (
     <div className="create-book-right">
@@ -64,8 +63,8 @@ const BookDetailsForm = ({
               onChange={(e) => setStatus(e.target.value)}
               className={`form-input ${errors.status ? 'error' : ''}`}
             >
-              <option value="DRAFT">Bản nháp (DRAFT)</option>
-              <option value="PUBLISHED">Đã xuất bản (PUBLISHED)</option>
+              <option value="UNAVAILABLE">Chưa sẵn sàng (UNAVAILABLE)</option>
+              <option value="AVAILABLE">Sẵn sàng (AVAILABLE)</option>
             </select>
             {errors.status && <span className="error-text">{errors.status}</span>}
           </div>
@@ -81,12 +80,12 @@ const BookDetailsForm = ({
             className="form-input"
           />
         </div>
-
+{/* bỏ dô style */}
         <div className="form-group">
           <label>Thể loại</label>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', 
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
             gap: '12px',
             marginTop: '8px',
             background: 'rgba(255, 255, 255, 0.02)',
@@ -98,23 +97,37 @@ const BookDetailsForm = ({
           }}>
             {allCategories && allCategories.length > 0 ? (
               allCategories.map(cat => {
-                const isChecked = categoryIds.includes(cat.id);
+                const isChecked = Array.isArray(categoryIds) && categoryIds.includes(cat.id);
                 return (
-                  <label key={cat.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                  <div key={cat.id} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <input
                       type="checkbox"
-                      checked={isChecked}
-                      onChange={() => {
-                        if (isChecked) {
-                          setCategoryIds(categoryIds.filter(id => id !== cat.id));
-                        } else {
-                          setCategoryIds([...categoryIds, cat.id]);
-                        }
-                      }}
+                      id={`cat-${cat.id}`}
+                      value={cat.id}
+                      className="category-checkbox-item"
+                      defaultChecked={isChecked}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => e.stopPropagation()}
                       style={{ cursor: 'pointer' }}
                     />
-                    <span>{cat.name}</span>
-                  </label>
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const input = document.getElementById(`cat-${cat.id}`);
+                        if (input) input.click();
+                      }}
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                        fontWeight: 'normal',
+                        margin: 0,
+                        userSelect: 'none',
+                        color: 'var(--text-primary, #ffffff)'
+                      }}
+                    >
+                      {cat.name}
+                    </span>
+                  </div>
                 );
               })
             ) : (
@@ -124,7 +137,7 @@ const BookDetailsForm = ({
         </div>
 
         <div className="form-group">
-          <label>Mô tả <span className="required">*</span> <FiInfo className="label-icon" /></label>
+          <label>Mô tả <FiInfo className="label-icon" /></label>
           <textarea
             placeholder="Nhập mô tả truyện của bạn..."
             value={description}

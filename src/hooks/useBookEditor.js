@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ROUTES } from '../config/routes';
 import { useAuth } from '../context/AuthContext';
@@ -17,7 +17,7 @@ export const useBookEditor = () => {
   const [author, setAuthor] = useState('');
   const [publisher, setPublisher] = useState('');
   const [year, setYear] = useState(new Date().getFullYear());
-  const [status, setStatus] = useState('DRAFT');
+  const [status, setStatus] = useState('UNAVAILABLE');
 
   const [coverImage, setCoverImage] = useState(null);
   const [rawFile, setRawFile] = useState(null);
@@ -48,7 +48,7 @@ export const useBookEditor = () => {
             setAuthor(book.author || '');
             setPublisher(book.publisher || '');
             setYear(book.year || new Date().getFullYear());
-            setStatus(book.status || 'DRAFT');
+            setStatus(book.status || 'UNAVAILABLE');
             
             // Map existing categories to IDs
             const bookCatIds = book.categoryIds || (book.categories ? book.categories.map(c => c.id || c.categoryId) : []);
@@ -62,7 +62,7 @@ export const useBookEditor = () => {
       } catch (err) {
         console.error("Failed to fetch book editor data", err);
         alert(`Không thể tải thông tin. Chi tiết: ${getErrorMessage(err)}`);
-        navigate(ROUTES.AUTHOR_DASHBOARD);
+        navigate(ROUTES.BOOK_MANAGEMENT);
       } finally {
         setIsLoading(false);
       }
@@ -84,7 +84,6 @@ export const useBookEditor = () => {
     const newErrors = {};
     if (!title.trim()) newErrors.title = "Tiêu đề không được để trống";
     if (!author.trim()) newErrors.author = "Tác giả không được để trống";
-    if (!description.trim()) newErrors.description = "Mô tả không được để trống";
     if (!status) newErrors.status = "Vui lòng chọn trạng thái";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -103,7 +102,7 @@ export const useBookEditor = () => {
         description: description.trim(),
         publisher: publisher.trim(),
         year: parseInt(year) || new Date().getFullYear(),
-        categoryIds: categoryIds
+        categoryIds: Array.from(document.querySelectorAll('.category-checkbox-item:checked')).map(el => parseInt(el.value))
       };
 
       const formData = new FormData();
@@ -124,7 +123,7 @@ export const useBookEditor = () => {
         await bookService.createBook(formData);
         alert('Tạo truyện thành công!');
       }
-      navigate(ROUTES.AUTHOR_DASHBOARD);
+      navigate(ROUTES.BOOK_MANAGEMENT);
     } catch (err) {
       console.error(err);
       alert(`Lỗi lưu thông tin: ${getErrorMessage(err)}`);

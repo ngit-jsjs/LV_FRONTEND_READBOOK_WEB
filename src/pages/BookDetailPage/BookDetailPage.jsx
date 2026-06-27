@@ -3,16 +3,18 @@ import { useParams, Link } from 'react-router-dom';
 import { FiHeart, FiShare2, FiBookOpen, FiUser, FiInfo, FiLock, FiStar, FiPlus, FiX, FiCheck } from 'react-icons/fi';
 import { useBookDetail } from '../../hooks/useBookDetail';
 import { useChapters } from '../../hooks/useChapters';
+import Pagination from '../../components/Pagination/Pagination';
 import { useBookRatings } from '../../hooks/useBookRatings';
 import { getFormattedImageUrl } from '../../utils/imageUtils';
 import { ROUTES } from '../../config/routes';
 import { useAuth } from '../../context/AuthContext';
 import bookListService from '../../services/bookListService';
+import { getErrorMessage } from '../../services/apiClient';
 
 function BookDetailPage() {
   const { id } = useParams();
   const { book, loading: bookLoading, error: bookError, refetch: refetchBook } = useBookDetail(id);
-  const { chapters, loading: chaptersLoading } = useChapters(id);
+  const { chapters, loading: chaptersLoading, page: chaptersPage, totalPages: chaptersTotalPages, totalElements: chaptersTotalElements, handlePageChange: handleChaptersPageChange } = useChapters(id, 20);
   const { user } = useAuth();
   
   const [activeTab, setActiveTab] = useState('chapters');
@@ -49,7 +51,7 @@ function BookDetailPage() {
       setIsFollowed(ids.length > 0);
     } catch (err) {
       console.error("Failed to load book lists:", err);
-      setListError("Khong the tai danh sach cua ban.");
+      setListError(getErrorMessage(err));
     }
   };
 
@@ -79,7 +81,7 @@ function BookDetailPage() {
       await loadBookLists();
     } catch (err) {
       console.error("Failed to update book list:", err);
-      setListError("Khong the cap nhat danh sach. Vui long thu lai.");
+      setListError(getErrorMessage(err));
     } finally {
       setBookmarkLoading(false);
     }
@@ -109,7 +111,7 @@ function BookDetailPage() {
       await loadBookLists();
     } catch (err) {
       console.error("Failed to create book list:", err);
-      setListError("Khong the tao danh sach moi. Vui long thu lai.");
+      setListError(getErrorMessage(err));
     } finally {
       setBookmarkLoading(false);
     }
@@ -159,8 +161,8 @@ function BookDetailPage() {
   }
 
   const imageUrl = getFormattedImageUrl(book.coverImage || book.coverImageUrl);
-  const statusLabel = book.status === 'PUBLISHED' ? 'Đã xuất bản' : book.status === 'DRAFT' ? 'Bản nháp' : 'Đang cập nhật';
-  const statusClass = book.status === 'PUBLISHED' ? 'status-published' : book.status === 'DRAFT' ? 'status-draft' : 'status-ongoing';
+  const statusLabel = book.status === 'PUBLISHED' || book.status === 'AVAILABLE' ? 'Sẵn sàng' : book.status === 'DRAFT' || book.status === 'UNAVAILABLE' ? 'Chưa sẵn sàng' : 'Đang cập nhật';
+  const statusClass = book.status === 'PUBLISHED' || book.status === 'AVAILABLE' ? 'status-published' : book.status === 'DRAFT' || book.status === 'UNAVAILABLE' ? 'status-draft' : 'status-ongoing';
 
   // Check if current user already has a rating in the list
   const hasUserRated = ratings.some(r => r.userId === user?.userId || r.userId === user?.id);
@@ -316,13 +318,13 @@ function BookDetailPage() {
                   className={`bd-tab ${activeTab === 'chapters' ? 'active' : ''}`}
                   onClick={() => { setActiveTab('chapters'); setRatingsPage(0); }}
                 >
-                  Danh sách chương ({chapters?.length || 0})
+                  Danh sách chương ({chaptersTotalElements || 0})
                 </button>
                 <button 
                   className={`bd-tab ${activeTab === 'ratings' ? 'active' : ''}`}
                   onClick={() => { setActiveTab('ratings'); setRatingsPage(0); }}
                 >
-                  Đánh giá & Bình luận ({ratingsTotalElements || book.ratingsCount || 0})
+                  Đánh giá & Bình luận
                 </button>
               </div>
 
@@ -332,21 +334,30 @@ function BookDetailPage() {
                     {chaptersLoading ? (
                       <div className="loading-state">Đang tải danh sách chương...</div>
                     ) : chapters && chapters.length > 0 ? (
-                      <ul className="chapter-list">
-                        {sortedChapters.map((chapter) => (
-                          <li key={chapter.id} className="chapter-item">
-                            <Link to={ROUTES.CHAPTER_READ.replace(':bookId', id).replace(':chapterId', chapter.id)} className="chapter-link">
-                              <span className="chapter-title">{chapter.title}</span>
-                              {!chapter.isFree && (
-                                <span className={`chapter-badge premium ${chapter.isLocked ? 'locked' : 'unlocked'}`}>
-                                  {chapter.isLocked ? <><FiLock /> Trả phí ({chapter.price} xu)</> : 'Đã mở khóa'}
-                                </span>
-                              )}
-                              {chapter.isFree && <span className="chapter-badge free">Miễn phí</span>}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
+                      <>
+                        <ul className="chapter-list">
+                          {sortedChapters.map((chapter) => (
+                            <li key={chapter.id} className="chapter-item">
+                              <Link to={ROUTES.CHAPTER_READ.replace(':bookId', id).replace(':chapterId', chapter.id)} className="chapter-link">
+                                <span className="chapter-title">{chapter.title}</span>
+                                {!chapter.isFree && (
+                                  <span className={`chapter-badge premium ${chapter.isLocked ? 'locked' : 'unlocked'}`}>
+                                    {chapter.isLocked ? <><FiLock /> Trả phí ({chapter.price} xu)</> : 'Đã mở khóa'}
+                                  </span>
+                                )}
+                                {chapter.isFree && <span className="chapter-badge free">Miễn phí</span>}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                        {chaptersTotalPages > 1 && (
+                          <Pagination
+                            currentPage={chaptersPage + 1}
+                            totalPages={chaptersTotalPages}
+                            onPageChange={handleChaptersPageChange}
+                          />
+                        )}
+                      </>
                     ) : (
                       <div className="empty-state">
                         Tác phẩm chưa có chương nào được đăng tải.

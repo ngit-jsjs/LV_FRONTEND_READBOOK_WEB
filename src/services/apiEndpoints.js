@@ -3,6 +3,10 @@ export const API_ENDPOINTS = {
     LOGIN: '/auth/login',
     REGISTER: '/user',
     LOGOUT: '/auth/logout',
+    VERIFY_EMAIL: '/auth/verify-email',
+    RESEND_OTP: '/auth/resend-otp',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
   },
   BOOKS: {
     CREATE_BOOK: '/books',
@@ -12,7 +16,6 @@ export const API_ENDPOINTS = {
     GET_BOOK: (bookId) => `/books/${bookId}`,
     UPDATE_BOOK: (bookId) => `/books/${bookId}`,
     DELETE_BOOK: (bookId) => `/books/${bookId}`,
-    GET_AUTHOR_BOOKS: (authorId) => `/books/authors/${authorId}`,
     IMPORT_EPUB: (bookId) => `/books/${bookId}/import-epub`,
   },
   USER: {
@@ -24,12 +27,13 @@ export const API_ENDPOINTS = {
     UPGRADE_AUTHOR: '/user/upgrade-author',
   },
   CHAPTERS: {
-    CREATE_CHAPTER: (bookId) => `/chapters/book/${bookId}`,
     GET_CHAPTERS_BY_BOOK: (bookId, page = 0, size = 100) => `/chapters/book/${bookId}?page=${page}&size=${size}`,
     GET_CHAPTER: (chapterId) => `/chapters/${chapterId}`,
     UPDATE_CHAPTER: (chapterId) => `/chapters/${chapterId}`,
     DELETE_CHAPTER: (chapterId) => `/chapters/${chapterId}`,
     UNLOCK_CHAPTER: (chapterId) => `/chapters/${chapterId}/unlock`,
+    BATCH_UPDATE: (bookId) => `/chapters/book/${bookId}/batch`,
+    DELETE_ALL: (bookId) => `/chapters/book/${bookId}/all`,
   },
   CATEGORIES: {
     GET_ALL: '/categories',
@@ -57,5 +61,14 @@ export const API_ENDPOINTS = {
   READING_HISTORY: {
     SAVE: '/reading-history',
     GET_MY: (page = 0, size = 10) => `/reading-history?page=${page}&size=${size}`,
+  },
+  PLANS: {
+    GET_ALL: '/api/plans',
+  },
+  SUBSCRIPTIONS: {
+    GET_MY: '/api/subscriptions/my',
+  },
+  PAYMENT: {
+    BUY_PACKAGE: '/api/payment/buy-package',
   }
 };

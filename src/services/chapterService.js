@@ -2,10 +2,6 @@ import apiClient from './apiClient';
 import { API_ENDPOINTS } from './apiEndpoints';
 
 const chapterService = {
-  createChapter: async (bookId, chapterData) => {
-    return await apiClient.post(API_ENDPOINTS.CHAPTERS.CREATE_CHAPTER(bookId), chapterData);
-  },
-
   getChaptersByBookId: async (bookId, page = 0, size = 50) => {
     return await apiClient.get(API_ENDPOINTS.CHAPTERS.GET_CHAPTERS_BY_BOOK(bookId, page, size));
   },
@@ -24,6 +20,14 @@ const chapterService = {
 
   unlockChapter: async (chapterId) => {
     return await apiClient.post(API_ENDPOINTS.CHAPTERS.UNLOCK_CHAPTER(chapterId));
+  },
+
+  batchUpdateChapters: async (bookId, batchData) => {
+    return await apiClient.put(API_ENDPOINTS.CHAPTERS.BATCH_UPDATE(bookId), batchData);
+  },
+
+  deleteAllChapters: async (bookId) => {
+    return await apiClient.delete(API_ENDPOINTS.CHAPTERS.DELETE_ALL(bookId));
   }
 };
 

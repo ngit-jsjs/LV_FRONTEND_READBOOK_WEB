@@ -18,7 +18,13 @@ function CategoriesPage() {
     handleDeleteCat,
     handleEditCatClick,
     handleUpdateCategory,
-    closeEditModal
+    closeEditModal,
+    catName,
+    setCatName,
+    catDesc,
+    setCatDesc,
+    catSubmitting,
+    handleSaveCategory
   } = useCategories();
 
   return (
@@ -32,6 +38,50 @@ function CategoriesPage() {
           Khám phá và phân loại các tác phẩm theo bối cảnh, chủ đề nội dung
         </p>
       </div>
+
+      {user?.isAdmin && (
+        <div className="admin-category-container" style={{ marginBottom: '40px' }}>
+          <div className="admin-category-card" style={{ maxWidth: '600px', margin: '0 auto' }}>
+            <h2 className="admin-category-title">Thêm thể loại mới</h2>
+            <form onSubmit={handleSaveCategory}>
+              <div className="admin-form-group">
+                <label className="admin-label">
+                  Tên thể loại <span className="admin-required">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={catName}
+                  onChange={(e) => setCatName(e.target.value)}
+                  placeholder="Ví dụ: Đô Thị, Tiên Hiệp, Huyền Huyễn..."
+                  required
+                  className="admin-input"
+                />
+              </div>
+              <div className="admin-form-group-large">
+                <label className="admin-label">
+                  Mô tả thể loại
+                </label>
+                <textarea
+                  value={catDesc}
+                  onChange={(e) => setCatDesc(e.target.value)}
+                  placeholder="Mô tả tóm tắt nội dung/bối cảnh..."
+                  rows={4}
+                  className="admin-textarea"
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                className="um-search-btn admin-submit-btn"
+                disabled={catSubmitting}
+                style={{ width: '100%', marginTop: '16px' }}
+              >
+                {catSubmitting ? 'Đang thêm...' : 'Thêm thể loại'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       {loading ? (

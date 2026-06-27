@@ -11,19 +11,21 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
+  VERIFY_EMAIL: '/verify-email',
 
   
   PROFILE: '/profile',
   PROFILE_EDIT: '/profile/edit',
   RECENTLY_READ: '/profile/recently-read',
   FOLLOWED_BOOKS: '/profile/followed-books',
+  FOLLOWED_BOOKS_DETAIL: '/profile/followed-books/:listId',
+  SUBSCRIPTIONS: '/profile/subscriptions',
+  PAYMENT_RESULT: '/payment/result',
   
   ADMIN: '/admin',
   
-  AUTHOR_DASHBOARD: '/author',
-  AUTHOR_STUDIO: '/author/studio/:bookId',
-  AUTHOR_STUDIO_CHAPTER_NEW: '/author/studio/:bookId/chapter/new',
-  AUTHOR_PROFILE: '/user/:id',
-  CREATE_BOOK: '/author/create',
-  EDIT_BOOK: '/author/edit/:id',
+  BOOK_MANAGEMENT: '/admin/books',
+  CHAPTER_MANAGEMENT: '/admin/books/:bookId/chapters',
+  CREATE_BOOK: '/admin/books/create',
+  EDIT_BOOK: '/admin/books/edit/:id',
 };

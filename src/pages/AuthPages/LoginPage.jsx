@@ -34,7 +34,15 @@ function LoginPage() {
       await login(email, password);
       navigate(ROUTES.HOME);
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      const errCode = error?.response?.data?.code;
+      if (errCode === 1080) {
+        setErrorMessage('Tài khoản chưa được kích hoạt. Đang chuyển đến trang xác thực...');
+        setTimeout(() => {
+          navigate(`${ROUTES.VERIFY_EMAIL}?email=${encodeURIComponent(email)}`);
+        }, 1500);
+      } else {
+        setErrorMessage(getErrorMessage(error));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +85,12 @@ function LoginPage() {
           </div>
 
           <div className="auth-form-group">
-            <label className="auth-label">Mật khẩu</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label className="auth-label" style={{ marginBottom: 0 }}>Mật khẩu</label>
+              <Link to={ROUTES.FORGOT_PASSWORD} className="auth-forgot-link" style={{ fontSize: '0.85rem', color: '#8b5cf6', textDecoration: 'none', fontWeight: '600' }}>
+                Quên mật khẩu?
+              </Link>
+            </div>
             <div className="auth-input-wrapper">
               <MdOutlineLock className="auth-input-icon" />
               <input

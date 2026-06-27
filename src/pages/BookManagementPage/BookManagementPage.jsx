@@ -1,11 +1,11 @@
 import React from 'react';
 import { FiPlus, FiSearch } from 'react-icons/fi';
-import { useAuthorDashboard } from '../../hooks/useAuthorDashboard';
+import { useBookManagement } from '../../hooks/useBookManagement';
 import BookCard from '../../components/BookCard/BookCard';
 import Pagination from '../../components/Pagination/Pagination';
 
 
-function AuthorDashboardPage() {
+function BookManagementPage() {
   const {
     books,
     isLoading,
@@ -18,15 +18,15 @@ function AuthorDashboardPage() {
     keyword,
     setKeyword,
     handleSearchSubmit
-  } = useAuthorDashboard();
+  } = useBookManagement();
 
   return (
     <div className="author-dashboard-page container">
       <div className="dashboard-header-minimal" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', justifyContent: 'space-between', marginBottom: '30px' }}>
         <h1 className="dashboard-title-minimal" style={{ margin: 0 }}>
-          Tác phẩm của tôi 
+          Quản lý sách
         </h1>
-        
+
         {/* Search bar inside header */}
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flex: 1, justifyContent: 'flex-end', minWidth: '300px' }}>
           <form className="um-search-form admin-search-form" onSubmit={handleSearchSubmit} style={{ margin: 0, flex: 1, maxWidth: '400px' }}>
@@ -35,14 +35,14 @@ function AuthorDashboardPage() {
               <input
                 type="text"
                 className="um-search-input"
-                placeholder="Tìm kiếm tác phẩm..."
+                placeholder="Tìm kiếm sách..."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
               />
             </div>
             <button type="submit" className="um-search-btn">Tìm kiếm</button>
           </form>
-          
+
           <button className="btn-create-minimal" onClick={() => navigate(ROUTES.CREATE_BOOK)}>
             <FiPlus /> Mới
           </button>
@@ -64,7 +64,7 @@ function AuthorDashboardPage() {
               ))
             ) : (
               <div className="empty-state-minimal">
-                Bạn chưa có tác phẩm nào. Hãy bấm nút "Mới" để tạo tiểu thuyết đầu tiên nhé!
+                Hãy upload sách!
               </div>
             )}
           </div>
@@ -80,4 +80,4 @@ function AuthorDashboardPage() {
   );
 }
 
-export default AuthorDashboardPage;
+export default BookManagementPage;

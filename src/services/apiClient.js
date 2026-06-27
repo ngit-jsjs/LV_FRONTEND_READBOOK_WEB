@@ -1,7 +1,11 @@
 const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export const getErrorMessage = (error) => {
-  if (error?.response?.data?.message) return error.response.data.message;
+  const data = error?.response?.data;
+  if (data) {
+    if (typeof data.result === 'string' && data.result) return data.result;
+    if (data.message) return data.message;
+  }
   if (error?.message) return error.message;
   return 'Đã xảy ra lỗi hệ thống';
 };

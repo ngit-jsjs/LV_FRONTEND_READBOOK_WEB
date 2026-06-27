@@ -1,69 +1,75 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import planService from '../services/planService';
+import paymentService from '../services/paymentService';
+import { getErrorMessage } from '../services/apiClient';
 
-export const usePremium = (user, addCoins) => {
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState(null);
+export const usePremium = (user) => {
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState('');
 
-  const packages = [
-    {
-      id: 1,
-      name: 'GÓI XU 199K',
-      price: '199.000Đ',
-      coins: '9.050',
-      bonus: '100',
-    },
-    {
-      id: 2,
-      name: 'GÓI XU 599K',
-      price: '599.000Đ',
-      coins: '28.050',
-      bonus: '300',
-    },
-    {
-      id: 3,
-      name: 'GÓI XU 999K',
-      price: '999.000Đ',
-      coins: '50.050',
-      bonus: '500',
-    }
-  ];
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        setLoading(true);
+        const res = await planService.getAllPlans();
+        if (res.result) {
+          const formatted = res.result.map(plan => ({
+            id: plan.id,
+            name: plan.name,
+            description: plan.description,
+            price: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(plan.price),
+            coins: new Intl.NumberFormat('vi-VN').format(plan.amount),
+            bonus: '0',
+          }));
+          setPackages(formatted);
+        }
+      } catch (err) {
+        console.error("Lỗi khi tải gói xu:", err);
+        setError(getErrorMessage(err));
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleBuyClick = (pkg) => {
+    fetchPlans();
+  }, []);
+
+  const handleBuyClick = async (pkg) => {
     if (!user) {
       alert("Vui lòng đăng nhập để thực hiện nạp xu!");
       return;
     }
-    setSelectedPackage(pkg);
-    setShowPaymentModal(true);
-    setIsSuccess(false);
-    setIsProcessing(false);
-  };
 
-  const handleConfirmPayment = () => {
-    setIsProcessing(true);
-    setTimeout(() => {
+    if (user && !user.verified) {
+      alert("Tài khoản của bạn chưa được xác thực email. Hệ thống sẽ chuyển hướng bạn đến trang xác thực OTP.");
+      window.location.href = `/verify-email?email=${encodeURIComponent(user.email)}`;
+      return;
+    }
+    
+    try {
+      setIsProcessing(true);
+      setError('');
+      const res = await paymentService.buyPackage(pkg.id);
+      if (res.result) {
+        window.location.href = res.result;
+      } else {
+        throw new Error("Không nhận được link thanh toán từ VNPay");
+      }
+    } catch (err) {
+      console.error("Lỗi tạo hóa đơn:", err);
+      alert(getErrorMessage(err));
+    } finally {
       setIsProcessing(false);
-      setIsSuccess(true);
-      const mainCoins = parseInt(selectedPackage.coins.replace(/\D/g, ''));
-      const bonusCoins = parseInt(selectedPackage.bonus.replace(/\D/g, ''));
-      addCoins(mainCoins + bonusCoins);
-    }, 2000);
-  };
-
-  const closePaymentModal = () => {
-    setShowPaymentModal(false);
+    }
   };
 
   return {
     packages,
-    showPaymentModal,
-    selectedPackage,
+    loading,
     isProcessing,
-    isSuccess,
-    handleBuyClick,
-    handleConfirmPayment,
-    closePaymentModal
+    error,
+    handleBuyClick
   };
 };

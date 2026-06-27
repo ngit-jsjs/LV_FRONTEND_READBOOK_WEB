@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import bookService from '../services/bookService';
+import { getErrorMessage } from '../services/apiClient';
 
 export const useBookDetail = (id) => {
   const [book, setBook] = useState(null);
@@ -15,7 +16,7 @@ export const useBookDetail = (id) => {
       setBook(res.result);
     } catch (err) {
       console.error("Failed to fetch book detail:", err);
-      setError("Không thể tải thông tin tác phẩm. Vui lòng thử lại sau.");
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

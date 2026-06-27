@@ -182,8 +182,8 @@ function UserDetailView({ user, onBack }) {
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
                     >
-                      <option value="DRAFT" className="modal-select-option">Bản nháp (DRAFT)</option>
-                      <option value="PUBLISHED" className="modal-select-option">Đã xuất bản (PUBLISHED)</option>
+                      <option value="UNAVAILABLE" className="modal-select-option">Chưa sẵn sàng (UNAVAILABLE)</option>
+                      <option value="AVAILABLE" className="modal-select-option">Sẵn sàng (AVAILABLE)</option>
                     </select>
                   </div>
                 </div>
@@ -202,7 +202,7 @@ function UserDetailView({ user, onBack }) {
               </div>
 
               <div className="auth-form-group">
-                <label className="auth-label">Mô tả truyện <span className="modal-label-required">*</span></label>
+                <label className="auth-label">Mô tả truyện</label>
                 <div className="modal-textarea-wrapper">
                   <textarea
                     className="auth-input modal-textarea-inner-tall"
@@ -210,7 +210,6 @@ function UserDetailView({ user, onBack }) {
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Mô tả tóm tắt tác phẩm..."
                     rows={4}
-                    required
                   />
                 </div>
               </div>

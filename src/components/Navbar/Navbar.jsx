@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { MdMenuBook } from 'react-icons/md';
 import { FaCrown, FaCoins } from 'react-icons/fa';
-import { FiUser, FiLogOut, FiSearch, FiFilter, FiRefreshCw, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiUser, FiUserPlus, FiLogOut, FiSearch, FiFilter, FiRefreshCw, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../config/routes';
 import categoryService from '../../services/categoryService';
@@ -152,9 +152,15 @@ function Navbar() {
                   </button>
                 </div>
               ) : (
-                <Link to={ROUTES.LOGIN} className="navbar-login-btn">
-                  <FiUser /> Đăng nhập
-                </Link>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Link to={ROUTES.LOGIN} className="navbar-login-btn">
+                    <FiUser /> Đăng nhập
+                  </Link>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.15)', fontSize: '0.9rem' }}>|</span>
+                  <Link to={ROUTES.REGISTER} className="navbar-login-btn">
+                    <FiUserPlus /> Đăng ký
+                  </Link>
+                </div>
               )}
             </div>
 
@@ -383,7 +389,7 @@ function Navbar() {
             >
               &times;
             </button>
-            
+
             <h3 className="auth-title modal-title-small" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 8px 0', color: '#fff' }}>
               <FiSearch /> Tìm kiếm & Chọn thể loại
             </h3>
@@ -457,7 +463,7 @@ function Navbar() {
                       <input
                         type="checkbox"
                         checked={isChecked}
-                        onChange={() => {}} // Controlled via onClick on parent
+                        onChange={() => { }} // Controlled via onClick on parent
                         style={{ cursor: 'pointer' }}
                       />
                       <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: isChecked ? '600' : 'normal' }}>

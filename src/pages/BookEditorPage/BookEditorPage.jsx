@@ -18,10 +18,11 @@ function BookEditorPage() {
     rawFile,
     categoryIds, setCategoryIds,
     allCategories,
+    allAuthors,
+    allPublishers,
     errors,
     isSubmitting,
     isLoading,
-    displayTitle,
     handleImageUpload,
     handleSave,
     navigate
@@ -30,7 +31,7 @@ function BookEditorPage() {
   if (isLoading) {
     return (
       <div className="create-book-page edit-book-loading" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
-        <div className="edit-book-loading-text">Đang tải thông tin tác phẩm...</div>
+        <div className="edit-book-loading-text">Đang tải dữ liệu...</div>
       </div>
     );
   }
@@ -43,10 +44,9 @@ function BookEditorPage() {
           <FiChevronLeft />
         </button>
         <div className="header-titles">
-          <span className="header-subtitle">
+          <h1 className="header-title">
             {id ? 'Sửa Thông Tin Truyện' : 'Thêm Thông Tin Truyện'}
-          </span>
-          <h1 className="header-title">{displayTitle}</h1>
+          </h1>
         </div>
         <div className="edit-book-header-actions" style={{ marginLeft: 'auto' }}>
           <button
@@ -84,6 +84,8 @@ function BookEditorPage() {
           allCategories={allCategories}
           categoryIds={categoryIds}
           setCategoryIds={setCategoryIds}
+          allAuthors={allAuthors}
+          allPublishers={allPublishers}
         />
       </div>
     </div>

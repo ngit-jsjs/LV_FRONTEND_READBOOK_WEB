@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
     UPDATE_BOOK: (bookId) => `/books/${bookId}`,
     DELETE_BOOK: (bookId) => `/books/${bookId}`,
     IMPORT_EPUB: (bookId) => `/books/${bookId}/import-epub`,
+    MY_UNRATED_FINISHED_BOOKS: '/books/my-unrated-finished-books',
   },
   USER: {
     MY_INFO: '/user/myInfo',
@@ -34,19 +35,39 @@ export const API_ENDPOINTS = {
     UNLOCK_CHAPTER: (chapterId) => `/chapters/${chapterId}/unlock`,
     BATCH_UPDATE: (bookId) => `/chapters/book/${bookId}/batch`,
     DELETE_ALL: (bookId) => `/chapters/book/${bookId}/all`,
+    MY_UNLOCKS: '/api/chapters/my-unlocks',
+    ADMIN_USER_UNLOCKS: (userId) => `/api/chapters/admin/user/${userId}/unlocks`,
   },
   CATEGORIES: {
     GET_ALL: '/categories',
+    GET_LIST: '/categories/list',
     GET_ONE: (id) => `/categories/${id}`,
     CREATE: '/categories',
     UPDATE: (id) => `/categories/${id}`,
     DELETE: (id) => `/categories/${id}`,
+  },
+  AUTHORS: {
+    GET_ALL: '/authors',
+    GET_ONE: (id) => `/authors/${id}`,
+    CREATE: '/authors',
+    UPDATE: (id) => `/authors/${id}`,
+    DELETE: (id) => `/authors/${id}`,
+    SEARCH: '/authors/search',
+  },
+  PUBLISHERS: {
+    GET_ALL: '/publishers',
+    GET_ONE: (id) => `/publishers/${id}`,
+    CREATE: '/publishers',
+    UPDATE: (id) => `/publishers/${id}`,
+    DELETE: (id) => `/publishers/${id}`,
+    SEARCH: '/publishers/search',
   },
   RATINGS: {
     CREATE: (bookId) => `/ratings/book/${bookId}`,
     UPDATE: (ratingId) => `/ratings/${ratingId}`,
     DELETE: (ratingId) => `/ratings/${ratingId}`,
     GET_BY_BOOK: (bookId, page = 0, size = 10) => `/ratings/book/${bookId}?page=${page}&size=${size}`,
+    MY_RATINGS: (page = 0, size = 10) => `/ratings/my-ratings?page=${page}&size=${size}`,
   },
   BOOKLISTS: {
     CREATE: '/booklists',
@@ -70,5 +91,10 @@ export const API_ENDPOINTS = {
   },
   PAYMENT: {
     BUY_PACKAGE: '/api/payment/buy-package',
+    ADMIN_USER_HISTORY: (userId) => `/api/payment/admin/user/${userId}`,
+  },
+  RECOMMENDATIONS: {
+    GET_RECOMMENDATIONS: '/recommendations',
+    TRAIN: '/recommendations/train',
   }
 };

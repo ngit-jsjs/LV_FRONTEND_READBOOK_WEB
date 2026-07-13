@@ -16,6 +16,10 @@ const ratingService = {
 
   getRatingsByBook: async (bookId, page = 0, size = 10) => {
     return await apiClient.get(API_ENDPOINTS.RATINGS.GET_BY_BOOK(bookId, page, size));
+  },
+
+  getMyRatings: async (page = 0, size = 10) => {
+    return await apiClient.get(API_ENDPOINTS.RATINGS.MY_RATINGS(page, size));
   }
 };
 

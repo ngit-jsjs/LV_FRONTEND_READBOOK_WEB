@@ -6,8 +6,10 @@ const bookListService = {
     return await apiClient.post(API_ENDPOINTS.BOOKLISTS.CREATE, data);
   },
 
-  getMyBookLists: async () => {
-    return await apiClient.get(API_ENDPOINTS.BOOKLISTS.GET_MY);
+  getMyBookLists: async (page = 0, size = 8) => {
+    return await apiClient.get(API_ENDPOINTS.BOOKLISTS.GET_MY, {
+      params: { page, size }
+    });
   },
 
   getBookListById: async (id) => {

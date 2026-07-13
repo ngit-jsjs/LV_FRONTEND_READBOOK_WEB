@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import categoryService from '../services/categoryService';
 import { getErrorMessage } from '../services/apiClient';
 
-export const useCategories = () => {
+export const useCategories = (paged = false) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   // Edit category states
   const [editingCategory, setEditingCategory] = useState(null);
@@ -22,8 +26,17 @@ export const useCategories = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await categoryService.getAllCategories();
-      setCategories(res.result || res || []);
+      if (paged) {
+        const res = await categoryService.getAllCategories(page - 1, 12);
+        if (res.result) {
+          setCategories(res.result.content || []);
+          setTotalPages(res.result.totalPages || 0);
+        }
+      } else {
+        // Fetch all categories (large size) for select dropdowns
+        const res = await categoryService.getAllCategories(0, 1000);
+        setCategories(res.result?.content || res.result || res || []);
+      }
     } catch (err) {
       console.error(err);
       setError(getErrorMessage(err));
@@ -34,7 +47,7 @@ export const useCategories = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [page]);
 
   const handleDeleteCat = async (id, name) => {
     if (window.confirm(`Bạn có chắc chắn muốn xóa thể loại "${name}" không?`)) {
@@ -128,6 +141,9 @@ export const useCategories = () => {
     catDesc,
     setCatDesc,
     catSubmitting,
-    handleSaveCategory
+    handleSaveCategory,
+    page,
+    setPage,
+    totalPages
   };
 };

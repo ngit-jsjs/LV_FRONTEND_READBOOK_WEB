@@ -23,7 +23,7 @@ function PremiumPage() {
         
         <div className="premium-header" style={{ textAlign: 'center', marginBottom: '50px', position: 'relative' }}>
           <button
-            onClick={() => navigate(ROUTES.SUBSCRIPTIONS)}
+            onClick={() => navigate(ROUTES.TRANSACTION_HISTORY)}
             style={{
               position: 'absolute',
               top: '0',

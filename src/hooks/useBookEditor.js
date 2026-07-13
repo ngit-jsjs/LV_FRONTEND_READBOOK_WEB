@@ -4,6 +4,8 @@ import { ROUTES } from '../config/routes';
 import { useAuth } from '../context/AuthContext';
 import bookService from '../services/bookService';
 import categoryService from '../services/categoryService';
+import authorService from '../services/authorService';
+import publisherService from '../services/publisherService';
 import { getFormattedImageUrl } from '../utils/imageUtils';
 import { getErrorMessage } from '../services/apiClient';
 
@@ -24,20 +26,30 @@ export const useBookEditor = () => {
 
   const [categoryIds, setCategoryIds] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
+  const [allAuthors, setAllAuthors] = useState([]);
+  const [allPublishers, setAllPublishers] = useState([]);
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const displayTitle = title.trim() || 'Truyện Chưa Có Tiêu Đề';
-
   useEffect(() => {
     const fetchAllData = async () => {
       try {
         // Load all categories first
-        const catRes = await categoryService.getAllCategories();
+        const catRes = await categoryService.getAllCategoriesList();
         const cats = catRes.result || catRes || [];
         setAllCategories(cats);
+
+        // Load all authors
+        const authRes = await authorService.getAllAuthors(0, 1000);
+        const authors = authRes.result?.content || authRes.content || [];
+        setAllAuthors(authors);
+
+        // Load all publishers
+        const pubRes = await publisherService.getAllPublishers(0, 1000);
+        const publishers = pubRes.result?.content || pubRes.content || [];
+        setAllPublishers(publishers);
 
         if (id) {
           const res = await bookService.getBookById(id);
@@ -50,8 +62,14 @@ export const useBookEditor = () => {
             setYear(book.year || new Date().getFullYear());
             setStatus(book.status || 'UNAVAILABLE');
             
-            // Map existing categories to IDs
-            const bookCatIds = book.categoryIds || (book.categories ? book.categories.map(c => c.id || c.categoryId) : []);
+            // Map existing categories to IDs (matching by name since backend returns String list)
+            const bookCatIds = book.categoryIds || (book.categories ? book.categories.map(c => {
+              if (typeof c === 'string') {
+                const found = cats.find(cat => cat.name === c);
+                return found ? found.id : null;
+              }
+              return c.id || c.categoryId;
+            }).filter(id => id !== null) : []);
             setCategoryIds(bookCatIds);
 
             if (book.coverImageUrl) {
@@ -95,14 +113,19 @@ export const useBookEditor = () => {
     setIsSubmitting(true);
 
     try {
+      const matchedAuthor = allAuthors.find(a => a.name && a.name.trim().toLowerCase() === author.trim().toLowerCase());
+      const matchedPublisher = allPublishers.find(p => p.name && p.name.trim().toLowerCase() === publisher.trim().toLowerCase());
+
       const bookData = {
         title: title.trim(),
         author: author.trim(),
+        authorId: matchedAuthor ? matchedAuthor.id : null,
         status,
         description: description.trim(),
         publisher: publisher.trim(),
+        publisherId: matchedPublisher ? matchedPublisher.id : null,
         year: parseInt(year) || new Date().getFullYear(),
-        categoryIds: Array.from(document.querySelectorAll('.category-checkbox-item:checked')).map(el => parseInt(el.value))
+        categoryIds: categoryIds
       };
 
       const formData = new FormData();
@@ -144,10 +167,11 @@ export const useBookEditor = () => {
     rawFile,
     categoryIds, setCategoryIds,
     allCategories,
+    allAuthors,
+    allPublishers,
     errors,
     isSubmitting,
     isLoading,
-    displayTitle,
     handleImageUpload,
     handleSave,
     navigate

@@ -23,7 +23,10 @@ function FollowedBooksPage() {
     handleUnfollow,
     handleCreateList,
     handleRenameList,
-    handleDeleteList
+    handleDeleteList,
+    bookListsPage,
+    setBookListsPage,
+    bookListsTotalPages
   } = useFollowedBooks(user);
 
   if (!user) return null;
@@ -34,22 +37,16 @@ function FollowedBooksPage() {
     <div className="followed-books-page">
       {/* Header */}
       <div className="followed-books-header">
-        {selectedListId ? (
+        {selectedListId && (
           <button 
             className="btn-back-profile" 
             onClick={() => {
               setSelectedListId(null);
               setPage(0);
             }}
+            style={{ marginBottom: '16px' }}
           >
             <FiArrowLeft /> Quay lại danh sách của tôi
-          </button>
-        ) : (
-          <button 
-            className="btn-back-profile" 
-            onClick={() => navigate(ROUTES.PROFILE)}
-          >
-            <FiArrowLeft /> Quay lại trang cá nhân
           </button>
         )}
         
@@ -84,13 +81,37 @@ function FollowedBooksPage() {
             </div>
           </div>
         ) : (
-          <div>
-            <h1 className="followed-books-title">
-              Danh sách theo dõi
-            </h1>
-            <p className="followed-books-subtitle">
-              Theo dõi sát sao các tác phẩm yêu thích của bạn và nhận cập nhật mới nhất
-            </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px', width: '100%' }}>
+            <div>
+              <h1 className="followed-books-title">
+                Danh sách theo dõi
+              </h1>
+              <p className="followed-books-subtitle">
+                Theo dõi sát sao các tác phẩm yêu thích của bạn và nhận cập nhật mới nhất
+              </p>
+            </div>
+            <button
+              onClick={handleCreateList}
+              style={{ 
+                background: 'var(--accent-gradient, linear-gradient(135deg, #a78bfa, #7c3aed))', 
+                border: 'none',
+                color: '#fff', 
+                padding: '10px 20px', 
+                borderRadius: '12px', 
+                fontWeight: '700', 
+                fontSize: '0.95rem',
+                cursor: 'pointer', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                transition: 'all 0.2s',
+                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)' 
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+            >
+              <FiFolderPlus size={16} /> Tạo danh sách mới
+            </button>
           </div>
         )}
       </div>
@@ -118,7 +139,7 @@ function FollowedBooksPage() {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
+            {totalPages > 0 && (
               <div className="followed-books-pagination">
                 <button
                   className="followed-books-pagination-btn"
@@ -150,51 +171,65 @@ function FollowedBooksPage() {
         )
       ) : (
         /* View Booklists Grid Cards */
-        <div className="booklists-grid">
-          {bookLists.map((list) => (
-            <div 
-              key={list.id} 
-              className="booklist-card" 
-              onClick={() => {
-                setPage(0);
-                setSelectedListId(list.id);
-              }}
-            >
-              <div className="booklist-card-icon">
-                <FiFolder />
+        <div>
+          <div className="booklists-grid">
+            {bookLists.map((list) => (
+              <div 
+                key={list.id} 
+                className="booklist-card" 
+                onClick={() => {
+                  setPage(0);
+                  setSelectedListId(list.id);
+                }}
+              >
+                <div className="booklist-card-icon">
+                  <FiFolder />
+                </div>
+                <h3 className="booklist-card-title">{list.name || 'Danh sách không tên'}</h3>
+                <p className="booklist-card-subtitle">Nhấp để mở xem danh sách</p>
+                
+                <div className="booklist-card-actions" onClick={(e) => e.stopPropagation()}>
+                  <button 
+                    onClick={() => handleRenameList(list.id)} 
+                    className="booklist-action-btn edit"
+                    title="Sửa tên danh sách"
+                  >
+                    <FiEdit size={13} /> Sửa
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteList(list.id)} 
+                    className="booklist-action-btn delete"
+                    title="Xóa danh sách"
+                  >
+                    <FiTrash2 size={13} /> Xóa
+                  </button>
+                </div>
               </div>
-              <h3 className="booklist-card-title">{list.name || 'Danh sách không tên'}</h3>
-              <p className="booklist-card-subtitle">Nhấp để mở xem danh sách</p>
-              
-              <div className="booklist-card-actions" onClick={(e) => e.stopPropagation()}>
-                <button 
-                  onClick={() => handleRenameList(list.id)} 
-                  className="booklist-action-btn edit"
-                  title="Sửa tên danh sách"
-                >
-                  <FiEdit size={13} /> Sửa
-                </button>
-                <button 
-                  onClick={() => handleDeleteList(list.id)} 
-                  className="booklist-action-btn delete"
-                  title="Xóa danh sách"
-                >
-                  <FiTrash2 size={13} /> Xóa
-                </button>
-              </div>
-            </div>
-          ))}
-          
-          <div 
-            className="booklist-card create-new-card" 
-            onClick={handleCreateList}
-          >
-            <div className="booklist-card-icon">
-              <FiFolderPlus />
-            </div>
-            <h3 className="booklist-card-title">Tạo danh sách</h3>
-            <p className="booklist-card-subtitle">Thêm thư mục lưu sách mới</p>
+            ))}
           </div>
+
+          {/* Pagination for Book Lists */}
+          {bookListsTotalPages > 0 && (
+            <div className="followed-books-pagination" style={{ marginTop: '30px' }}>
+              <button
+                className="followed-books-pagination-btn"
+                disabled={bookListsPage === 0}
+                onClick={() => setBookListsPage(prev => prev - 1)}
+              >
+                Trang trước
+              </button>
+              <span className="followed-books-pagination-info">
+                Trang {bookListsPage + 1} / {bookListsTotalPages}
+              </span>
+              <button
+                className="followed-books-pagination-btn"
+                disabled={bookListsPage === bookListsTotalPages - 1}
+                onClick={() => setBookListsPage(prev => prev + 1)}
+              >
+                Trang sau
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -1,17 +1,17 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiEdit3, FiClock, FiImage, FiTrash2, FiBookOpen } from 'react-icons/fi';
+import { FiEdit3, FiClock, FiImage, FiTrash2, FiBookOpen, FiUser, FiCalendar, FiTag, FiStar } from 'react-icons/fi';
 import { getFormattedImageUrl } from '../../utils/imageUtils';
 import { useAuth } from '../../context/AuthContext';
 import bookService from '../../services/bookService';
 import { ROUTES } from '../../config/routes';
 
 
-function BookCard({ 
-  book, 
-  onDelete, 
-  onEdit, 
-  rank, 
+function BookCard({
+  book,
+  onDelete,
+  onEdit,
+  rank,
   showActions = false,
   showEdit = true,
   showDelete = true,
@@ -25,7 +25,7 @@ function BookCard({
 
   const imageUrl = getFormattedImageUrl(book.coverImage || book.coverImageUrl);
   const isAdmin = user?.isAdmin;
-  const isManageMode = showActions || location.pathname.startsWith('/author');
+  const isManageMode = showActions || location.pathname.startsWith('/author') || location.pathname.startsWith('/admin');
 
   const handleDelete = (e) => {
     e.preventDefault();
@@ -71,7 +71,9 @@ function BookCard({
       </div>
       <div className="book-card-content">
         <div className="book-card-top">
-          <h3 className="book-title-minimal">{book.title || 'Untitled'}</h3>
+          <h3 className="book-title-minimal" title={book.title || 'Untitled'}>
+            {book.title || 'Untitled'}
+          </h3>
           {isManageMode && (showEdit || showDelete) && (
             <div className="book-card-actions" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
               {showEdit && (
@@ -97,28 +99,61 @@ function BookCard({
         </div>
 
         <div className="book-card-meta">
-          {book.author && <span className="book-author-minimal">Tác giả: {book.author}</span>}
-          {book.year && <span className="book-year-minimal">Năm: {book.year}</span>}
+          {book.author && (
+            <span className="book-author-minimal" title={book.author}>
+              <FiUser className="meta-icon" /> {book.author}
+            </span>
+          )}
+
+          {book.categories && (Array.isArray(book.categories) ? book.categories : Array.from(book.categories)).length > 0 && (
+            <div className="book-categories-badges">
+              {(Array.isArray(book.categories) ? book.categories : Array.from(book.categories)).slice(0, 3).map((cat, idx) => (
+                <span key={idx} className="book-category-badge" title={cat}>
+                  <FiTag className="badge-icon" /> {cat}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="book-meta-grid">
+            {book.year && (
+              <span className="book-meta-item year" title={`Năm xuất bản: ${book.year}`}>
+                <FiCalendar className="meta-icon" /> {book.year}
+              </span>
+            )}
+            {book.totalChapters !== undefined && book.totalChapters !== null && (
+              <span className="book-meta-item chapters" title={`Số chương: ${book.totalChapters}`}>
+                <FiBookOpen className="meta-icon" /> {book.totalChapters} chương
+              </span>
+            )}
+            {book.averageRating && Number(book.averageRating) > 0 && (
+              <span className="book-meta-item rating" title={`Đánh giá: ${Number(book.averageRating).toFixed(1)} sao`}>
+                <FiStar className="meta-icon star-filled" /> {Number(book.averageRating).toFixed(1)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="book-card-middle-status">
           {book.status && (
-            <span className="book-status-minimal">
-              Trạng thái: {(book.status === 'AVAILABLE') ? 'Sẵn sàng' : 'Chưa sẵn sàng'}
-            </span>
-          )}
-          {book.totalChapters !== undefined && book.totalChapters !== null && (
-            <span className="book-chapters-minimal">
-              Số chương: {book.totalChapters}
-            </span>
-          )}
-          {book.averageRating && Number(book.averageRating) > 0 && (
-            <span className="book-rating-minimal-display" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ffb300', fontWeight: 'bold', fontSize: '0.85rem', marginTop: '2px' }}>
-              ★ {Number(book.averageRating).toFixed(1)}
+            <span className={`book-status-badge-minimal ${book.status.toLowerCase()}`}>
+              <span className="status-dot-minimal"></span>
+              {book.status === 'AVAILABLE' ? 'Sẵn sàng' : 'Chưa sẵn sàng'}
             </span>
           )}
         </div>
 
         <div className="book-card-bottom">
-          {book.createdAt && <span className="book-time-minimal">Tạo: {new Date(book.createdAt).toLocaleDateString('vi-VN')}</span>}
-          {book.updatedAt && <span className="book-time-minimal"><FiClock /> Cập nhật: {new Date(book.updatedAt).toLocaleDateString('vi-VN')}</span>}
+          {book.createdAt && (
+            <span className="book-time-minimal" title={`Ngày tạo: ${new Date(book.createdAt).toLocaleDateString('vi-VN')}`}>
+              Tạo: {new Date(book.createdAt).toLocaleDateString('vi-VN')}
+            </span>
+          )}
+          {book.updatedAt && (
+            <span className="book-time-minimal" title={`Cập nhật gần nhất: ${new Date(book.updatedAt).toLocaleDateString('vi-VN')}`}>
+              <FiClock /> {new Date(book.updatedAt).toLocaleDateString('vi-VN')}
+            </span>
+          )}
         </div>
 
         {isManageMode && showManageChapters && (

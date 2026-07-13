@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { MdMenuBook, MdOutlineEmail, MdOutlineLock } from 'react-icons/md';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { HiSparkles } from 'react-icons/hi';
@@ -11,19 +11,22 @@ import { getErrorMessage } from '../../services/apiClient';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const redirect = searchParams.get('redirect');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
-    
+
     if (!email || !password) {
       setErrorMessage('Vui lòng nhập đầy đủ email và mật khẩu');
       return;
@@ -32,7 +35,7 @@ function LoginPage() {
     setIsLoading(true);
     try {
       await login(email, password);
-      navigate(ROUTES.HOME);
+      navigate(redirect || ROUTES.HOME);
     } catch (error) {
       const errCode = error?.response?.data?.code;
       if (errCode === 1080) {

@@ -12,12 +12,33 @@ export const useBookManagement = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [keyword, setKeyword] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
+  
+  // Trạng thái bộ lọc bổ sung cho Admin
+  const [status, setStatus] = useState('');
+  const [author, setAuthor] = useState('');
+  const [publisher, setPublisher] = useState('');
+  const [year, setYear] = useState('');
+  const [categoryIds, setCategoryIds] = useState([]);
+
+  // Reset trang về 0 khi có bất kỳ điều kiện tìm kiếm nào thay đổi
+  useEffect(() => {
+    setPage(0);
+  }, [searchKeyword, status, author, publisher, year, categoryIds]);
 
   useEffect(() => {
     const fetchBooks = async () => {
       setIsLoading(true);
       try {
-        const res = await bookService.getMyUploadBooks(searchKeyword, page, 12);
+        const res = await bookService.getMyUploadBooks(
+          searchKeyword,
+          status,
+          author,
+          publisher,
+          year,
+          categoryIds,
+          page,
+          12
+        );
         const data = res.result;
         if (data && data.content) {
           setBooks(data.content);
@@ -35,7 +56,7 @@ export const useBookManagement = () => {
     };
     
     fetchBooks();
-  }, [page, searchKeyword]);
+  }, [page, searchKeyword, status, author, publisher, year, categoryIds]);
 
   const handleSearchSubmit = (e) => {
     if (e) e.preventDefault();
@@ -44,16 +65,18 @@ export const useBookManagement = () => {
   };
 
   const handleDeleteBook = async (id, title) => {
-    const confirmDelete = window.confirm(`Bạn có chắc chắn muốn xóa tác phẩm "${title}" không? Hành động này không thể hoàn tác.`);
+    const confirmDelete = window.confirm(`Bạn có chắc chắn muốn ẩn tác phẩm "${title}" không?`);
     if (!confirmDelete) return;
 
     try {
       await bookService.deleteBook(id);
-      alert('Xóa tác phẩm thành công!');
-      setBooks(prev => prev.filter(book => book.id !== id));
+      alert('Ẩn tác phẩm thành công!');
+      setBooks(prev => prev.map(book => 
+        book.id === id ? { ...book, status: 'UNAVAILABLE' } : book
+      ));
     } catch (error) {
-      console.error("Failed to delete book", error);
-      alert(`Không thể xóa tác phẩm. Chi tiết: ${getErrorMessage(error)}`);
+      console.error("Failed to hide book", error);
+      alert(`Không thể ẩn tác phẩm. Chi tiết: ${getErrorMessage(error)}`);
     }
   };
 
@@ -68,6 +91,16 @@ export const useBookManagement = () => {
     ROUTES,
     keyword,
     setKeyword,
-    handleSearchSubmit
+    handleSearchSubmit,
+    status,
+    setStatus,
+    author,
+    setAuthor,
+    publisher,
+    setPublisher,
+    year,
+    setYear,
+    categoryIds,
+    setCategoryIds
   };
 };

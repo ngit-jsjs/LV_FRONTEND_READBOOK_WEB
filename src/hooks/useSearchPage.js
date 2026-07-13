@@ -1,37 +1,60 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import bookService from '../services/bookService';
+import categoryService from '../services/categoryService';
 
 export const useSearchPage = () => {
   const [searchParams] = useSearchParams();
-  const initialKeyword = searchParams.get('keyword') || '';
   
-  const [keyword, setKeyword] = useState(initialKeyword);
+  const keyword = searchParams.get('keyword') || '';
+  const author = searchParams.get('author') || '';
+  const publisher = searchParams.get('publisher') || '';
+  const year = searchParams.get('year') || '';
+  const categoryIds = searchParams.get('categories')
+    ? searchParams.get('categories').split(',').map(Number)
+    : [];
+
   const [books, setBooks] = useState([]);
+  const [categoriesList, setCategoriesList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
+  // Fetch all categories once for the filter panel (if needed elsewhere)
   useEffect(() => {
-    const urlKeyword = searchParams.get('keyword') || '';
-    if (urlKeyword !== keyword) {
-      setKeyword(urlKeyword);
-      setPage(0);
-    }
-  }, [searchParams]);
+    const fetchCategories = async () => {
+      try {
+        const res = await categoryService.getAllCategoriesList();
+        if (res.result) {
+          setCategoriesList(res.result);
+        } else if (Array.isArray(res)) {
+          setCategoriesList(res);
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải danh mục:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Reset page when search criteria change
+  useEffect(() => {
+    setPage(0);
+  }, [keyword, author, publisher, year, searchParams.get('categories')]);
 
   useEffect(() => {
     const fetchBooks = async () => {
-      const queryKeyword = keyword || '';
-      
       setLoading(true);
       try {
-        let res;
-        if (!queryKeyword) {
-          res = await bookService.getPublicBooks(page, 12);
-        } else {
-          res = await bookService.searchBooks(queryKeyword, page, 12);
-        }
+        const res = await bookService.searchBooks(
+          keyword,
+          author,
+          publisher,
+          year,
+          categoryIds,
+          page,
+          12
+        );
         
         const data = res.result;
         if (data && data.content) {
@@ -51,11 +74,15 @@ export const useSearchPage = () => {
     };
 
     fetchBooks();
-  }, [keyword, page]);
+  }, [keyword, author, publisher, year, searchParams.get('categories'), page]);
 
   return {
     keyword,
-    setKeyword,
+    author,
+    publisher,
+    year,
+    categoryIds,
+    categoriesList,
     books,
     loading,
     page,

@@ -80,9 +80,6 @@ function ProfilePage() {
         <div className="profile-actions">
           <button onClick={() => navigate(ROUTES.PREMIUM)} className="profile-btn primary">Nạp xu</button>
           <button onClick={() => navigate(ROUTES.PROFILE_EDIT)} className="profile-btn secondary">Sửa thông tin</button>
-          <button onClick={() => navigate(ROUTES.SUBSCRIPTIONS)} className="profile-btn secondary">Lịch sử giao dịch</button>
-          <button onClick={() => navigate(ROUTES.RECENTLY_READ)} className="profile-btn secondary">Sách đọc gần đây</button>
-          <button onClick={() => navigate(ROUTES.FOLLOWED_BOOKS)} className="profile-btn secondary">Danh sách theo dõi</button>
           <button 
             onClick={async () => {
               await logout();

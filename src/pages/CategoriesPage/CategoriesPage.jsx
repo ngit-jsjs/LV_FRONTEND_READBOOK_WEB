@@ -2,8 +2,9 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useCategories } from '../../hooks/useCategories';
 import { FiTrash2, FiGrid, FiEdit, FiX } from 'react-icons/fi';
+import Pagination from '../../components/Pagination/Pagination';
 
-function CategoriesPage() {
+function CategoriesPage({ isSubComponent = false }) {
   const { user } = useAuth();
   const {
     categories,
@@ -24,18 +25,21 @@ function CategoriesPage() {
     catDesc,
     setCatDesc,
     catSubmitting,
-    handleSaveCategory
-  } = useCategories();
+    handleSaveCategory,
+    page,
+    setPage,
+    totalPages
+  } = useCategories(true);
 
   return (
-    <div className="categories-page">
+    <div className={isSubComponent ? '' : 'categories-page'}>
       {/* Header */}
-      <div className="categories-header">
-        <h1 className="categories-title">
-          <FiGrid /> Danh sách Thể loại
+      <div style={{ marginBottom: '30px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px' }}>
+        <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: '0 0 8px 0', color: '#fff', fontFamily: '"Noto Serif SC", serif' }}>
+          Quản lý thể loại
         </h1>
-        <p className="categories-subtitle">
-          Khám phá và phân loại các tác phẩm theo bối cảnh, chủ đề nội dung
+        <p style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.95rem', margin: 0 }}>
+          Thêm, sửa, xóa và cấu hình các danh mục thể loại tác phẩm.
         </p>
       </div>
 
@@ -70,8 +74,8 @@ function CategoriesPage() {
                 />
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="um-search-btn admin-submit-btn"
                 disabled={catSubmitting}
                 style={{ width: '100%', marginTop: '16px' }}
@@ -91,40 +95,52 @@ function CategoriesPage() {
           {error}
         </div>
       ) : categories.length > 0 ? (
-        <div className="categories-grid">
-          {categories.map(cat => (
-            <div 
-              key={cat.id} 
-              className="category-card"
-            >
-              <h3 className={`category-title ${user?.isAdmin ? 'admin-padded' : ''}`}>
-                {cat.name}
-              </h3>
-              <p className="category-description">
-                {cat.description || 'Chưa có mô tả cho thể loại này.'}
-              </p>
+        <>
+          <div className="categories-grid">
+            {categories.map(cat => (
+              <div
+                key={cat.id}
+                className="category-card"
+              >
+                <h3 className={`category-title ${user?.isAdmin ? 'admin-padded' : ''}`}>
+                  {cat.name}
+                </h3>
+                <p className="category-description">
+                  {cat.description || 'Chưa có mô tả cho thể loại này.'}
+                </p>
 
-              {user?.isAdmin && (
-                <div className="category-actions">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); handleEditCatClick(cat); }}
-                    className="category-action-btn edit"
-                    title="Sửa thể loại"
-                  >
-                    <FiEdit size={16} />
-                  </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); handleDeleteCat(cat.id, cat.name); }}
-                    className="category-action-btn delete"
-                    title="Xóa thể loại"
-                  >
-                    <FiTrash2 size={16} />
-                  </button>
-                </div>
-              )}
+                {user?.isAdmin && (
+                  <div className="category-actions">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleEditCatClick(cat); }}
+                      className="category-action-btn edit"
+                      title="Sửa thể loại"
+                    >
+                      <FiEdit size={16} />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDeleteCat(cat.id, cat.name); }}
+                      className="category-action-btn delete"
+                      title="Xóa thể loại"
+                    >
+                      <FiTrash2 size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={(p) => setPage(p)}
+              />
             </div>
-          ))}
-        </div>
+          )}
+        </>
       ) : (
         <div className="categories-empty">
           Hiện chưa có thể loại nào được tạo.
@@ -142,7 +158,7 @@ function CategoriesPage() {
             >
               <FiX />
             </button>
-            
+
             <h3 className="auth-title modal-title-small">Sửa thông tin thể loại</h3>
             <p className="auth-subtitle modal-subtitle-small">Chỉnh sửa tên và mô tả của thể loại</p>
 

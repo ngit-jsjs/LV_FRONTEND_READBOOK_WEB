@@ -65,7 +65,7 @@ function PaymentResultPage() {
             <FiHome /> Về trang cá nhân
           </button>
           <button 
-            onClick={() => navigate(ROUTES.SUBSCRIPTIONS)}
+            onClick={() => navigate(ROUTES.TRANSACTION_HISTORY)}
             style={{ 
               width: '100%', 
               padding: '14px', 

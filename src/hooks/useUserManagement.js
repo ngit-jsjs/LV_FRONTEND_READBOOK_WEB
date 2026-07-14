@@ -50,13 +50,15 @@ export const useUserManagement = () => {
   }, [page, searchTrigger]);
 
   const handleDelete = async (userToDelete) => {
-    if (window.confirm(`Bạn có chắc chắn muốn xóa tài khoản "${userToDelete.name}" không?`)) {
+    const isActive = userToDelete.active !== false;
+    const actionText = isActive ? 'khóa' : 'mở khóa';
+    if (window.confirm(`Bạn có chắc chắn muốn ${actionText} tài khoản "${userToDelete.name}" không?`)) {
       try {
         await userService.deleteUser(userToDelete.id);
-        alert(`Đã xóa tài khoản ${userToDelete.name} thành công!`);
-        setResults(results.filter(u => u.id !== userToDelete.id));
+        alert(`Đã ${actionText} tài khoản ${userToDelete.name} thành công!`);
+        setResults(results.map(u => u.id === userToDelete.id ? { ...u, active: !isActive } : u));
       } catch (err) {
-        alert('Xóa thất bại: ' + getErrorMessage(err));
+        alert(`${isActive ? 'Khóa' : 'Mở khóa'} thất bại: ${getErrorMessage(err)}`);
       }
     }
   };

@@ -46,22 +46,18 @@ export const useBookRatings = (bookId, user, refetchBook, activeTab) => {
       alert("Vui lòng đăng nhập để đánh giá.");
       return;
     }
-    if (!userComment.trim()) {
-      alert("Vui lòng nhập nội dung bình luận.");
-      return;
-    }
     setSubmittingRating(true);
     try {
       if (editingRatingId) {
         await ratingService.updateRating(editingRatingId, {
           ratings: userRatingScore,
-          comment: userComment
+          comment: userComment.trim()
         });
         alert("Cập nhật đánh giá thành công!");
       } else {
         await ratingService.createRating(bookId, {
           ratings: userRatingScore,
-          comment: userComment
+          comment: userComment.trim()
         });
         alert("Đăng đánh giá thành công!");
       }

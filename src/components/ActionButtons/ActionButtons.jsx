@@ -50,7 +50,7 @@ function ActionButtons({
           title={deleteTitle}
           style={btnStyle}
         >
-          <FiTrash2 /> {showText && 'Xóa'}
+          <FiTrash2 /> {showText && deleteTitle}
         </button>
       )}
     </div>

@@ -46,16 +46,18 @@ export const useUserDetailView = (user) => {
   }, [user, page]);
 
   const handleDeleteBook = async (id, title) => {
-    const confirmDelete = window.confirm(`Bạn có chắc chắn muốn xóa tác phẩm "${title}" không? Hành động này không thể hoàn tác.`);
+    const confirmDelete = window.confirm(`Bạn có chắc chắn muốn ẩn tác phẩm "${title}" không?`);
     if (!confirmDelete) return;
 
     try {
       await bookService.deleteBook(id);
-      alert('Xóa tác phẩm thành công!');
-      setBooks(prev => prev.filter(book => book.id !== id));
+      alert('Ẩn tác phẩm thành công!');
+      setBooks(prev => prev.map(book => 
+        book.id === id ? { ...book, status: 'UNAVAILABLE' } : book
+      ));
     } catch (error) {
-      console.error("Failed to delete book", error);
-      alert(`Không thể xóa tác phẩm. Chi tiết: ${getErrorMessage(error)}`);
+      console.error("Failed to hide book", error);
+      alert(`Không thể ẩn tác phẩm. Chi tiết: ${getErrorMessage(error)}`);
     }
   };
 
@@ -110,10 +112,10 @@ export const useUserDetailView = (user) => {
         prev.map(b =>
           b.id === editingBook.id
             ? {
-                ...b,
-                ...bookData,
-                coverImageUrl: coverFile ? URL.createObjectURL(coverFile) : b.coverImageUrl
-              }
+              ...b,
+              ...bookData,
+              coverImageUrl: coverFile ? URL.createObjectURL(coverFile) : b.coverImageUrl
+            }
             : b
         )
       );

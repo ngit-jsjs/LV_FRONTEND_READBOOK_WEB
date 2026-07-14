@@ -47,42 +47,17 @@ function RecentlyReadPage() {
 
   return (
     <div style={{ padding: '60px 20px', maxWidth: '1000px', margin: '0 auto', minHeight: 'calc(100vh - 120px)' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '40px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px' }}>
-        <button 
-          className="btn-back-minimal" 
-          onClick={() => navigate(ROUTES.PROFILE)}
-          style={{ 
-            background: 'none', 
-            border: 'none', 
-            color: 'var(--text-muted)', 
-            cursor: 'pointer', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px', 
-            fontSize: '0.95rem',
-            padding: 0,
-            marginBottom: '16px',
-            transition: 'color 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
-        >
-          <FiArrowLeft /> Quay lại trang cá nhân
-        </button>
-        
+      <div style={{ marginBottom: '30px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px' }}>
         <h1 style={{ 
           fontSize: '2.2rem', 
           fontWeight: '800', 
           margin: '0 0 8px 0', 
           color: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px'
+          fontFamily: '"Noto Serif SC", serif'
         }}>
-          <FiClock style={{ color: 'var(--accent-purple)' }} /> Lịch sử đọc sách
+          Lịch sử đọc sách
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1rem', margin: 0 }}>
+        <p style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.95rem', margin: 0 }}>
           Xem các tác phẩm bạn đã mở đọc gần đây và tiếp tục hành trình của mình
         </p>
       </div>
@@ -182,7 +157,7 @@ function RecentlyReadPage() {
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {totalPages > 0 && (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '30px' }}>
               <button
                 className="ratings-pagination-btn"

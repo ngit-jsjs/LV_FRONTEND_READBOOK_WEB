@@ -6,10 +6,16 @@ const bookService = {
     return apiClient.post(API_ENDPOINTS.BOOKS.CREATE_BOOK, bookData);
   },
   
-  getMyUploadBooks: (keyword = '', page = 0, size = 12) => {
-    return apiClient.get(API_ENDPOINTS.BOOKS.MY_UPLOAD_BOOKS, {
-      params: { keyword, page, size }
-    });
+  getMyUploadBooks: (keyword = '', status = '', author = '', publisher = '', year = '', categoryIds = [], page = 0, size = 12) => {
+    const params = { keyword, page, size };
+    if (status) params.status = status;
+    if (author) params.author = author;
+    if (publisher) params.publisher = publisher;
+    if (year) params.year = year;
+    if (categoryIds && categoryIds.length > 0) {
+      params.categoryIds = categoryIds.join(',');
+    }
+    return apiClient.get(API_ENDPOINTS.BOOKS.MY_UPLOAD_BOOKS, { params });
   },
 
   getPublicBooks: (page = 0, size = 12) => {
@@ -18,10 +24,15 @@ const bookService = {
     });
   },
 
-  searchBooks: (keyword, page = 0, size = 12) => {
-    return apiClient.get(API_ENDPOINTS.BOOKS.SEARCH_BOOKS, {
-      params: { keyword, page, size }
-    });
+  searchBooks: (keyword, author = '', publisher = '', year = '', categoryIds = [], page = 0, size = 12) => {
+    const params = { keyword, page, size };
+    if (author) params.author = author;
+    if (publisher) params.publisher = publisher;
+    if (year) params.year = year;
+    if (categoryIds && categoryIds.length > 0) {
+      params.categoryIds = categoryIds.join(',');
+    }
+    return apiClient.get(API_ENDPOINTS.BOOKS.SEARCH_BOOKS, { params });
   },
   getBookById: (id) => {
     return apiClient.get(API_ENDPOINTS.BOOKS.GET_BOOK(id));
@@ -39,6 +50,12 @@ const bookService = {
     formData.append('file', file);
     
     return apiClient.post(API_ENDPOINTS.BOOKS.IMPORT_EPUB(bookId), formData);
+  },
+
+  getUnratedFinishedBooks: (page = 0, size = 12) => {
+    return apiClient.get(API_ENDPOINTS.BOOKS.MY_UNRATED_FINISHED_BOOKS, {
+      params: { page, size }
+    });
   }
 };
 

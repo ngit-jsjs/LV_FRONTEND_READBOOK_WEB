@@ -28,6 +28,18 @@ const chapterService = {
 
   deleteAllChapters: async (bookId) => {
     return await apiClient.delete(API_ENDPOINTS.CHAPTERS.DELETE_ALL(bookId));
+  },
+
+  getMyUnlocks: async (page = 0, size = 10) => {
+    return await apiClient.get(API_ENDPOINTS.CHAPTERS.MY_UNLOCKS, {
+      params: { page, size }
+    });
+  },
+
+  getAdminUserUnlocks: async (userId, page = 0, size = 10) => {
+    return await apiClient.get(API_ENDPOINTS.CHAPTERS.ADMIN_USER_UNLOCKS(userId), {
+      params: { page, size }
+    });
   }
 };
 

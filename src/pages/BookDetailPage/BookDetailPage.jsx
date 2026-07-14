@@ -41,7 +41,8 @@ function BookDetailPage() {
   const loadBookLists = async () => {
     try {
       const res = await bookListService.getMyBookLists();
-      const lists = res.result || res || [];
+      const data = res.result || res || [];
+      const lists = (data && data.content && Array.isArray(data.content)) ? data.content : (Array.isArray(data) ? data : []);
       const ids = lists
         .filter(list => Array.isArray(list.bookIds) && list.bookIds.includes(Number(id)))
         .map(list => list.id);
@@ -143,7 +144,7 @@ function BookDetailPage() {
   if (bookLoading) {
     return (
       <div className="book-detail-page container">
-        <div className="bd-loading">Đang tải thông tin tác phẩm...</div>
+        <div className="bd-loading">Đang tải dữ liệu...</div>
       </div>
     );
   }
@@ -208,6 +209,24 @@ function BookDetailPage() {
                 {book.averageRating && Number(book.averageRating) > 0 ? `${Number(book.averageRating).toFixed(1)} / 5.0` : 'Chưa có đánh giá'}
               </span>
             </div>
+
+            {book.categories && (Array.isArray(book.categories) ? book.categories : Array.from(book.categories)).length > 0 && (
+              <div className="bd-categories-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '14px', marginBottom: '14px' }}>
+                {(Array.isArray(book.categories) ? book.categories : Array.from(book.categories)).map((catName, index) => (
+                  <span key={index} className="bd-category-tag" style={{
+                    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                    color: 'var(--accent-purple, #8b5cf6)',
+                    padding: '4px 12px',
+                    borderRadius: '16px',
+                    fontSize: '0.85rem',
+                    fontWeight: '600',
+                    border: '1px solid rgba(139, 92, 246, 0.3)'
+                  }}>
+                    {catName}
+                  </span>
+                ))}
+              </div>
+            )}
 
             <div className="bd-actions">
               {firstChapter && (
@@ -397,7 +416,6 @@ function BookDetailPage() {
                               value={userComment}
                               onChange={(e) => setUserComment(e.target.value)}
                               maxLength={500}
-                              required
                             />
                             <div className="rating-form-actions">
                               <button
@@ -466,12 +484,14 @@ function BookDetailPage() {
                                           Sửa
                                         </button>
                                       )}
-                                      <button
-                                        className="rating-action-btn delete"
-                                        onClick={() => handleDeleteRating(rating.id)}
-                                      >
-                                        Xóa
-                                      </button>
+                                      {user?.isAdmin && (
+                                        <button
+                                          className="rating-action-btn delete"
+                                          onClick={() => handleDeleteRating(rating.id)}
+                                        >
+                                          Xóa
+                                        </button>
+                                      )}
                                     </div>
                                   )}
                                 </div>

@@ -23,6 +23,8 @@ export const useFollowedBooks = (user) => {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [bookLists, setBookLists] = useState([]);
+  const [bookListsPage, setBookListsPage] = useState(0);
+  const [bookListsTotalPages, setBookListsTotalPages] = useState(0);
 
   useEffect(() => {
     if (!user) {
@@ -30,15 +32,25 @@ export const useFollowedBooks = (user) => {
       return;
     }
     fetchFollowedBooks();
-  }, [user, page, selectedListId]);
+  }, [user, page, selectedListId, bookListsPage]);
 
   const fetchFollowedBooks = async () => {
     setLoading(true);
     setError('');
     try {
-      const listsRes = await bookListService.getMyBookLists();
-      const lists = listsRes.result || listsRes || [];
-      setBookLists(lists);
+      const listsRes = await bookListService.getMyBookLists(bookListsPage, 8);
+      const data = listsRes.result || listsRes;
+      
+      if (data && data.content && Array.isArray(data.content)) {
+        setBookLists(data.content);
+        setBookListsTotalPages(data.totalPages || 0);
+      } else if (Array.isArray(data)) {
+        setBookLists(data);
+        setBookListsTotalPages(data.length > 0 ? 1 : 0);
+      } else {
+        setBookLists([]);
+        setBookListsTotalPages(0);
+      }
 
       if (selectedListId) {
         const booksRes = await bookListService.getBooksInBookList(selectedListId, page, 8);

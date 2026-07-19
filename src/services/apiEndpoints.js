@@ -35,8 +35,8 @@ export const API_ENDPOINTS = {
     UNLOCK_CHAPTER: (chapterId) => `/chapters/${chapterId}/unlock`,
     BATCH_UPDATE: (bookId) => `/chapters/book/${bookId}/batch`,
     DELETE_ALL: (bookId) => `/chapters/book/${bookId}/all`,
-    MY_UNLOCKS: '/api/chapters/my-unlocks',
-    ADMIN_USER_UNLOCKS: (userId) => `/api/chapters/admin/user/${userId}/unlocks`,
+    MY_UNLOCKS: '/chapters/my-unlocks',
+    ADMIN_USER_UNLOCKS: (userId) => `/chapters/admin/user/${userId}/unlocks`,
   },
   CATEGORIES: {
     GET_ALL: '/categories',
@@ -87,7 +87,7 @@ export const API_ENDPOINTS = {
     GET_ALL: '/api/plans',
   },
   SUBSCRIPTIONS: {
-    GET_MY: '/api/subscriptions/my',
+    GET_MY: '/api/payment/my-history',
   },
   PAYMENT: {
     BUY_PACKAGE: '/api/payment/buy-package',

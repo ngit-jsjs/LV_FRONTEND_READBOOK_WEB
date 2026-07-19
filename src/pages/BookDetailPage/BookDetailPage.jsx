@@ -92,7 +92,7 @@ function BookDetailPage() {
     e.preventDefault();
     const trimmedName = newListName.trim();
     if (!trimmedName) {
-      setListError("Nhap ten danh sach truoc khi tao.");
+      setListError("Nhập tên danh sách trước khi tạo.");
       return;
     }
 
@@ -239,7 +239,7 @@ function BookDetailPage() {
               )}
               <button 
                 className={`bd-btn icon-btn ${isFollowed ? 'followed' : ''}`} 
-                title={isFollowed ? "Quan ly danh sach da luu" : "Luu vao danh sach"}
+                title={isFollowed ? "Quản lý danh sách đã lưu" : "Lưu vào danh sách"}
                 onClick={handleToggleFollow}
                 disabled={bookmarkLoading}
               >
@@ -258,14 +258,14 @@ function BookDetailPage() {
           <div className="bd-list-modal" onClick={(e) => e.stopPropagation()}>
             <div className="bd-list-modal-header">
               <div>
-                <h3>Luu vao danh sach</h3>
-                <p>Chon danh sach ban muon them tac pham nay vao.</p>
+                <h3>Lưu vào danh sách</h3>
+                <p>Chọn danh sách bạn muốn thêm tác phẩm này vào.</p>
               </div>
               <button
                 type="button"
                 className="bd-list-modal-close"
                 onClick={() => setListModalOpen(false)}
-                aria-label="Dong"
+                aria-label="Đóng"
               >
                 <FiX />
               </button>
@@ -285,15 +285,15 @@ function BookDetailPage() {
                       onClick={() => handleToggleBookInList(list.id)}
                       disabled={bookmarkLoading}
                     >
-                      <span className="bd-list-option-name">{list.name || 'Danh sach khong ten'}</span>
+                      <span className="bd-list-option-name">{list.name || 'Danh sách không tên'}</span>
                       <span className="bd-list-option-status">
-                        {isSavedInList ? <><FiCheck /> Da them</> : <><FiPlus /> Them</>}
+                        {isSavedInList ? <><FiCheck /> Đã thêm</> : <><FiPlus /> Thêm</>}
                       </span>
                     </button>
                   );
                 })
               ) : (
-                <div className="bd-list-empty">Ban chua co danh sach nao.</div>
+                <div className="bd-list-empty">Bạn chưa có danh sách nào.</div>
               )}
             </div>
 
@@ -302,7 +302,7 @@ function BookDetailPage() {
                 type="text"
                 value={newListName}
                 onChange={(e) => setNewListName(e.target.value)}
-                placeholder="Ten danh sach moi"
+                placeholder="Tên danh sách mới"
                 disabled={bookmarkLoading}
               />
               <button type="submit" disabled={bookmarkLoading}>
@@ -543,11 +543,9 @@ function BookDetailPage() {
                 <li>
                   <span className="label">Thể loại:</span>
                   <span className="value">
-                    {book.categories && book.categories.size > 0 
-                      ? Array.from(book.categories).join(', ') 
-                      : book.categories && book.categories.length > 0 
-                        ? book.categories.join(', ')
-                        : 'Đang cập nhật'}
+                    {book.categories && book.categories.length > 0
+                      ? (Array.isArray(book.categories) ? book.categories : Array.from(book.categories)).join(', ')
+                      : 'Đang cập nhật'}
                   </span>
                 </li>
                 <li>

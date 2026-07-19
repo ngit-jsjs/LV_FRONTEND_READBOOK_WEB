@@ -1,10 +1,13 @@
 import React from 'react';
-import { FiFrown, FiCompass, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { FiFrown, FiCompass, FiChevronLeft, FiChevronRight, FiImage, FiStar } from 'react-icons/fi';
 import BookCard from '../../components/BookCard/BookCard';
 import Pagination from '../../components/Pagination/Pagination';
 import { useSearchPage } from '../../hooks/useSearchPage';
 import { useAuth } from '../../context/AuthContext';
 import { useRecommendations } from '../../hooks/useRecommendations';
+import { getFormattedImageUrl } from '../../utils/imageUtils';
+import { ROUTES } from '../../config/routes';
 
 function HomePage() {
   const { user } = useAuth();
@@ -23,7 +26,7 @@ function HomePage() {
   const scroll = (direction) => {
     if (scrollRef.current) {
       const { scrollLeft } = scrollRef.current;
-      const scrollAmount = 550; // 420px card width + 20px gap
+      const scrollAmount = 660; // scroll 3 vertical cards (200px each + 20px gap)
       scrollRef.current.scrollTo({
         left: direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
         behavior: 'smooth'
@@ -32,32 +35,24 @@ function HomePage() {
   };
 
   return (
-    <div className="home-page" style={{ background: 'var(--bg-secondary, #111328)', minHeight: '100vh' }}>
+    <div className="home-page">
 
-      <div className="container home-page-container" style={{ padding: '40px 24px' }}>
+      <div className="container home-page-container">
 
         {/* Recommendations Section */}
         {user && (
-          <div className="recommendations-container" style={{ marginBottom: '40px', padding: '10px 0' }}>
-            <h2 className="section-title home-section-title" style={{ 
-              color: '#fff', 
-              fontSize: '1.6rem', 
-              fontWeight: '800', 
-              marginBottom: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px'
-            }}>
+          <div className="recommendations-container">
+            <h2 className="section-title home-section-title">
               Sách gợi ý dành riêng cho bạn
             </h2>
             
             {recsLoading ? (
-              <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                <div style={{ width: '30px', height: '30px', border: '3px solid rgba(139, 92, 246, 0.2)', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 10px' }} />
-                <p style={{ color: 'var(--text-muted, #6b6f80)', fontSize: '0.9rem' }}>Đang tải sách gợi ý...</p>
+              <div className="recs-loading-container">
+                <div className="recs-loading-spinner" />
+                <p className="recs-loading-text">Đang tải sách gợi ý...</p>
               </div>
             ) : recs.length > 0 && (
-              <div className="recommendations-slider-wrapper" style={{ position: 'relative' }}>
+              <div className="recommendations-slider-wrapper">
                 <button 
                   onClick={() => scroll('left')} 
                   className="btn-scroll-nav nav-prev"
@@ -68,17 +63,37 @@ function HomePage() {
                 
                 <div 
                   ref={scrollRef}
-                  style={{ 
-                    display: 'flex', 
-                    overflowX: 'auto', 
-                    gap: '20px', 
-                    paddingBottom: '5px',
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none'
-                  }} className="horizontal-scroll-container">
+                  className="horizontal-scroll-container">
                   {recs.map((book, index) => (
-                    <div key={book.id || index} style={{ width: '550px', flexShrink: 0 }} className="scroll-item-card">
-                      <BookCard book={book} />
+                    <div key={book.id || index} className="rec-book-card-wrapper">
+                      <Link to={ROUTES.BOOK_DETAIL.replace(':id', book.id)} className="rec-book-card">
+                        <div className="rec-book-cover-container">
+                          {getFormattedImageUrl(book.coverImage || book.coverImageUrl) ? (
+                            <img 
+                              src={getFormattedImageUrl(book.coverImage || book.coverImageUrl)} 
+                              alt={book.title} 
+                              className="rec-book-cover"
+                            />
+                          ) : (
+                            <div className="rec-book-placeholder">
+                              <FiImage size={36} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="rec-book-info">
+                          <h4 className="rec-book-title" title={book.title}>
+                            {book.title}
+                          </h4>
+                          <p className="rec-book-author">
+                            {book.author || 'Tác giả ẩn danh'}
+                          </p>
+                          <div className="rec-book-meta-row">
+                            <span className="rec-book-rating">
+                              <FiStar className="star-icon-filled" /> {Number(book.averageRating || 0) > 0 ? Number(book.averageRating).toFixed(1) : '4.5'}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
                     </div>
                   ))}
                 </div>
@@ -92,30 +107,16 @@ function HomePage() {
                 </button>
               </div>
             )}
-            <p style={{ 
-              color: 'var(--text-muted, #6b6f80)', 
-              fontSize: '0.8rem', 
-              margin: '12px 0 0', 
-              fontStyle: 'italic',
-              opacity: 0.7
-            }}>
+            <p className="recommendations-hint">
               💡 Hãy siêng năng đánh giá sách đã đọc để hệ thống gợi ý sách phù hợp hơn cho bạn nhé!
             </p>
-            <hr style={{ borderColor: 'rgba(255, 255, 255, 0.08)', margin: '30px 0 10px' }} />
+            <hr className="home-divider" />
           </div>
         )}
 
         {/* Section Title */}
-        <h2 className="section-title home-section-title" style={{ 
-          color: '#fff', 
-          fontSize: '1.6rem', 
-          fontWeight: '800', 
-          marginBottom: '24px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px'
-        }}>
-          <FiCompass style={{ color: 'var(--accent-purple, #8b5cf6)' }} />
+        <h2 className="section-title home-section-title margin-bottom-24">
+          <FiCompass className="home-section-icon" />
           {keyword || author || publisher || year || categoryIds.length > 0 ? (
             <>Kết quả tìm kiếm phù hợp</>
           ) : (
@@ -126,9 +127,9 @@ function HomePage() {
         {/* Results grid */}
         <div className="search-results-section home-search-results">
           {loading ? (
-            <div className="search-empty" style={{ textAlign: 'center', padding: '60px 0' }}>
-              <div style={{ width: '40px', height: '40px', border: '3px solid rgba(139, 92, 246, 0.2)', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
-              <p style={{ color: 'var(--text-muted, #6b6f80)' }}>Đang tìm kiếm...</p>
+            <div className="search-empty">
+              <div className="search-loading-spinner" />
+              <p className="search-loading-text">Đang tìm kiếm...</p>
             </div>
           ) : books.length > 0 ? (
             <>
@@ -145,10 +146,10 @@ function HomePage() {
               />
             </>
           ) : (
-            <div className="search-empty" style={{ textAlign: 'center', padding: '60px 20px', border: '1px dashed var(--border-color)', borderRadius: '16px' }}>
-              <FiFrown className="search-empty-icon" style={{ fontSize: '3rem', color: 'var(--text-muted, #6b6f80)', marginBottom: '16px' }} />
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#fff', marginBottom: '8px' }}>Không tìm thấy tác phẩm</h3>
-              <p style={{ color: 'var(--text-muted, #6b6f80)', margin: 0 }}>Vui lòng thử lại với bộ lọc hoặc từ khóa khác.</p>
+            <div className="search-empty search-empty-dashed">
+              <FiFrown className="search-empty-icon-custom" />
+              <h3 className="search-empty-title">Không tìm thấy tác phẩm</h3>
+              <p className="search-empty-desc">Vui lòng thử lại với bộ lọc hoặc từ khóa khác.</p>
             </div>
           )}
         </div>

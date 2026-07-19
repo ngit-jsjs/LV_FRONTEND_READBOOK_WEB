@@ -43,7 +43,7 @@ export const useUserDetailView = (user) => {
     if (user?.id) {
       fetchUserBooks();
     }
-  }, [user, page]);
+  }, [user?.id, page]);
 
   const handleDeleteBook = async (id, title) => {
     const confirmDelete = window.confirm(`Bạn có chắc chắn muốn ẩn tác phẩm "${title}" không?`);

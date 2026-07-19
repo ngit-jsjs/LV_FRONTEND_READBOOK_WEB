@@ -22,12 +22,12 @@ function TransactionHistoryPage() {
 
   // State for Chapter Purchases (Unlocks)
   const [unlocks, setUnlocks] = useState([]);
-  const [allUnlocks, setAllUnlocks] = useState([]);
   const [unlockLoading, setUnlockLoading] = useState(true);
   const [unlockError, setUnlockError] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+  const [totalCoinsSpent, setTotalCoinsSpent] = useState(0);
 
   useEffect(() => {
     if (!user) {
@@ -46,9 +46,11 @@ function TransactionHistoryPage() {
     setSubLoading(true);
     setSubError('');
     try {
-      const res = await subscriptionService.getMySubscriptions();
+      const res = await subscriptionService.getMySubscriptions(page - 1, 10);
       if (res.result) {
-        setSubscriptions(res.result);
+        setSubscriptions(res.result.content || []);
+        setTotalPages(res.result.totalPages || 0);
+        setTotalElements(res.result.totalElements || 0);
       }
     } catch (err) {
       console.error("Lỗi khi tải lịch sử nạp xu:", err);
@@ -62,19 +64,13 @@ function TransactionHistoryPage() {
     setUnlockLoading(true);
     setUnlockError('');
     try {
-      const [pageRes, allRes] = await Promise.all([
-        chapterService.getMyUnlocks(page - 1, 10),
-        chapterService.getMyUnlocks(0, 1000).catch(() => ({ result: { content: [] } }))
-      ]);
-
-      if (pageRes.result) {
-        setUnlocks(pageRes.result.content || []);
-        setTotalPages(pageRes.result.totalPages || 0);
-        setTotalElements(pageRes.result.totalElements || 0);
-      }
-
-      if (allRes.result) {
-        setAllUnlocks(allRes.result.content || []);
+      const res = await chapterService.getMyUnlocks(page - 1, 10);
+      if (res.result) {
+        setUnlocks(res.result.content || []);
+        setTotalPages(res.result.totalPages || 0);
+        setTotalElements(res.result.totalElements || 0);
+        // Backend trả về tổng xu đã chi tiêu
+        setTotalCoinsSpent(res.result.totalCoinsSpent || 0);
       }
     } catch (err) {
       console.error("Lỗi khi tải lịch sử mua chương:", err);
@@ -85,8 +81,6 @@ function TransactionHistoryPage() {
   };
 
   if (!user) return null;
-
-  const totalCoinsSpent = allUnlocks.reduce((sum, item) => sum + (item.price || 0), 0);
 
   return (
     <div className="transaction-page-container">
@@ -135,53 +129,66 @@ function TransactionHistoryPage() {
           ) : subError ? (
             <div className="error-message">{subError}</div>
           ) : subscriptions.length > 0 ? (
-            <div style={{ overflowX: 'auto', background: 'rgba(17, 19, 40, 0.6)', border: '1px solid var(--border-color, #1e293b)', borderRadius: '16px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: '#fff' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-color, #1e293b)', background: 'rgba(255, 255, 255, 0.02)' }}>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Mã GD</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Gói xu</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Giá tiền</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Số xu nhận</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Thời gian</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {subscriptions.map((sub) => (
-                    <tr 
-                      key={sub.id} 
-                      style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(139, 92, 246, 0.03)'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <td style={{ padding: '16px 20px', fontFamily: 'monospace', color: 'var(--text-muted, #94a3b8)' }}>#{sub.id}</td>
-                      <td style={{ padding: '16px 20px', fontWeight: '600' }}>{sub.planName}</td>
-                      <td style={{ padding: '16px 20px' }}>
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sub.planPrice)}
-                      </td>
-                      <td style={{ padding: '16px 20px', color: '#fbbf24', fontWeight: '700' }}>
-                        +{new Intl.NumberFormat('vi-VN').format(sub.planAmount)} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
-                      </td>
-                      <td style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.9rem' }}>
-                        {new Date(sub.createdAt).toLocaleDateString('vi-VN')} {new Date(sub.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                      </td>
-                      <td style={{ padding: '16px 20px' }}>
-                        {sub.status === 'COMPLETED' ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#10b981', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: '600' }}>
-                            <FiCheckCircle /> Thành công
-                          </span>
-                        ) : (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: '600' }}>
-                            <FiXCircle /> Thất bại
-                          </span>
-                        )}
-                      </td>
+            <>
+              <div style={{ overflowX: 'auto', background: 'rgba(17, 19, 40, 0.6)', border: '1px solid var(--border-color, #1e293b)', borderRadius: '16px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: '#fff' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--border-color, #1e293b)', background: 'rgba(255, 255, 255, 0.02)' }}>
+                      <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Mã GD</th>
+                      <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Gói xu</th>
+                      <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Giá tiền</th>
+                      <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Số xu nhận</th>
+                      <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Thời gian</th>
+                      <th style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase' }}>Trạng thái</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {subscriptions.map((sub) => (
+                      <tr 
+                        key={sub.id} 
+                        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(139, 92, 246, 0.03)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <td style={{ padding: '16px 20px', fontFamily: 'monospace', color: 'var(--text-muted, #94a3b8)' }}>#{sub.id}</td>
+                        <td style={{ padding: '16px 20px', fontWeight: '600' }}>{sub.planName}</td>
+                        <td style={{ padding: '16px 20px' }}>
+                          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sub.planPrice)}
+                        </td>
+                        <td style={{ padding: '16px 20px', color: '#fbbf24', fontWeight: '700' }}>
+                          +{new Intl.NumberFormat('vi-VN').format(sub.planAmount)} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
+                        </td>
+                        <td style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.9rem' }}>
+                          {new Date(sub.createdAt).toLocaleDateString('vi-VN')} {new Date(sub.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                        </td>
+                        <td style={{ padding: '16px 20px' }}>
+                          {sub.status === 'SUCCESS' ? (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#10b981', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: '600' }}>
+                              <FiCheckCircle /> Thành công
+                            </span>
+                          ) : sub.status === 'PENDING' ? (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#fbbf24', background: 'rgba(251, 191, 36, 0.1)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: '600' }}>
+                              <div className="spinner-mini" style={{ width: '12px', height: '12px', border: '2px solid rgba(251,191,36,0.2)', borderTopColor: '#fbbf24', borderRadius: '50%', animation: 'spin 0.8s linear infinite', display: 'inline-block' }} /> Chờ thanh toán
+                            </span>
+                          ) : (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: '600' }}>
+                              <FiXCircle /> Thất bại
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ marginTop: '20px' }}>
+                <Pagination 
+                  currentPage={page}
+                  totalPages={totalPages}
+                  onPageChange={(p) => setPage(p)}
+                />
+              </div>
+            </>
           ) : (
             <div className="empty-state">
               <FiCreditCard size={48} style={{ color: 'var(--text-muted)', marginBottom: '16px' }} />

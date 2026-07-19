@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import bookListService from '../services/bookListService';
 import { ROUTES } from '../config/routes';
@@ -26,21 +26,13 @@ export const useFollowedBooks = (user) => {
   const [bookListsPage, setBookListsPage] = useState(0);
   const [bookListsTotalPages, setBookListsTotalPages] = useState(0);
 
-  useEffect(() => {
-    if (!user) {
-      navigate(ROUTES.LOGIN);
-      return;
-    }
-    fetchFollowedBooks();
-  }, [user, page, selectedListId, bookListsPage]);
-
-  const fetchFollowedBooks = async () => {
+  const fetchFollowedBooks = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
       const listsRes = await bookListService.getMyBookLists(bookListsPage, 8);
       const data = listsRes.result || listsRes;
-      
+
       if (data && data.content && Array.isArray(data.content)) {
         setBookLists(data.content);
         setBookListsTotalPages(data.totalPages || 0);
@@ -68,7 +60,15 @@ export const useFollowedBooks = (user) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, page, selectedListId, bookListsPage]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate(ROUTES.LOGIN);
+      return;
+    }
+    fetchFollowedBooks();
+  }, [user, page, selectedListId, bookListsPage, fetchFollowedBooks, navigate]);
 
   const handleUnfollow = async (bookId, bookTitle) => {
     if (!selectedListId) return;
@@ -89,37 +89,38 @@ export const useFollowedBooks = (user) => {
     }
   };
 
-  const handleCreateList = async () => {
-    const name = window.prompt("Nhập tên danh sách theo dõi mới:");
-    if (!name || !name.trim()) return;
+  const handleCreateList = async (name) => {
+    if (!name || !name.trim()) return false;
     try {
       setLoading(true);
       await bookListService.createBookList({ name: name.trim() });
       alert("Đã tạo danh sách mới thành công.");
       await fetchFollowedBooks();
+      return true;
     } catch (err) {
       console.error("Tạo danh sách thất bại:", err);
       alert(getErrorMessage(err));
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRenameList = async (listId) => {
+  const handleRenameList = async (listId, newName) => {
     const targetId = listId || selectedListId;
-    if (!targetId) return;
-    const currentList = bookLists.find(l => l.id === targetId);
-    const newName = window.prompt("Nhập tên mới cho danh sách theo dõi:", currentList?.name || "");
-    if (!newName || !newName.trim() || newName.trim() === currentList?.name) return;
+    if (!targetId) return false;
+    if (!newName || !newName.trim()) return false;
 
     try {
       setLoading(true);
       await bookListService.updateBookList(targetId, { name: newName.trim() });
       alert("Đã đổi tên danh sách thành công.");
       await fetchFollowedBooks();
+      return true;
     } catch (err) {
       console.error("Đổi tên thất bại:", err);
       alert(getErrorMessage(err));
+      return false;
     } finally {
       setLoading(false);
     }

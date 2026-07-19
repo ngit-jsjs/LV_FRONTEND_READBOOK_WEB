@@ -17,9 +17,7 @@ export const AuthProvider = ({ children }) => {
           const tokenData = authService.getUserFromToken();
           const roles = tokenData?.scope ? tokenData.scope.split(' ') : [];
           const isAdmin = roles.includes('ADMIN');
-          const savedMockCoins = localStorage.getItem('mock_coins');
-          const amount = savedMockCoins !== null ? Number(savedMockCoins) : (res.result?.amount || 0);
-          setUser({ ...res.result, amount, userId: tokenData?.userId || tokenData?.id, roles, isAdmin });
+          setUser({ ...res.result, userId: tokenData?.userId || tokenData?.id, roles, isAdmin });
         } catch (error) {
           console.error("Lỗi lấy thông tin user:", error);
           await authService.logout();
@@ -37,15 +35,12 @@ export const AuthProvider = ({ children }) => {
     const tokenData = authService.getUserFromToken();
     const roles = tokenData?.scope ? tokenData.scope.split(' ') : [];
     const isAdmin = roles.includes('ADMIN');
-    const savedMockCoins = localStorage.getItem('mock_coins');
-    const amount = savedMockCoins !== null ? Number(savedMockCoins) : (userRes.result?.amount || 0);
-    setUser({ ...userRes.result, amount, userId: tokenData?.userId || tokenData?.id, roles, isAdmin });
+    setUser({ ...userRes.result, userId: tokenData?.userId || tokenData?.id, roles, isAdmin });
     return res;
   };
 
   const logout = async () => {
     await authService.logout();
-    localStorage.removeItem('mock_coins');
     setUser(null);
   };
 
@@ -56,9 +51,7 @@ export const AuthProvider = ({ children }) => {
         const tokenData = authService.getUserFromToken();
         const roles = tokenData?.scope ? tokenData.scope.split(' ') : [];
         const isAdmin = roles.includes('ADMIN');
-        const savedMockCoins = localStorage.getItem('mock_coins');
-        const amount = savedMockCoins !== null ? Number(savedMockCoins) : (res.result?.amount || 0);
-        setUser({ ...res.result, amount, userId: tokenData?.userId || tokenData?.id, roles, isAdmin });
+        setUser({ ...res.result, userId: tokenData?.userId || tokenData?.id, roles, isAdmin });
       } catch (error) {
         console.error("Lỗi refresh user:", error);
       }
@@ -68,12 +61,10 @@ export const AuthProvider = ({ children }) => {
   const addCoins = (amountToCharge) => {
     setUser(prevUser => {
       if (!prevUser) return null;
-      const updatedUser = {
+      return {
         ...prevUser,
         amount: (prevUser.amount || 0) + Number(amountToCharge)
       };
-      localStorage.setItem('mock_coins', updatedUser.amount);
-      return updatedUser;
     });
   };
 

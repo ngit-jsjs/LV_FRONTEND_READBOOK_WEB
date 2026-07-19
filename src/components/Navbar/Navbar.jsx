@@ -152,11 +152,11 @@ function Navbar() {
                   </button>
                 </div>
               ) : (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div className="navbar-auth-group">
                   <Link to={ROUTES.LOGIN} className="navbar-login-btn">
                     <FiUser /> Đăng nhập
                   </Link>
-                  <span style={{ color: 'rgba(255, 255, 255, 0.15)', fontSize: '0.9rem' }}>|</span>
+                  <span className="navbar-auth-divider">|</span>
                   <Link to={ROUTES.REGISTER} className="navbar-login-btn">
                     <FiUserPlus /> Đăng ký
                   </Link>

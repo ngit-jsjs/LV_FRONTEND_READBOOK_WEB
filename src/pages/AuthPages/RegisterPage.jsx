@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MdMenuBook, MdOutlineEmail, MdOutlineLock } from 'react-icons/md';
 import { FiEye, FiEyeOff, FiUser } from 'react-icons/fi';
 import { HiSparkles } from 'react-icons/hi';
-import { FaGoogle, FaApple } from 'react-icons/fa';
 import authService from '../../services/authService';
 import { ROUTES } from '../../config/routes';
 import { getErrorMessage } from '../../services/apiClient';
@@ -15,7 +14,6 @@ function RegisterPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [agreeTerms, setAgreeTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);

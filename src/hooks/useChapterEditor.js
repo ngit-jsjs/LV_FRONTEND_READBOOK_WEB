@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import chapterService from '../services/chapterService';
 import bookService from '../services/bookService';
@@ -25,15 +25,7 @@ export const useChapterEditor = () => {
 
   const [isFocusMode, setIsFocusMode] = useState(true); 
 
-  useEffect(() => {
-    if (!bookId) {
-      navigate(ROUTES.BOOK_MANAGEMENT);
-      return;
-    }
-    fetchData();
-  }, [bookId, chapterId]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const bookRes = await bookService.getBookById(bookId);
@@ -72,7 +64,15 @@ export const useChapterEditor = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [bookId, chapterId]);
+
+  useEffect(() => {
+    if (!bookId) {
+      navigate(ROUTES.BOOK_MANAGEMENT);
+      return;
+    }
+    fetchData();
+  }, [bookId, chapterId, fetchData, navigate]);
 
   const handleSave = async () => {
     setSaving(true);

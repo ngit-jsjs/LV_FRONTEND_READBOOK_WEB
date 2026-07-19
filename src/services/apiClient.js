@@ -55,12 +55,6 @@ const fetchClient = async (endpoint, options = {}) => {
       throw error;
     }
 
-    if (data.code !== undefined && data.code !== 200) {
-      const error = new Error(data.message || 'Yêu cầu thất bại');
-      error.response = { data };
-      throw error;
-    }
-
     return data;
   } catch (error) {
     if (error.response) {

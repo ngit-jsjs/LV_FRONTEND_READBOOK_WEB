@@ -3,7 +3,6 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { MdMenuBook, MdOutlineEmail, MdOutlineLock } from 'react-icons/md';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { HiSparkles } from 'react-icons/hi';
-import { FaGoogle, FaApple } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../config/routes';
 import { getErrorMessage } from '../../services/apiClient';

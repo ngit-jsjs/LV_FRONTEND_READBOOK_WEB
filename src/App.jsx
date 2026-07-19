@@ -73,21 +73,21 @@ function App() {
           <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
           <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
           <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
-          <Route 
-            path={ROUTES.PROFILE} 
+          <Route
+            path={ROUTES.PROFILE}
             element={
               <ProtectedRoute allowedRoles={['USER', 'ADMIN']}>
                 <ProfilePage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path={ROUTES.PROFILE_EDIT} 
+          <Route
+            path={ROUTES.PROFILE_EDIT}
             element={
               <ProtectedRoute allowedRoles={['USER', 'ADMIN']}>
                 <ProfileEditPage />
               </ProtectedRoute>
-            } 
+            }
           />
           <Route
             path={ROUTES.RECENTLY_READ}

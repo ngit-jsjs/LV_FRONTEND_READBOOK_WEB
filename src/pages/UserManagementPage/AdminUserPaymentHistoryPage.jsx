@@ -13,13 +13,15 @@ function AdminUserPaymentHistoryPage() {
   const navigate = useNavigate();
 
   const [payments, setPayments] = useState([]);
-  const [allPayments, setAllPayments] = useState([]); // Used to calculate summary stats
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalCoins, setTotalCoins] = useState(0);
 
   useEffect(() => {
     if (userId) {
@@ -31,19 +33,17 @@ function AdminUserPaymentHistoryPage() {
     setLoading(true);
     setError('');
     try {
-      const [paymentRes, userRes, allPaymentRes] = await Promise.all([
+      const [paymentRes, userRes] = await Promise.all([
         paymentService.getAdminUserPaymentHistory(userId, page - 1, 10),
-        userService.getUserById(userId).catch(() => null),
-        paymentService.getAdminUserPaymentHistory(userId, 0, 1000).catch(() => ({ result: { content: [] } }))
+        userService.getUserById(userId).catch(() => null)
       ]);
 
       if (paymentRes.result) {
         setPayments(paymentRes.result.content || []);
         setTotalPages(paymentRes.result.totalPages || 0);
-      }
-
-      if (allPaymentRes?.result) {
-        setAllPayments(allPaymentRes.result.content || []);
+        setTotalElements(paymentRes.result.totalElements || 0);
+        setTotalAmount(paymentRes.result.totalAmount || 0);
+        setTotalCoins(paymentRes.result.totalCoins || 0);
       }
 
       if (userRes?.result) {
@@ -58,25 +58,7 @@ function AdminUserPaymentHistoryPage() {
   };
 
   const getPrice = (p) => p.amount ?? 0;
-  const getCoins = (p) => {
-    // Parse from planName, e.g. "GÓI XU 199K" -> 199
-    if (p.planName) {
-      const match = p.planName.match(/\d+/);
-      if (match) return parseInt(match[0]);
-    }
-    // Fallback: amount / 1000
-    if (p.amount) return p.amount / 1000;
-    return 0;
-  };
-
-  // PaymentStatus is SUCCESS, FAILED, PENDING, REFUNDED
-  const totalAmount = allPayments
-    .filter(p => p.status === 'SUCCESS')
-    .reduce((sum, p) => sum + getPrice(p), 0);
-
-  const totalCoins = allPayments
-    .filter(p => p.status === 'SUCCESS')
-    .reduce((sum, p) => sum + getCoins(p), 0);
+  const getCoins = (p) => p.planAmount ?? (p.amount ? p.amount / 1000 : 0);
 
   return (
     <div style={{ padding: '60px 20px', maxWidth: '1100px', margin: '0 auto', minHeight: 'calc(100vh - 120px)' }}>
@@ -130,7 +112,7 @@ function AdminUserPaymentHistoryPage() {
       </div>
 
       {/* Summary Stats */}
-      {!loading && !error && allPayments.length > 0 && (
+      {!loading && !error && totalElements > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
           <div style={{
             background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05))',
@@ -141,7 +123,7 @@ function AdminUserPaymentHistoryPage() {
               <FiActivity style={{ fontSize: '22px', color: '#10b981' }} />
             </div>
             <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#fff' }}>{allPayments.length}</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#fff' }}>{totalElements}</div>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-muted, #94a3b8)' }}>Tổng giao dịch</div>
             </div>
           </div>

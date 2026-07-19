@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ratingService from '../../services/ratingService';
@@ -34,19 +34,7 @@ function ReviewedBooksPage() {
   const [unratedPage, setUnratedPage] = useState(0);
   const [unratedTotalPages, setUnratedTotalPages] = useState(0);
 
-  useEffect(() => {
-    if (!user) {
-      navigate(ROUTES.LOGIN);
-      return;
-    }
-    if (activeTab === 'reviewed') {
-      fetchRatings();
-    } else {
-      fetchUnratedBooks();
-    }
-  }, [user, activeTab, reviewedPage, unratedPage]);
-
-  const fetchRatings = async () => {
+  const fetchRatings = useCallback(async () => {
     setReviewedLoading(true);
     setReviewedError('');
     try {
@@ -61,9 +49,9 @@ function ReviewedBooksPage() {
     } finally {
       setReviewedLoading(false);
     }
-  };
+  }, [reviewedPage]);
 
-  const fetchUnratedBooks = async () => {
+  const fetchUnratedBooks = useCallback(async () => {
     setUnratedLoading(true);
     setUnratedError('');
     try {
@@ -78,7 +66,28 @@ function ReviewedBooksPage() {
     } finally {
       setUnratedLoading(false);
     }
-  };
+  }, [unratedPage]);
+
+  // Auth Redirect check
+  useEffect(() => {
+    if (!user) {
+      navigate(ROUTES.LOGIN);
+    }
+  }, [user, navigate]);
+
+  // Fetch reviewed ratings
+  useEffect(() => {
+    if (user && activeTab === 'reviewed') {
+      fetchRatings();
+    }
+  }, [user, activeTab, fetchRatings]);
+
+  // Fetch unrated books
+  useEffect(() => {
+    if (user && activeTab === 'unrated') {
+      fetchUnratedBooks();
+    }
+  }, [user, activeTab, fetchUnratedBooks]);
 
   if (!user) return null;
 

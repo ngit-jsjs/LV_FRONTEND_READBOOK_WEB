@@ -306,7 +306,7 @@ function BookDetailPage() {
                 disabled={bookmarkLoading}
               />
               <button type="submit" disabled={bookmarkLoading}>
-                <FiPlus /> Tao va them
+                <FiPlus /> Tạo và thêm
               </button>
             </form>
           </div>

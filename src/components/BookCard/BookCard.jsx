@@ -3,7 +3,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FiEdit3, FiClock, FiImage, FiTrash2, FiBookOpen, FiUser, FiCalendar, FiTag, FiStar } from 'react-icons/fi';
 import { getFormattedImageUrl } from '../../utils/imageUtils';
 import { useAuth } from '../../context/AuthContext';
-import bookService from '../../services/bookService';
 import { ROUTES } from '../../config/routes';
 
 

@@ -168,6 +168,9 @@ export const useFollowedBooks = (user) => {
     handleCreateList,
     handleRenameList,
     handleDeleteList,
-    fetchFollowedBooks
+    fetchFollowedBooks,
+    bookListsPage,
+    setBookListsPage,
+    bookListsTotalPages
   };
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ratingService from '../services/ratingService';
 
 export const useBookRatings = (bookId, user, refetchBook, activeTab) => {
@@ -15,7 +15,7 @@ export const useBookRatings = (bookId, user, refetchBook, activeTab) => {
   const [submittingRating, setSubmittingRating] = useState(false);
   const [ratingError, setRatingError] = useState('');
 
-  const fetchRatings = async () => {
+  const fetchRatings = useCallback(async () => {
     if (!bookId) return;
     setRatingsLoading(true);
     setRatingError('');
@@ -32,13 +32,13 @@ export const useBookRatings = (bookId, user, refetchBook, activeTab) => {
     } finally {
       setRatingsLoading(false);
     }
-  };
+  }, [bookId, ratingsPage]);
 
   useEffect(() => {
     if (activeTab === 'ratings') {
       fetchRatings();
     }
-  }, [bookId, activeTab, ratingsPage]);
+  }, [activeTab, fetchRatings]);
 
   const handleRatingSubmit = async (e) => {
     e.preventDefault();

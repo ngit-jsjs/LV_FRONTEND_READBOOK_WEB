@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import subscriptionService from '../../services/subscriptionService';
@@ -29,20 +29,7 @@ function TransactionHistoryPage() {
   const [totalElements, setTotalElements] = useState(0);
   const [totalCoinsSpent, setTotalCoinsSpent] = useState(0);
 
-  useEffect(() => {
-    if (!user) {
-      navigate(ROUTES.LOGIN);
-      return;
-    }
-
-    if (activeTab === 'recharges') {
-      fetchSubscriptions();
-    } else {
-      fetchUnlocks();
-    }
-  }, [user, activeTab, page]);
-
-  const fetchSubscriptions = async () => {
+  const fetchSubscriptions = useCallback(async () => {
     setSubLoading(true);
     setSubError('');
     try {
@@ -58,9 +45,9 @@ function TransactionHistoryPage() {
     } finally {
       setSubLoading(false);
     }
-  };
+  }, [page]);
 
-  const fetchUnlocks = async () => {
+  const fetchUnlocks = useCallback(async () => {
     setUnlockLoading(true);
     setUnlockError('');
     try {
@@ -78,7 +65,20 @@ function TransactionHistoryPage() {
     } finally {
       setUnlockLoading(false);
     }
-  };
+  }, [page]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate(ROUTES.LOGIN);
+      return;
+    }
+
+    if (activeTab === 'recharges') {
+      fetchSubscriptions();
+    } else {
+      fetchUnlocks();
+    }
+  }, [user, navigate, activeTab, fetchSubscriptions, fetchUnlocks]);
 
   if (!user) return null;
 

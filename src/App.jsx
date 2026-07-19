@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 import HomePage from './pages/HomePage/HomePage';
@@ -25,6 +25,41 @@ import TransactionHistoryPage from './pages/ProfilePage/TransactionHistoryPage';
 import PaymentResultPage from './pages/PremiumPage/PaymentResultPage';
 import { ROUTES } from './config/routes';
 
+function NotFoundPage() {
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: 'calc(100vh - 120px)',
+      textAlign: 'center',
+      padding: '40px 20px',
+      color: '#fff'
+    }}>
+      <h1 style={{ fontSize: '6rem', fontWeight: '800', margin: '0', color: 'var(--accent-purple, #8b5cf6)' }}>404</h1>
+      <h2 style={{ fontSize: '1.8rem', fontWeight: '700', margin: '12px 0 8px' }}>Trang không tồn tại</h2>
+      <p style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '1rem', marginBottom: '32px' }}>
+        Đường dẫn bạn truy cập không hợp lệ hoặc đã bị xóa.
+      </p>
+      <Link
+        to={ROUTES.HOME}
+        style={{
+          padding: '12px 28px',
+          background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+          color: '#fff',
+          borderRadius: '10px',
+          textDecoration: 'none',
+          fontWeight: '700',
+          fontSize: '1rem'
+        }}
+      >
+        Về trang chủ
+      </Link>
+    </div>
+  );
+}
+
 function App() {
 
   return (
@@ -38,21 +73,21 @@ function App() {
           <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
           <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
           <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
-          <Route 
-            path={ROUTES.PROFILE} 
+          <Route
+            path={ROUTES.PROFILE}
             element={
               <ProtectedRoute allowedRoles={['USER', 'ADMIN']}>
                 <ProfilePage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path={ROUTES.PROFILE_EDIT} 
+          <Route
+            path={ROUTES.PROFILE_EDIT}
             element={
               <ProtectedRoute allowedRoles={['USER', 'ADMIN']}>
                 <ProfileEditPage />
               </ProtectedRoute>
-            } 
+            }
           />
           <Route
             path={ROUTES.RECENTLY_READ}
@@ -165,6 +200,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route path="*" element={<NotFoundPage />} />
 
         </Routes>
       </main>

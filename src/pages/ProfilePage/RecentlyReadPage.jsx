@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import readingHistoryService from '../../services/readingHistoryService';
@@ -18,15 +18,7 @@ function RecentlyReadPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  useEffect(() => {
-    if (!user) {
-      navigate(ROUTES.LOGIN);
-      return;
-    }
-    fetchHistory();
-  }, [user, page]);
-
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -41,7 +33,15 @@ function RecentlyReadPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate(ROUTES.LOGIN);
+      return;
+    }
+    fetchHistory();
+  }, [user, navigate, fetchHistory]);
 
   if (!user) return null;
 

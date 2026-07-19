@@ -45,18 +45,12 @@ const fetchClient = async (endpoint, options = {}) => {
     if (data && data.code === 1012) {
       console.error("Token lỗi hoặc hết hạn. Vui lòng đăng nhập lại.");
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
       return Promise.reject(data);
     }
 
     if (!response.ok) {
       const error = new Error(data.message || 'HTTP Error');
-      error.response = { data };
-      throw error;
-    }
-
-    if (data.code !== undefined && data.code !== 200) {
-      const error = new Error(data.message || 'Yêu cầu thất bại');
       error.response = { data };
       throw error;
     }

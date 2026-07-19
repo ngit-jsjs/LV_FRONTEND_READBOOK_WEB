@@ -12,6 +12,7 @@ export const useBookManagement = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [keyword, setKeyword] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   
   // Trạng thái bộ lọc bổ sung cho Admin
   const [status, setStatus] = useState('');
@@ -56,7 +57,7 @@ export const useBookManagement = () => {
     };
     
     fetchBooks();
-  }, [page, searchKeyword, status, author, publisher, year, categoryIds]);
+  }, [page, searchKeyword, status, author, publisher, year, categoryIds, refreshTrigger]);
 
   const handleSearchSubmit = (e) => {
     if (e) e.preventDefault();
@@ -71,9 +72,7 @@ export const useBookManagement = () => {
     try {
       await bookService.deleteBook(id);
       alert('Ẩn tác phẩm thành công!');
-      setBooks(prev => prev.map(book => 
-        book.id === id ? { ...book, status: 'UNAVAILABLE' } : book
-      ));
+      setRefreshTrigger(prev => prev + 1);
     } catch (error) {
       console.error("Failed to hide book", error);
       alert(`Không thể ẩn tác phẩm. Chi tiết: ${getErrorMessage(error)}`);

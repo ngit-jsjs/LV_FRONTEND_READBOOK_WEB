@@ -14,7 +14,7 @@ function PaymentResultPage() {
 
   useEffect(() => {
     refreshUser();
-  }, []);
+  }, [refreshUser]);
 
   const isSuccess = status === 'success';
 

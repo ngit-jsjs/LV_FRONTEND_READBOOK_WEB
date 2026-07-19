@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import chapterService from '../services/chapterService';
 import { getErrorMessage } from '../services/apiClient';
 
@@ -10,7 +10,7 @@ export const useChapters = (bookId, pageSize = 20) => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  const fetchChapters = async (pageToFetch = 0) => {
+  const fetchChapters = useCallback(async (pageToFetch = 0) => {
     if (!bookId) return;
     setLoading(true);
     setError(null);
@@ -37,12 +37,12 @@ export const useChapters = (bookId, pageSize = 20) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [bookId, pageSize]);
 
   useEffect(() => {
     setPage(0);
     fetchChapters(0);
-  }, [bookId]);
+  }, [fetchChapters]);
 
   const handlePageChange = (newPage) => {
     const zeroBasedPage = newPage - 1;

@@ -13,7 +13,6 @@ function AdminUserChapterPurchasesPage() {
   const navigate = useNavigate();
 
   const [unlocks, setUnlocks] = useState([]);
-  const [allUnlocks, setAllUnlocks] = useState([]); // Used to calculate summary stats
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,6 +20,7 @@ function AdminUserChapterPurchasesPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+  const [totalCoinsSpent, setTotalCoinsSpent] = useState(0);
 
   useEffect(() => {
     if (userId) {
@@ -32,20 +32,16 @@ function AdminUserChapterPurchasesPage() {
     setLoading(true);
     setError('');
     try {
-      const [unlockRes, userRes, allUnlockRes] = await Promise.all([
+      const [unlockRes, userRes] = await Promise.all([
         chapterService.getAdminUserUnlocks(userId, page - 1, 10),
-        userService.getUserById(userId).catch(() => null),
-        chapterService.getAdminUserUnlocks(userId, 0, 1000).catch(() => ({ result: { content: [] } }))
+        userService.getUserById(userId).catch(() => null)
       ]);
 
       if (unlockRes.result) {
         setUnlocks(unlockRes.result.content || []);
         setTotalPages(unlockRes.result.totalPages || 0);
         setTotalElements(unlockRes.result.totalElements || 0);
-      }
-
-      if (allUnlockRes.result) {
-        setAllUnlocks(allUnlockRes.result.content || []);
+        setTotalCoinsSpent(unlockRes.result.totalCoinsSpent || 0);
       }
 
       if (userRes?.result) {
@@ -58,8 +54,6 @@ function AdminUserChapterPurchasesPage() {
       setLoading(false);
     }
   };
-
-  const totalCoinsSpent = allUnlocks.reduce((sum, item) => sum + (item.price || 0), 0);
 
   return (
     <div style={{ padding: '60px 20px', maxWidth: '1100px', margin: '0 auto', minHeight: 'calc(100vh - 120px)' }}>

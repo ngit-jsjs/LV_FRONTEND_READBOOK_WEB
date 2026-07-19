@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import categoryService from '../services/categoryService';
 import { getErrorMessage } from '../services/apiClient';
 
@@ -22,7 +22,7 @@ export const useCategories = (paged = false) => {
   const [catDesc, setCatDesc] = useState('');
   const [catSubmitting, setCatSubmitting] = useState(false);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -33,9 +33,9 @@ export const useCategories = (paged = false) => {
           setTotalPages(res.result.totalPages || 0);
         }
       } else {
-        // Fetch all categories (large size) for select dropdowns
-        const res = await categoryService.getAllCategories(0, 1000);
-        setCategories(res.result?.content || res.result || res || []);
+        // Fetch all categories without pagination using the correct list endpoint
+        const res = await categoryService.getAllCategoriesList();
+        setCategories(res.result || res || []);
       }
     } catch (err) {
       console.error(err);
@@ -43,11 +43,11 @@ export const useCategories = (paged = false) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [paged, page]);
 
   useEffect(() => {
     fetchCategories();
-  }, [page]);
+  }, [fetchCategories]);
 
   const handleDeleteCat = async (id, name) => {
     if (window.confirm(`Bạn có chắc chắn muốn xóa thể loại "${name}" không?`)) {

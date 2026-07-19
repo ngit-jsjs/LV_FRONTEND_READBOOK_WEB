@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import chapterService from '../services/chapterService';
 import bookService from '../services/bookService';
@@ -46,15 +46,27 @@ export const useChapterManagement = () => {
   const [batchSubmitting, setBatchSubmitting] = useState(false);
   const [batchError, setBatchError] = useState('');
 
-  useEffect(() => {
-    if (!bookId) {
-      navigate(ROUTES.BOOK_MANAGEMENT);
-      return;
-    }
-    fetchData(0);
-  }, [bookId]);
+  const handleSelectChapter = useCallback((chapter) => {
+    setSelectedChapter(chapter);
+    setTitle(chapter.title || '');
+    setContent(chapter.content || '');
+    setChapterNumber(chapter.chapterNumber || (chapters ? chapters.length + 1 : 1));
+    setIsFree(chapter.isFree !== false);
+    setIsPublished(chapter.isPublished === true);
+    setPrice(chapter.price || 0);
+  }, [chapters]);
 
-  const fetchData = async (pageToFetch = page) => {
+  const handleCreateNewChapter = useCallback((nextNumber) => {
+    setSelectedChapter(null);
+    setTitle('');
+    setContent('');
+    setChapterNumber(nextNumber || (chapters ? chapters.length + 1 : 1));
+    setIsFree(true);
+    setIsPublished(false);
+    setPrice(0);
+  }, [chapters]);
+
+  const fetchData = useCallback(async (pageToFetch) => {
     setLoading(true);
     try {
       const bookRes = await bookService.getBookById(bookId);
@@ -82,35 +94,23 @@ export const useChapterManagement = () => {
         handleCreateNewChapter(1);
       }
     } catch (err) {
-      setError('Lỗi khi tải dữ liệu', err);
+      setError('Lỗi khi tải dữ liệu: ' + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
-  };
+  }, [bookId, handleSelectChapter, handleCreateNewChapter]);
+
+  useEffect(() => {
+    if (!bookId) {
+      navigate(ROUTES.BOOK_MANAGEMENT);
+      return;
+    }
+    fetchData(0);
+  }, [bookId, fetchData]);
 
   const handlePageChange = (newPage) => {
     const zeroBasedPage = newPage - 1;
     fetchData(zeroBasedPage);
-  };
-
-  const handleSelectChapter = (chapter) => {
-    setSelectedChapter(chapter);
-    setTitle(chapter.title || '');
-    setContent(chapter.content || '');
-    setChapterNumber(chapter.chapterNumber || chapters.length + 1);
-    setIsFree(chapter.isFree !== false);
-    setIsPublished(chapter.isPublished === true);
-    setPrice(chapter.price || 0);
-  };
-
-  const handleCreateNewChapter = (nextNumber) => {
-    setSelectedChapter(null);
-    setTitle('');
-    setContent('');
-    setChapterNumber(nextNumber || chapters.length + 1);
-    setIsFree(true);
-    setIsPublished(false);
-    setPrice(0);
   };
 
   const handleSave = async () => {
@@ -141,7 +141,7 @@ export const useChapterManagement = () => {
     try {
       if (selectedChapter) {
         await chapterService.updateChapter(selectedChapter.id, payload);
-        await fetchData();
+        await fetchData(page);
         alert('Lưu thành công!');
       } else {
         alert('Chức năng thêm chương thủ công không khả dụng. Vui lòng import file EPUB.');
@@ -157,7 +157,7 @@ export const useChapterManagement = () => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa chương này?")) return;
     try {
       await chapterService.deleteChapter(chapterId);
-      fetchData();
+      fetchData(page);
     } catch (err) {
       alert("Xóa thất bại");
     }
@@ -169,7 +169,7 @@ export const useChapterManagement = () => {
     try {
       await bookService.importEpub(bookId, file);
       alert('Import chương từ file EPUB thành công!');
-      await fetchData();
+      await fetchData(page);
     } catch (err) {
       console.error(err);
       alert(`Import thất bại: ${getErrorMessage(err)}`);
@@ -216,7 +216,7 @@ export const useChapterManagement = () => {
       await chapterService.updateChapter(editingChapter.id, payload);
       alert('Cập nhật chương thành công!');
       setEditingChapter(null);
-      fetchData();
+      fetchData(page);
     } catch (err) {
       setEditError(getErrorMessage(err));
     } finally {
@@ -298,7 +298,7 @@ export const useChapterManagement = () => {
       await chapterService.batchUpdateChapters(bookId, payload);
       alert('Cập nhật hàng loạt thành công!');
       setIsBatchUpdating(false);
-      await fetchData();
+      await fetchData(page);
     } catch (err) {
       setBatchError(getErrorMessage(err));
     } finally {
@@ -312,7 +312,7 @@ export const useChapterManagement = () => {
     try {
       await chapterService.deleteAllChapters(bookId);
       alert("Đã xóa toàn bộ chương thành công!");
-      fetchData();
+      fetchData(page);
     } catch (err) {
       alert("Xóa thất bại: " + getErrorMessage(err));
     }

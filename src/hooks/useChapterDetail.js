@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import chapterService from '../services/chapterService';
 import { getErrorMessage } from '../services/apiClient';
 
@@ -7,7 +7,7 @@ export const useChapterDetail = (chapterId) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchChapter = async () => {
+  const fetchChapter = useCallback(async () => {
     if (!chapterId) return;
     setLoading(true);
     setError(null);
@@ -20,11 +20,11 @@ export const useChapterDetail = (chapterId) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [chapterId]);
 
   useEffect(() => {
     fetchChapter();
-  }, [chapterId]);
+  }, [fetchChapter]);
 
   return { chapter, loading, error, refreshChapter: fetchChapter };
 };

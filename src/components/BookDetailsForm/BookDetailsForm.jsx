@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { FiInfo, FiSearch, FiX } from 'react-icons/fi';
+import React, { useState, useEffect, useRef } from 'react';
+import { FiInfo, FiSearch, FiX, FiLoader } from 'react-icons/fi';
+import authorService from '../../services/authorService';
+import publisherService from '../../services/publisherService';
 
 const BookDetailsForm = ({
   title, setTitle,
@@ -12,8 +14,10 @@ const BookDetailsForm = ({
   allCategories = [],
   categoryIds = [],
   setCategoryIds,
-  allAuthors = [],
-  allPublishers = []
+  selectedAuthorId,
+  setSelectedAuthorId,
+  selectedPublisherId,
+  setSelectedPublisherId
 }) => {
   const [isAuthorModalOpen, setAuthorModalOpen] = useState(false);
   const [isPublisherModalOpen, setPublisherModalOpen] = useState(false);
@@ -21,22 +25,77 @@ const BookDetailsForm = ({
   const [authorSearchQuery, setAuthorSearchQuery] = useState('');
   const [publisherSearchQuery, setPublisherSearchQuery] = useState('');
   const [categorySearchQuery, setCategorySearchQuery] = useState('');
-  const [authorPage, setAuthorPage] = useState(0);
-  const [publisherPage, setPublisherPage] = useState(0);
   const [categoryPage, setCategoryPage] = useState(0);
 
-  const filteredAuthors = allAuthors.filter(auth =>
-    auth.name && auth.name.toLowerCase().includes(authorSearchQuery.toLowerCase())
-  );
-  const authorTotalPages = Math.ceil(filteredAuthors.length / 20);
-  const displayedAuthors = filteredAuthors.slice(authorPage * 20, (authorPage + 1) * 20);
+  // API-based author search state
+  const [authorResults, setAuthorResults] = useState([]);
+  const [authorPage, setAuthorPage] = useState(0);
+  const [authorTotalPages, setAuthorTotalPages] = useState(0);
+  const [authorLoading, setAuthorLoading] = useState(false);
 
-  const filteredPublishers = allPublishers.filter(pub =>
-    pub.name && pub.name.toLowerCase().includes(publisherSearchQuery.toLowerCase())
-  );
-  const publisherTotalPages = Math.ceil(filteredPublishers.length / 20);
-  const displayedPublishers = filteredPublishers.slice(publisherPage * 20, (publisherPage + 1) * 20);
+  // API-based publisher search state
+  const [publisherResults, setPublisherResults] = useState([]);
+  const [publisherPage, setPublisherPage] = useState(0);
+  const [publisherTotalPages, setPublisherTotalPages] = useState(0);
+  const [publisherLoading, setPublisherLoading] = useState(false);
 
+  // Debounced API search for authors
+  useEffect(() => {
+    if (!isAuthorModalOpen) return;
+
+    const timer = setTimeout(async () => {
+      setAuthorLoading(true);
+      try {
+        let res;
+        if (authorSearchQuery.trim()) {
+          res = await authorService.searchAuthors(authorSearchQuery.trim(), authorPage, 20);
+        } else {
+          res = await authorService.getAllAuthors(authorPage, 20);
+        }
+        const data = res.result || res;
+        setAuthorResults(data.content || []);
+        setAuthorTotalPages(data.totalPages || 0);
+      } catch (err) {
+        console.error('Error searching authors:', err);
+        setAuthorResults([]);
+        setAuthorTotalPages(0);
+      } finally {
+        setAuthorLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [authorSearchQuery, authorPage, isAuthorModalOpen]);
+
+  // Debounced API search for publishers
+  useEffect(() => {
+    if (!isPublisherModalOpen) return;
+
+    const timer = setTimeout(async () => {
+      setPublisherLoading(true);
+      try {
+        let res;
+        if (publisherSearchQuery.trim()) {
+          res = await publisherService.searchPublishers(publisherSearchQuery.trim(), publisherPage, 20);
+        } else {
+          res = await publisherService.getAllPublishers(publisherPage, 20);
+        }
+        const data = res.result || res;
+        setPublisherResults(data.content || []);
+        setPublisherTotalPages(data.totalPages || 0);
+      } catch (err) {
+        console.error('Error searching publishers:', err);
+        setPublisherResults([]);
+        setPublisherTotalPages(0);
+      } finally {
+        setPublisherLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [publisherSearchQuery, publisherPage, isPublisherModalOpen]);
+
+  // Category filtering (still offline since categories are small dataset)
   const filteredCategories = allCategories.filter(cat =>
     cat.name && cat.name.toLowerCase().includes(categorySearchQuery.toLowerCase())
   );
@@ -116,8 +175,9 @@ const BookDetailsForm = ({
               type="number"
               value={year}
               onChange={(e) => setYear(e.target.value)}
-              className="form-input"
+              className={`form-input ${errors.year ? 'error' : ''}`}
             />
+            {errors.year && <span className="error-text">{errors.year}</span>}
           </div>
 
           <div className="form-group">
@@ -253,7 +313,7 @@ const BookDetailsForm = ({
         </div>
       </div>
 
-      {/* Author Search Modal */}
+      {/* Author Search Modal - API-based */}
       {isAuthorModalOpen && (
         <div className="author-modal-overlay" onClick={() => setAuthorModalOpen(false)}>
           <div className="auth-card modal-card-small" style={{ width: '450px', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
@@ -269,7 +329,7 @@ const BookDetailsForm = ({
             <h3 className="auth-title modal-title-small" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <FiSearch /> Tìm kiếm tác giả
             </h3>
-            <p className="auth-subtitle modal-subtitle-small">Chọn từ danh sách tác giả có sẵn</p>
+            <p className="auth-subtitle modal-subtitle-small">Tìm kiếm từ toàn bộ danh sách tác giả</p>
 
             <div className="auth-form-group modal-form-group">
               <div className="auth-input-wrapper">
@@ -296,12 +356,17 @@ const BookDetailsForm = ({
               background: 'rgba(0, 0, 0, 0.2)',
               padding: '4px'
             }}>
-              {displayedAuthors.length > 0 ? (
-                displayedAuthors.map(auth => (
+              {authorLoading ? (
+                <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <FiLoader style={{ animation: 'spin 1s linear infinite' }} /> Đang tìm kiếm...
+                </div>
+              ) : authorResults.length > 0 ? (
+                authorResults.map(auth => (
                   <div
                     key={auth.id}
                     onClick={() => {
                       setAuthor(auth.name);
+                      setSelectedAuthorId(auth.id);
                       setAuthorModalOpen(false);
                     }}
                     style={{
@@ -321,13 +386,13 @@ const BookDetailsForm = ({
                 ))
               ) : (
                 <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  Không tìm thấy tác giả nào khớp với "{authorSearchQuery}"
+                  {authorSearchQuery.trim() ? `Không tìm thấy tác giả nào khớp với "${authorSearchQuery}"` : 'Không có dữ liệu tác giả'}
                 </div>
               )}
             </div>
 
             {/* Pagination for Authors */}
-            {authorTotalPages > 0 && (
+            {authorTotalPages > 1 && (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '16px' }}>
                 <button
                   type="button"
@@ -371,7 +436,7 @@ const BookDetailsForm = ({
         </div>
       )}
 
-      {/* Publisher Search Modal */}
+      {/* Publisher Search Modal - API-based */}
       {isPublisherModalOpen && (
         <div className="author-modal-overlay" onClick={() => setPublisherModalOpen(false)}>
           <div className="auth-card modal-card-small" style={{ width: '450px', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
@@ -387,7 +452,7 @@ const BookDetailsForm = ({
             <h3 className="auth-title modal-title-small" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <FiSearch /> Tìm kiếm nhà xuất bản
             </h3>
-            <p className="auth-subtitle modal-subtitle-small">Chọn từ danh sách nhà xuất bản có sẵn</p>
+            <p className="auth-subtitle modal-subtitle-small">Tìm kiếm từ toàn bộ danh sách nhà xuất bản</p>
 
             <div className="auth-form-group modal-form-group">
               <div className="auth-input-wrapper">
@@ -414,12 +479,17 @@ const BookDetailsForm = ({
               background: 'rgba(0, 0, 0, 0.2)',
               padding: '4px'
             }}>
-              {displayedPublishers.length > 0 ? (
-                displayedPublishers.map(pub => (
+              {publisherLoading ? (
+                <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <FiLoader style={{ animation: 'spin 1s linear infinite' }} /> Đang tìm kiếm...
+                </div>
+              ) : publisherResults.length > 0 ? (
+                publisherResults.map(pub => (
                   <div
                     key={pub.id}
                     onClick={() => {
                       setPublisher(pub.name);
+                      setSelectedPublisherId(pub.id);
                       setPublisherModalOpen(false);
                     }}
                     style={{
@@ -439,13 +509,13 @@ const BookDetailsForm = ({
                 ))
               ) : (
                 <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  Không tìm thấy nhà xuất bản nào khớp với "{publisherSearchQuery}"
+                  {publisherSearchQuery.trim() ? `Không tìm thấy nhà xuất bản nào khớp với "${publisherSearchQuery}"` : 'Không có dữ liệu nhà xuất bản'}
                 </div>
               )}
             </div>
 
             {/* Pagination for Publishers */}
-            {publisherTotalPages > 0 && (
+            {publisherTotalPages > 1 && (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '16px' }}>
                 <button
                   type="button"
@@ -488,7 +558,7 @@ const BookDetailsForm = ({
           </div>
         </div>
       )}
-      {/* Category Search Modal */}
+      {/* Category Search Modal (offline filtering - small dataset) */}
       {isCategoryModalOpen && (
         <div className="author-modal-overlay" onClick={() => setCategoryModalOpen(false)}>
           <div className="auth-card modal-card-small" style={{ width: '500px', position: 'relative' }} onClick={(e) => e.stopPropagation()}>

@@ -4,8 +4,6 @@ import { ROUTES } from '../config/routes';
 import { useAuth } from '../context/AuthContext';
 import bookService from '../services/bookService';
 import categoryService from '../services/categoryService';
-import authorService from '../services/authorService';
-import publisherService from '../services/publisherService';
 import { getFormattedImageUrl } from '../utils/imageUtils';
 import { getErrorMessage } from '../services/apiClient';
 
@@ -26,8 +24,8 @@ export const useBookEditor = () => {
 
   const [categoryIds, setCategoryIds] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
-  const [allAuthors, setAllAuthors] = useState([]);
-  const [allPublishers, setAllPublishers] = useState([]);
+  const [selectedAuthorId, setSelectedAuthorId] = useState(null);
+  const [selectedPublisherId, setSelectedPublisherId] = useState(null);
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,20 +34,10 @@ export const useBookEditor = () => {
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        // Load all categories first
+        // Load all categories (small dataset, OK to load all)
         const catRes = await categoryService.getAllCategoriesList();
         const cats = catRes.result || catRes || [];
         setAllCategories(cats);
-
-        // Load all authors
-        const authRes = await authorService.getAllAuthors(0, 1000);
-        const authors = authRes.result?.content || authRes.content || [];
-        setAllAuthors(authors);
-
-        // Load all publishers
-        const pubRes = await publisherService.getAllPublishers(0, 1000);
-        const publishers = pubRes.result?.content || pubRes.content || [];
-        setAllPublishers(publishers);
 
         if (id) {
           const res = await bookService.getBookById(id);
@@ -59,6 +47,8 @@ export const useBookEditor = () => {
             setDescription(book.description || '');
             setAuthor(book.author || '');
             setPublisher(book.publisher || '');
+            setSelectedAuthorId(book.authorId || null);
+            setSelectedPublisherId(book.publisherId || null);
             setYear(book.year || new Date().getFullYear());
             setStatus(book.status || 'UNAVAILABLE');
             
@@ -103,6 +93,10 @@ export const useBookEditor = () => {
     if (!title.trim()) newErrors.title = "Tiêu đề không được để trống";
     if (!author.trim()) newErrors.author = "Tác giả không được để trống";
     if (!status) newErrors.status = "Vui lòng chọn trạng thái";
+    const currentYear = new Date().getFullYear();
+    if (year && parseInt(year) > currentYear) {
+      newErrors.year = `Năm xuất bản không được lớn hơn năm hiện tại (${currentYear})`;
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -113,17 +107,14 @@ export const useBookEditor = () => {
     setIsSubmitting(true);
 
     try {
-      const matchedAuthor = allAuthors.find(a => a.name && a.name.trim().toLowerCase() === author.trim().toLowerCase());
-      const matchedPublisher = allPublishers.find(p => p.name && p.name.trim().toLowerCase() === publisher.trim().toLowerCase());
-
       const bookData = {
         title: title.trim(),
         author: author.trim(),
-        authorId: matchedAuthor ? matchedAuthor.id : null,
+        authorId: selectedAuthorId || null,
         status,
         description: description.trim(),
         publisher: publisher.trim(),
-        publisherId: matchedPublisher ? matchedPublisher.id : null,
+        publisherId: selectedPublisherId || null,
         year: parseInt(year) || new Date().getFullYear(),
         categoryIds: categoryIds
       };
@@ -167,8 +158,8 @@ export const useBookEditor = () => {
     rawFile,
     categoryIds, setCategoryIds,
     allCategories,
-    allAuthors,
-    allPublishers,
+    selectedAuthorId, setSelectedAuthorId,
+    selectedPublisherId, setSelectedPublisherId,
     errors,
     isSubmitting,
     isLoading,

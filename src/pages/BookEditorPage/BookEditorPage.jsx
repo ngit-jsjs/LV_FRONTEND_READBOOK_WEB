@@ -18,8 +18,8 @@ function BookEditorPage() {
     rawFile,
     categoryIds, setCategoryIds,
     allCategories,
-    allAuthors,
-    allPublishers,
+    selectedAuthorId, setSelectedAuthorId,
+    selectedPublisherId, setSelectedPublisherId,
     errors,
     isSubmitting,
     isLoading,
@@ -84,8 +84,10 @@ function BookEditorPage() {
           allCategories={allCategories}
           categoryIds={categoryIds}
           setCategoryIds={setCategoryIds}
-          allAuthors={allAuthors}
-          allPublishers={allPublishers}
+          selectedAuthorId={selectedAuthorId}
+          setSelectedAuthorId={setSelectedAuthorId}
+          selectedPublisherId={selectedPublisherId}
+          setSelectedPublisherId={setSelectedPublisherId}
         />
       </div>
     </div>

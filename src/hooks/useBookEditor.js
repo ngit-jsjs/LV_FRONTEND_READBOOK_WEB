@@ -92,11 +92,21 @@ export const useBookEditor = () => {
     const newErrors = {};
     if (!title.trim()) newErrors.title = "Tiêu đề không được để trống";
     if (!author.trim()) newErrors.author = "Tác giả không được để trống";
-    if (!status) newErrors.status = "Vui lòng chọn trạng thái";
-    const currentYear = new Date().getFullYear();
-    if (year && parseInt(year) > currentYear) {
-      newErrors.year = `Năm xuất bản không được lớn hơn năm hiện tại (${currentYear})`;
+    
+    if (!year && year !== 0) {
+      newErrors.year = "Năm xuất bản không được để trống";
+    } else {
+      const currentYear = new Date().getFullYear();
+      if (parseInt(year) > currentYear) {
+        newErrors.year = `Năm xuất bản không được lớn hơn năm hiện tại (${currentYear})`;
+      }
     }
+
+    if (!status) newErrors.status = "Vui lòng chọn trạng thái";
+    if (!publisher.trim()) newErrors.publisher = "Nhà xuất bản không được để trống";
+    if (!categoryIds || categoryIds.length === 0) newErrors.categoryIds = "Vui lòng chọn ít nhất một thể loại";
+    if (!description.trim()) newErrors.description = "Mô tả không được để trống";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

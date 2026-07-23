@@ -24,7 +24,6 @@ export const useChapterManagement = () => {
   const [content, setContent] = useState('');
   const [chapterNumber, setChapterNumber] = useState(1);
   const [isFree, setIsFree] = useState(true);
-  const [isPublished, setIsPublished] = useState(false);
   const [price, setPrice] = useState(0);
 
   // States for Quick Edit popup
@@ -33,7 +32,6 @@ export const useChapterManagement = () => {
   const [editChapterNumber, setEditChapterNumber] = useState(1);
   const [editIsFree, setEditIsFree] = useState(true);
   const [editPrice, setEditPrice] = useState(0);
-  const [editIsPublished, setEditIsPublished] = useState(false);
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [editError, setEditError] = useState('');
 
@@ -50,21 +48,19 @@ export const useChapterManagement = () => {
     setSelectedChapter(chapter);
     setTitle(chapter.title || '');
     setContent(chapter.content || '');
-    setChapterNumber(chapter.chapterNumber || (chapters ? chapters.length + 1 : 1));
+    setChapterNumber(chapter.chapterNumber ?? 1);
     setIsFree(chapter.isFree !== false);
-    setIsPublished(chapter.isPublished === true);
     setPrice(chapter.price || 0);
-  }, [chapters]);
+  }, []);
 
   const handleCreateNewChapter = useCallback((nextNumber) => {
     setSelectedChapter(null);
     setTitle('');
     setContent('');
-    setChapterNumber(nextNumber || (chapters ? chapters.length + 1 : 1));
+    setChapterNumber(nextNumber || 1);
     setIsFree(true);
-    setIsPublished(false);
     setPrice(0);
-  }, [chapters]);
+  }, []);
 
   const fetchData = useCallback(async (pageToFetch) => {
     setLoading(true);
@@ -106,7 +102,7 @@ export const useChapterManagement = () => {
       return;
     }
     fetchData(0);
-  }, [bookId, fetchData]);
+  }, [bookId, fetchData, navigate]);
 
   const handlePageChange = (newPage) => {
     const zeroBasedPage = newPage - 1;
@@ -134,7 +130,6 @@ export const useChapterManagement = () => {
       title,
       content,
       isFree,
-      isPublished,
       price: !isFree ? Number(price) : 0
     };
 
@@ -184,7 +179,6 @@ export const useChapterManagement = () => {
     setEditChapterNumber(chapter.chapterNumber || 1);
     setEditIsFree(chapter.isFree !== false);
     setEditPrice(chapter.price || 0);
-    setEditIsPublished(chapter.isPublished === true);
     setEditError('');
   };
 
@@ -209,7 +203,6 @@ export const useChapterManagement = () => {
         chapterNumber: Number(editChapterNumber),
         title: editTitle.trim(),
         isFree: editIsFree,
-        isPublished: editIsPublished,
         price: !editIsFree ? Number(editPrice) : 0,
         content: null
       };
@@ -332,7 +325,6 @@ export const useChapterManagement = () => {
     content, setContent,
     chapterNumber, setChapterNumber,
     isFree, setIsFree,
-    isPublished, setIsPublished,
     price, setPrice,
     handleSelectChapter,
     handleCreateNewChapter,
@@ -355,8 +347,6 @@ export const useChapterManagement = () => {
     setEditIsFree,
     editPrice,
     setEditPrice,
-    editIsPublished,
-    setEditIsPublished,
     editSubmitting,
     editError,
     handleEditClick,

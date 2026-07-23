@@ -170,7 +170,7 @@ const BookDetailsForm = ({
 
         <div className="form-row">
           <div className="form-group">
-            <label>Năm xuất bản</label>
+            <label>Năm xuất bản <span className="required">*</span></label>
             <input
               type="number"
               value={year}
@@ -195,7 +195,7 @@ const BookDetailsForm = ({
         </div>
 
         <div className="form-group">
-          <label>Nhà xuất bản (Tùy chọn)</label>
+          <label>Nhà xuất bản <span className="required">*</span></label>
           <div style={{ display: 'flex', gap: '8px' }}>
             <input
               type="text"
@@ -207,7 +207,7 @@ const BookDetailsForm = ({
                 setPublisherPage(0);
                 setPublisherModalOpen(true);
               }}
-              className="form-input"
+              className={`form-input ${errors.publisher ? 'error' : ''}`}
               style={{ flex: 1, cursor: 'pointer' }}
             />
             <button
@@ -236,10 +236,11 @@ const BookDetailsForm = ({
               <FiSearch /> Tìm NXB
             </button>
           </div>
+          {errors.publisher && <span className="error-text">{errors.publisher}</span>}
         </div>
 {/* bỏ dô style */}
         <div className="form-group">
-          <label>Thể loại</label>
+          <label>Thể loại <span className="required">*</span></label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
             {Array.isArray(categoryIds) && categoryIds.length > 0 ? (
               categoryIds.map(id => {
@@ -298,10 +299,11 @@ const BookDetailsForm = ({
           >
             <FiSearch /> Chọn thể loại
           </button>
+          {errors.categoryIds && <span className="error-text" style={{ marginTop: '8px', display: 'block' }}>{errors.categoryIds}</span>}
         </div>
 
         <div className="form-group">
-          <label>Mô tả <FiInfo className="label-icon" /></label>
+          <label>Mô tả <span className="required">*</span> <FiInfo className="label-icon" /></label>
           <textarea
             placeholder="Nhập mô tả truyện của bạn..."
             value={description}

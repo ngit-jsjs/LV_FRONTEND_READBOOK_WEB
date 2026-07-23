@@ -3580,9 +3580,7 @@ input[type="password"]::-ms-clear {
   font-size: 1.8rem;
   font-weight: 900;
   margin: 0;
-  background: #e2e8f0;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #ffffff;
 }
 
 

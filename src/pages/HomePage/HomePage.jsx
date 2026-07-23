@@ -40,7 +40,7 @@ function HomePage() {
       <div className="container home-page-container">
 
         {/* Recommendations Section */}
-        {user && (
+        {user && !(keyword || author || publisher || year || categoryIds.length > 0) && (
           <div className="recommendations-container">
             <h2 className="section-title home-section-title">
               Sách gợi ý dành riêng cho bạn

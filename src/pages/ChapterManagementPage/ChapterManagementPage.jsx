@@ -33,8 +33,6 @@ function ChapterManagementPage() {
     setEditIsFree,
     editPrice,
     setEditPrice,
-    editIsPublished,
-    setEditIsPublished,
     editSubmitting,
     editError,
     handleEditClick,
@@ -177,10 +175,9 @@ function ChapterManagementPage() {
                     />
                   </th>
                   <th width="15%" className="col-center">Số chương</th>
-                  <th width="35%">Tiêu đề</th>
-                  <th width="20%" className="col-center">Trạng thái</th>
-                  <th width="12%" className="col-center">Loại</th>
-                  <th width="13%" className="col-center">Hành động</th>
+                  <th width="45%">Tiêu đề</th>
+                  <th width="20%" className="col-center">Loại</th>
+                  <th width="15%" className="col-center">Hành động</th>
                 </tr>
               </thead>
               <tbody>
@@ -205,13 +202,6 @@ function ChapterManagementPage() {
                     </td>
                     <td>
                       <span className="chapter-title">{chapter.title}</span>
-                    </td>
-                    <td className="col-center">
-                      {chapter.isPublished ? (
-                        <span className="status-badge published" style={{ whiteSpace: 'nowrap' }}><FiCheck /> Sẵn sàng</span>
-                      ) : (
-                        <span className="status-badge draft" style={{ whiteSpace: 'nowrap' }}><FiClock /> Chưa sẵn sàng</span>
-                      )}
                     </td>
                     <td className="col-center">
                       {chapter.isFree !== false ? (
@@ -346,21 +336,6 @@ function ChapterManagementPage() {
                 </div>
               )}
 
-              <div 
-                className="auth-form-group modal-checkbox-row" 
-                onClick={() => setEditIsPublished(!editIsPublished)}
-              >
-                <input
-                  type="checkbox"
-                  checked={editIsPublished}
-                  onChange={(e) => setEditIsPublished(e.target.checked)}
-                  className="modal-checkbox-input"
-                />
-                <label className="modal-checkbox-label">
-                  Sẵn sàng ngay lập tức
-                </label>
-              </div>
-
               <div className="auth-form-group modal-actions-row">
                 <button
                   type="button"
@@ -395,7 +370,7 @@ function ChapterManagementPage() {
             </button>
             
             <h3 className="auth-title modal-title-small">Cập nhật hàng loạt chương</h3>
-            <p className="auth-subtitle modal-subtitle-small">Áp dụng thay đổi hàng loạt trạng thái, loại chương cho tác phẩm</p>
+            <p className="auth-subtitle modal-subtitle-small">Áp dụng thay đổi hàng loạt loại chương cho tác phẩm</p>
 
             {batchError && (
               <div className="modal-error-banner">

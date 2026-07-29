@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useChapterDetail } from '../../hooks/useChapterDetail';
-import { useChapters } from '../../hooks/useChapters';
 import chapterService from '../../services/chapterService';
 import readingHistoryService from '../../services/readingHistoryService';
 import ratingService from '../../services/ratingService';
@@ -52,7 +51,6 @@ function ChapterReadPage() {
   const { bookId, chapterId } = useParams();
   const navigate = useNavigate();
   const { chapter, loading, error, refreshChapter } = useChapterDetail(chapterId);
-  const { chapters } = useChapters(bookId);
   const { user, refreshUser } = useAuth();
 
   const [unlocking, setUnlocking] = useState(false);
@@ -64,11 +62,8 @@ function ChapterReadPage() {
   const [submittingRating, setSubmittingRating] = useState(false);
   const [ratingError, setRatingError] = useState('');
 
-  const sortedChapters = [...(chapters || [])].sort((a, b) => a.chapterNumber - b.chapterNumber);
-  const currentIndex = sortedChapters.findIndex(c => String(c.id) === String(chapterId));
-
-  const prevChapterId = currentIndex > 0 ? sortedChapters[currentIndex - 1].id : null;
-  const nextChapterId = currentIndex !== -1 && currentIndex < sortedChapters.length - 1 ? sortedChapters[currentIndex + 1].id : null;
+  const prevChapterId = chapter?.prevChapterId ?? null;
+  const nextChapterId = chapter?.nextChapterId ?? null;
 
   useEffect(() => {
     if (user && chapter && !chapter.isLocked) {

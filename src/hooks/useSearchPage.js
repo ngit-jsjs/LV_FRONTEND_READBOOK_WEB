@@ -27,15 +27,21 @@ export const useSearchPage = () => {
     const fetchBooks = async () => {
       setLoading(true);
       try {
-        const res = await bookService.searchBooks(
-          keyword,
-          author,
-          publisher,
-          year,
-          categoryIds,
-          page,
-          12
-        );
+        const hasFilter = Boolean(keyword || author || publisher || year || (categoryIds && categoryIds.length > 0));
+        let res;
+        if (hasFilter) {
+          res = await bookService.searchBooks(
+            keyword,
+            author,
+            publisher,
+            year,
+            categoryIds,
+            page,
+            12
+          );
+        } else {
+          res = await bookService.getPublicBooks(page, 12);
+        }
         
         const data = res.result;
         if (data && data.content) {

@@ -28,7 +28,7 @@ function ActionButtons({
           title={viewTitle}
           style={btnStyle}
         >
-          <FiFileText /> {showText && 'Chi tiết'}
+          {showText ? viewTitle : <FiFileText />}
         </button>
       )}
 
@@ -39,7 +39,7 @@ function ActionButtons({
           title={editTitle}
           style={btnStyle}
         >
-          <FiEdit2 /> {showText && 'Sửa'}
+          {showText ? editTitle : <FiEdit2 />}
         </button>
       )}
 
@@ -50,7 +50,7 @@ function ActionButtons({
           title={deleteTitle}
           style={btnStyle}
         >
-          <FiTrash2 /> {showText && deleteTitle}
+          {showText ? deleteTitle : <FiTrash2 />}
         </button>
       )}
     </div>

@@ -32,15 +32,17 @@ function CategoriesPage({ isSubComponent = false }) {
   } = useCategories(true);
 
   return (
-    <div className={isSubComponent ? '' : 'categories-page'}>
+    <div className={isSubComponent ? 'admin-sub-page' : 'categories-page'}>
       {/* Header */}
-      <div style={{ marginBottom: '30px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px' }}>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: '0 0 8px 0', color: '#fff', fontFamily: '"Noto Serif SC", serif' }}>
-          Quản lý thể loại
-        </h1>
-        <p style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.95rem', margin: 0 }}>
-          Thêm, sửa, xóa và cấu hình các danh mục thể loại tác phẩm.
-        </p>
+      <div className="admin-page-header">
+        <div className="admin-page-title-group">
+          <h1 className="admin-page-title">
+            Quản lý thể loại
+          </h1>
+          <p className="admin-page-subtitle">
+            Thêm, sửa, xóa và cấu hình các danh mục thể loại tác phẩm
+          </p>
+        </div>
       </div>
 
       {user?.isAdmin && (

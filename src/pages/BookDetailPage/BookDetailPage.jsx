@@ -211,17 +211,9 @@ function BookDetailPage() {
             </div>
 
             {book.categories && (Array.isArray(book.categories) ? book.categories : Array.from(book.categories)).length > 0 && (
-              <div className="bd-categories-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '14px', marginBottom: '14px' }}>
+              <div className="bd-categories-list">
                 {(Array.isArray(book.categories) ? book.categories : Array.from(book.categories)).map((catName, index) => (
-                  <span key={index} className="bd-category-tag" style={{
-                    backgroundColor: 'rgba(139, 92, 246, 0.15)',
-                    color: 'var(--accent-purple, #8b5cf6)',
-                    padding: '4px 12px',
-                    borderRadius: '16px',
-                    fontSize: '0.85rem',
-                    fontWeight: '600',
-                    border: '1px solid rgba(139, 92, 246, 0.3)'
-                  }}>
+                  <span key={index} className="bd-category-tag">
                     {catName}
                   </span>
                 ))}
@@ -243,7 +235,7 @@ function BookDetailPage() {
                 onClick={handleToggleFollow}
                 disabled={bookmarkLoading}
               >
-                <FiHeart fill={isFollowed ? "#ef4444" : "none"} style={{ stroke: isFollowed ? '#ef4444' : 'currentColor' }} />
+                <FiHeart fill={isFollowed ? "#ef4444" : "none"} />
               </button>
               <button className="bd-btn icon-btn" title="Chia sẻ">
                 <FiShare2 />
@@ -415,7 +407,7 @@ function BookDetailPage() {
                               placeholder="Nhập cảm nhận của bạn về cuốn sách này..."
                               value={userComment}
                               onChange={(e) => setUserComment(e.target.value)}
-                              maxLength={500}
+                              maxLength={3000}
                             />
                             <div className="rating-form-actions">
                               <button
@@ -455,26 +447,29 @@ function BookDetailPage() {
                       <div className="ratings-list">
                         {ratings.map((rating) => {
                           const isOwnRating = rating.userId === user?.userId || rating.userId === user?.id;
+                          const isEditingThisCard = editingRatingId === rating.id;
+
                           return (
-                            <div key={rating.id} className="rating-card">
+                            <div key={rating.id} className={`rating-card ${isEditingThisCard ? 'editing-card' : ''}`}>
                               <div className="rating-card-header">
                                 <div className="rating-card-author">
                                   <span className="rating-author-name">{rating.userName || "Độc giả ẩn danh"}</span>
-                                  <div className="rating-stars-display">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <FiStar
-                                        key={star}
-                                        fill={star <= rating.ratings ? "#ffb300" : "none"}
-                                        style={{ stroke: star <= rating.ratings ? '#ffb300' : 'var(--text-muted)' }}
-                                      />
-                                    ))}
-                                  </div>
+                                  {!isEditingThisCard && (
+                                    <div className="rating-stars-display">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <FiStar
+                                          key={star}
+                                          className={star <= rating.ratings ? "rating-star-filled" : "rating-star-empty"}
+                                        />
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="rating-card-meta">
                                   <span className="rating-date">
                                     {rating.createdAt ? new Date(rating.createdAt).toLocaleDateString('vi-VN') : 'N/A'}
                                   </span>
-                                  {(isOwnRating || user?.isAdmin) && (
+                                  {(isOwnRating || user?.isAdmin) && !isEditingThisCard && (
                                     <div className="rating-actions-btn-group">
                                       {isOwnRating && (
                                         <button
@@ -496,7 +491,50 @@ function BookDetailPage() {
                                   )}
                                 </div>
                               </div>
-                              <p className="rating-comment-body">{rating.comment}</p>
+
+                              {isEditingThisCard ? (
+                                <form onSubmit={handleRatingSubmit} className="rating-inline-edit-form" style={{ marginTop: '12px' }}>
+                                  <div className="rating-stars-select" style={{ marginBottom: '12px' }}>
+                                    <span className="bd-rating-select-label" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Chọn số sao:</span>
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <button
+                                        key={star}
+                                        type="button"
+                                        className={`rating-star-btn ${star <= userRatingScore ? 'active' : ''}`}
+                                        onClick={() => setUserRatingScore(star)}
+                                      >
+                                        <FiStar fill={star <= userRatingScore ? "#ffb300" : "none"} />
+                                      </button>
+                                    ))}
+                                  </div>
+                                  <textarea
+                                    className="rating-comment-textarea"
+                                    placeholder="Nhập cảm nhận của bạn..."
+                                    value={userComment}
+                                    onChange={(e) => setUserComment(e.target.value)}
+                                    maxLength={3000}
+                                    autoFocus
+                                  />
+                                  <div className="rating-form-actions">
+                                    <button
+                                      type="submit"
+                                      className="bd-btn primary bd-submit-rating-btn"
+                                      disabled={submittingRating}
+                                    >
+                                      {submittingRating ? "Đang gửi..." : "Lưu thay đổi"}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="bd-btn secondary bd-cancel-rating-btn"
+                                      onClick={cancelEdit}
+                                    >
+                                      Hủy
+                                    </button>
+                                  </div>
+                                </form>
+                              ) : (
+                                <p className="rating-comment-body">{rating.comment}</p>
+                              )}
                             </div>
                           );
                         })}
@@ -560,10 +598,7 @@ function BookDetailPage() {
                   <span className="label">Cập nhật:</span>
                   <span className="value">{book.updatedAt ? new Date(book.updatedAt).toLocaleDateString('vi-VN') : 'N/A'}</span>
                 </li>
-                <li>
-                  <span className="label">Số chương:</span>
-                  <span className="value">{(book.totalChapters !== undefined && book.totalChapters !== null) ? `${book.totalChapters} chương` : 'Đang cập nhật'}</span>
-                </li>
+
                 {book.publisher && (
                   <li>
                     <span className="label">NXB:</span>

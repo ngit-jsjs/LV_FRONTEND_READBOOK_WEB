@@ -103,7 +103,7 @@ function Navbar() {
             <div className="navbar-right">
               {user ? (
                 <div className="navbar-user-actions">
-                  <div className="navbar-coin-badge-container" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div className="navbar-coin-badge-container">
                     <div className="navbar-coin-badge" title="Số xu của bạn">
                       <FaCoins className="coin-icon" />
                       <span>{user.amount || 0}</span>
@@ -111,32 +111,12 @@ function Navbar() {
                     <Link
                       to={ROUTES.PREMIUM}
                       className="navbar-recharge-btn"
-                      style={{
-                        padding: '4px 10px',
-                        background: 'rgba(234, 179, 8, 0.1)',
-                        border: '1px solid rgba(234, 179, 8, 0.3)',
-                        borderRadius: '20px',
-                        color: '#eab308',
-                        fontSize: '0.8rem',
-                        fontWeight: '700',
-                        textDecoration: 'none',
-                        transition: 'all 0.2s',
-                        cursor: 'pointer'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(234, 179, 8, 0.2)';
-                        e.currentTarget.style.borderColor = '#eab308';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(234, 179, 8, 0.1)';
-                        e.currentTarget.style.borderColor = 'rgba(234, 179, 8, 0.3)';
-                      }}
                     >
                       Nạp xu
                     </Link>
                   </div>
                   <Link to={ROUTES.PROFILE} className="navbar-user-profile">
-                    <FiUser style={{ fontSize: '1.2rem' }} />
+                    <FiUser className="navbar-user-icon" />
                     <span className="navbar-username">{user.name}</span>
                   </Link>
                   <button
@@ -169,7 +149,7 @@ function Navbar() {
 
         {/* Sub-navbar */}
         <nav className="sub-navbar">
-          <div className="container sub-navbar-inner" style={{ position: 'relative' }}>
+          <div className="container sub-navbar-inner">
             <div className="sub-navbar-links">
               <Link to={ROUTES.HOME} className={`sub-navbar-link ${location.pathname === ROUTES.HOME || location.pathname === '/search' ? 'active' : ''}`}>Trang chủ</Link>
               <Link to={ROUTES.FOLLOWED_BOOKS} className={`sub-navbar-link ${location.pathname === ROUTES.FOLLOWED_BOOKS ? 'active' : ''}`}>Tủ sách</Link>
@@ -184,7 +164,7 @@ function Navbar() {
             {/* Search and Filters */}
             <div className="sub-navbar-search-wrapper">
               <form className="sub-navbar-search-form" onSubmit={handleSearchSubmit}>
-                <FiSearch style={{ color: 'var(--accent-purple, #8b5cf6)', fontSize: '1.1rem' }} />
+                <FiSearch className="sub-navbar-search-icon" />
                 <input
                   type="text"
                   className="sub-navbar-search-input"
@@ -214,85 +194,62 @@ function Navbar() {
               {/* Filter Panel Dropdown */}
               {showFilters && (
                 <div className="sub-navbar-filter-panel">
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#fff', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '8px' }}>
+                  <h3 className="filter-panel-title">
                     Bộ lọc tìm kiếm nâng cao
                   </h3>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
+                  <div className="filter-panel-grid">
                     {/* Author filter */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <label style={{ fontSize: '0.85rem', color: 'var(--text-muted, #6b6f80)', fontWeight: '600' }}>Tác giả</label>
+                    <div className="filter-panel-field">
+                      <label className="filter-panel-label">Tác giả</label>
                       <input
                         type="text"
                         placeholder="Tên tác giả..."
                         value={localAuthor}
                         onChange={(e) => setLocalAuthor(e.target.value)}
-                        style={{ background: 'var(--bg-primary, #272d4a)', border: '1px solid var(--border-color)', color: '#fff', borderRadius: '8px', padding: '8px 12px', outline: 'none', fontSize: '0.9rem' }}
+                        className="filter-panel-input"
                       />
                     </div>
 
                     {/* Publisher filter */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <label style={{ fontSize: '0.85rem', color: 'var(--text-muted, #6b6f80)', fontWeight: '600' }}>Nhà xuất bản</label>
+                    <div className="filter-panel-field">
+                      <label className="filter-panel-label">Nhà xuất bản</label>
                       <input
                         type="text"
                         placeholder="Tên nhà xuất bản..."
                         value={localPublisher}
                         onChange={(e) => setLocalPublisher(e.target.value)}
-                        style={{ background: 'var(--bg-primary, #272d4a)', border: '1px solid var(--border-color)', color: '#fff', borderRadius: '8px', padding: '8px 12px', outline: 'none', fontSize: '0.9rem' }}
+                        className="filter-panel-input"
                       />
                     </div>
 
                     {/* Year filter */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <label style={{ fontSize: '0.85rem', color: 'var(--text-muted, #6b6f80)', fontWeight: '600' }}>Năm xuất bản</label>
+                    <div className="filter-panel-field">
+                      <label className="filter-panel-label">Năm xuất bản</label>
                       <input
                         type="number"
                         placeholder="Ví dụ: 2024"
                         value={localYear}
                         onChange={(e) => setLocalYear(e.target.value)}
-                        style={{ background: 'var(--bg-primary, #272d4a)', border: '1px solid var(--border-color)', color: '#fff', borderRadius: '8px', padding: '8px 12px', outline: 'none', fontSize: '0.9rem' }}
+                        className="filter-panel-input"
                       />
                     </div>
                   </div>
 
                   {/* Category chip filter */}
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted, #6b6f80)', fontWeight: '600', marginBottom: '8px' }}>Thể loại</label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                  <div className="filter-panel-category-section">
+                    <label className="filter-panel-label bdf-error-block">Thể loại</label>
+                    <div className="bdf-tags-container">
                       {localCategoryIds.length > 0 ? (
                         localCategoryIds.map(id => {
                           const cat = categoriesList.find(c => c.id === id);
                           if (!cat) return null;
                           return (
-                            <span
-                              key={cat.id}
-                              style={{
-                                background: 'rgba(139, 92, 246, 0.15)',
-                                border: '1px solid rgba(139, 92, 246, 0.4)',
-                                color: '#fff',
-                                padding: '6px 12px',
-                                borderRadius: '20px',
-                                fontSize: '0.85rem',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                fontWeight: '500'
-                              }}
-                            >
+                            <span key={cat.id} className="filter-category-chip">
                               {cat.name}
                               <button
                                 type="button"
-                                style={{
-                                  background: 'none',
-                                  border: 'none',
-                                  color: 'rgba(255, 255, 255, 0.6)',
-                                  cursor: 'pointer',
-                                  padding: 0,
-                                  fontSize: '0.9rem',
-                                  display: 'flex',
-                                  alignItems: 'center'
-                                }}
+                                className="filter-chip-clear-btn"
                                 onClick={() => setLocalCategoryIds(localCategoryIds.filter(cid => cid !== cat.id))}
                               >
                                 &times;
@@ -301,29 +258,15 @@ function Navbar() {
                           );
                         })
                       ) : (
-                        <span style={{ color: 'var(--text-muted, #6b6f80)', fontSize: '0.9rem' }}>Chưa chọn thể loại nào</span>
+                        <span className="filter-chip-empty-text">Chưa chọn thể loại nào</span>
                       )}
                     </div>
                     <button
                       type="button"
-                      className="select-popup-btn"
+                      className="select-popup-btn filter-select-category-btn"
                       onClick={() => {
                         setCategorySearchQuery('');
                         setCategoryModalOpen(true);
-                      }}
-                      style={{
-                        padding: '8px 16px',
-                        background: 'rgba(139, 92, 246, 0.1)',
-                        border: '1px solid rgba(139, 92, 246, 0.3)',
-                        color: 'var(--accent-purple, #a855f7)',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        width: 'fit-content',
-                        fontWeight: '600',
-                        fontSize: '0.9rem'
                       }}
                     >
                       <FiSearch /> Chọn thể loại
@@ -331,30 +274,18 @@ function Navbar() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <div className="filter-panel-actions">
                     <button
                       type="button"
                       onClick={handleClearAll}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: '6px',
-                        background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
-                        padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem',
-                        fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s',
-                        border: 'none'
-                      }}
+                      className="filter-action-btn reset"
                     >
                       <FiRefreshCw /> Đặt lại
                     </button>
                     <button
                       type="button"
                       onClick={handleSearchSubmit}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: '6px',
-                        background: 'var(--accent-purple, #8b5cf6)', color: '#fff',
-                        padding: '8px 20px', borderRadius: '8px', fontSize: '0.85rem',
-                        fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s',
-                        border: 'none'
-                      }}
+                      className="filter-action-btn submit"
                     >
                       Tìm kiếm
                     </button>
@@ -369,38 +300,28 @@ function Navbar() {
 
       {/* Category Search Modal inside Navbar */}
       {isCategoryModalOpen && (
-        <div className="author-modal-overlay" onClick={() => setCategoryModalOpen(false)} style={{ zIndex: 1100 }}>
-          <div className="auth-card modal-card-small" style={{ width: '500px', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+        <div className="author-modal-overlay navbar-modal-overlay" onClick={() => setCategoryModalOpen(false)}>
+          <div className="auth-card modal-card-small bdf-modal-500" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setCategoryModalOpen(false)}
-              className="modal-close-btn"
+              className="modal-close-btn navbar-modal-close-btn"
               title="Đóng"
               type="button"
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                background: 'none',
-                border: 'none',
-                color: 'var(--text-muted, #6b6f80)',
-                fontSize: '1.2rem',
-                cursor: 'pointer'
-              }}
             >
               &times;
             </button>
 
-            <h3 className="auth-title modal-title-small" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 8px 0', color: '#fff' }}>
+            <h3 className="auth-title modal-title-small navbar-modal-title">
               <FiSearch /> Tìm kiếm & Chọn thể loại
             </h3>
-            <p className="auth-subtitle modal-subtitle-small" style={{ color: 'var(--text-muted, #6b6f80)', fontSize: '0.85rem', margin: '0 0 16px 0' }}>
+            <p className="auth-subtitle modal-subtitle-small navbar-modal-subtitle">
               Chọn các thể loại để lọc sách
             </p>
 
-            <div className="auth-form-group modal-form-group" style={{ marginBottom: '16px' }}>
+            <div className="auth-form-group modal-form-group">
               <input
                 type="text"
-                className="admin-input"
+                className="admin-input navbar-search-input-field"
                 value={categorySearchQuery}
                 onChange={(e) => {
                   setCategorySearchQuery(e.target.value);
@@ -408,31 +329,10 @@ function Navbar() {
                 }}
                 placeholder="Nhập tên thể loại cần tìm..."
                 autoFocus
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
-                  borderRadius: '8px',
-                  color: '#fff',
-                  outline: 'none',
-                  fontSize: '0.95rem'
-                }}
               />
             </div>
 
-            <div className="search-results-list" style={{
-              maxHeight: '280px',
-              overflowY: 'auto',
-              marginTop: '16px',
-              border: '1px solid var(--border-color, rgba(255,255,255,0.08))',
-              borderRadius: '8px',
-              background: 'rgba(0, 0, 0, 0.2)',
-              padding: '8px',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '8px'
-            }}>
+            <div className="search-results-list bdf-category-grid">
               {displayedCategories.length > 0 ? (
                 displayedCategories.map(cat => {
                   const isChecked = localCategoryIds.includes(cat.id);
@@ -446,34 +346,22 @@ function Navbar() {
                           setLocalCategoryIds([...localCategoryIds, cat.id]);
                         }
                       }}
-                      style={{
-                        padding: '10px 12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        background: isChecked ? 'rgba(139, 92, 246, 0.1)' : 'transparent',
-                        border: isChecked ? '1px solid rgba(139, 92, 246, 0.3)' : '1px solid transparent',
-                        borderRadius: '6px',
-                        transition: 'all 0.2s',
-                        userSelect: 'none'
-                      }}
-                      className="category-search-item"
+                      className={`category-search-item bdf-cat-item ${isChecked ? 'active' : ''}`}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => { }} // Controlled via onClick on parent
-                        style={{ cursor: 'pointer' }}
+                        className="bdf-cat-checkbox"
                       />
-                      <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: isChecked ? '600' : 'normal' }}>
+                      <span className={`bdf-cat-name ${isChecked ? 'bold' : ''}`}>
                         {cat.name}
                       </span>
                     </div>
                   );
                 })
               ) : (
-                <div style={{ gridColumn: 'span 2', padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)' }}>
+                <div className="bdf-empty-result-msg bdf-grid-span-2">
                   Không tìm thấy thể loại nào khớp với "{categorySearchQuery}"
                 </div>
               )}
@@ -481,41 +369,23 @@ function Navbar() {
 
             {/* Pagination for Categories inside Modal */}
             {modalTotalPages > 0 && (
-              <div className="followed-books-pagination" style={{ marginTop: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
+              <div className="bdf-modal-pagination">
                 <button
                   type="button"
-                  className="followed-books-pagination-btn"
+                  className="bdf-modal-page-btn"
                   disabled={modalPage === 0}
                   onClick={() => setModalPage(prev => prev - 1)}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '0.8rem',
-                    borderRadius: '6px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
                 >
                   Trang trước
                 </button>
-                <span className="followed-books-pagination-info" style={{ color: 'var(--text-muted, #6b6f80)', fontSize: '0.85rem' }}>
+                <span className="bdf-modal-page-info">
                   Trang {modalPage + 1} / {modalTotalPages}
                 </span>
                 <button
                   type="button"
-                  className="followed-books-pagination-btn"
+                  className="bdf-modal-page-btn"
                   disabled={modalPage === modalTotalPages - 1 || modalTotalPages === 0}
                   onClick={() => setModalPage(prev => prev + 1)}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '0.8rem',
-                    borderRadius: '6px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
                 >
                   Trang sau
                 </button>
@@ -524,21 +394,8 @@ function Navbar() {
 
             <button
               type="button"
-              className="admin-submit-btn"
+              className="admin-submit-btn navbar-modal-confirm-btn"
               onClick={() => setCategoryModalOpen(false)}
-              style={{
-                width: '100%',
-                marginTop: '20px',
-                padding: '12px',
-                background: 'var(--accent-purple, #8b5cf6)',
-                border: 'none',
-                color: '#fff',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
             >
               Xác nhận ({localCategoryIds.length} đã chọn)
             </button>

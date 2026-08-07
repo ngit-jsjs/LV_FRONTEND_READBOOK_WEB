@@ -124,7 +124,7 @@ const BookDetailsForm = ({
 
           <div className="form-group">
             <label>Tác giả <span className="required">*</span></label>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div className="form-input-flex-group">
               <input
                 type="text"
                 placeholder="Chọn tác giả"
@@ -135,8 +135,7 @@ const BookDetailsForm = ({
                   setAuthorPage(0);
                   setAuthorModalOpen(true);
                 }}
-                className={`form-input ${errors.author ? 'error' : ''}`}
-                style={{ flex: 1, cursor: 'pointer' }}
+                className={`form-input form-input-readonly-clickable ${errors.author ? 'error' : ''}`}
               />
               <button
                 type="button"
@@ -145,20 +144,6 @@ const BookDetailsForm = ({
                   setAuthorSearchQuery('');
                   setAuthorPage(0);
                   setAuthorModalOpen(true);
-                }}
-                style={{
-                  padding: '0 16px',
-                  background: 'rgba(139, 92, 246, 0.1)',
-                  border: '1px solid rgba(139, 92, 246, 0.3)',
-                  color: 'var(--accent-purple, #a855f7)',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  whiteSpace: 'nowrap',
-                  fontWeight: '600',
-                  fontSize: '0.9rem'
                 }}
               >
                 <FiSearch /> Tìm tác giả
@@ -196,7 +181,7 @@ const BookDetailsForm = ({
 
         <div className="form-group">
           <label>Nhà xuất bản <span className="required">*</span></label>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="form-input-flex-group">
             <input
               type="text"
               placeholder="Chọn nhà xuất bản"
@@ -207,8 +192,7 @@ const BookDetailsForm = ({
                 setPublisherPage(0);
                 setPublisherModalOpen(true);
               }}
-              className={`form-input ${errors.publisher ? 'error' : ''}`}
-              style={{ flex: 1, cursor: 'pointer' }}
+              className={`form-input form-input-readonly-clickable ${errors.publisher ? 'error' : ''}`}
             />
             <button
               type="button"
@@ -218,88 +202,46 @@ const BookDetailsForm = ({
                 setPublisherPage(0);
                 setPublisherModalOpen(true);
               }}
-              style={{
-                padding: '0 16px',
-                background: 'rgba(139, 92, 246, 0.1)',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
-                color: 'var(--accent-purple, #a855f7)',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                whiteSpace: 'nowrap',
-                fontWeight: '600',
-                fontSize: '0.9rem'
-              }}
             >
               <FiSearch /> Tìm NXB
             </button>
           </div>
           {errors.publisher && <span className="error-text">{errors.publisher}</span>}
         </div>
-{/* bỏ dô style */}
+
         <div className="form-group">
           <label>Thể loại <span className="required">*</span></label>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+          <div className="bdf-tags-container">
             {Array.isArray(categoryIds) && categoryIds.length > 0 ? (
               categoryIds.map(id => {
                 const cat = allCategories.find(c => c.id === id);
                 if (!cat) return null;
                 return (
-                  <span
-                    key={cat.id}
-                    style={{
-                      background: 'rgba(139, 92, 246, 0.15)',
-                      border: '1px solid rgba(139, 92, 246, 0.4)',
-                      color: '#fff',
-                      padding: '6px 12px',
-                      borderRadius: '6px',
-                      fontSize: '0.85rem',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      fontWeight: '500'
-                    }}
-                  >
+                  <span key={cat.id} className="bdf-selected-tag">
                     {cat.name}
                     <FiX
-                      style={{ cursor: 'pointer', color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem' }}
+                      className="bdf-tag-remove-icon"
                       onClick={() => setCategoryIds(categoryIds.filter(cid => cid !== cat.id))}
                     />
                   </span>
                 );
               })
             ) : (
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Chưa chọn thể loại nào</span>
+              <span className="bdf-empty-tag-text">Chưa chọn thể loại nào</span>
             )}
           </div>
           <button
             type="button"
-            className="select-popup-btn"
+            className="select-popup-btn bdf-add-category-btn"
             onClick={() => {
               setCategorySearchQuery('');
               setCategoryPage(0);
               setCategoryModalOpen(true);
             }}
-            style={{
-              padding: '8px 16px',
-              background: 'rgba(139, 92, 246, 0.1)',
-              border: '1px solid rgba(139, 92, 246, 0.3)',
-              color: 'var(--accent-purple, #a855f7)',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              width: 'fit-content',
-              fontWeight: '600',
-              fontSize: '0.9rem'
-            }}
           >
             <FiSearch /> Chọn thể loại
           </button>
-          {errors.categoryIds && <span className="error-text" style={{ marginTop: '8px', display: 'block' }}>{errors.categoryIds}</span>}
+          {errors.categoryIds && <span className="error-text bdf-error-block">{errors.categoryIds}</span>}
         </div>
 
         <div className="form-group">
@@ -318,7 +260,7 @@ const BookDetailsForm = ({
       {/* Author Search Modal - API-based */}
       {isAuthorModalOpen && (
         <div className="author-modal-overlay" onClick={() => setAuthorModalOpen(false)}>
-          <div className="auth-card modal-card-small" style={{ width: '450px', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+          <div className="auth-card modal-card-small bdf-modal-450" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setAuthorModalOpen(false)}
               className="modal-close-btn"
@@ -328,7 +270,7 @@ const BookDetailsForm = ({
               <FiX />
             </button>
             
-            <h3 className="auth-title modal-title-small" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 className="auth-title modal-title-small bdf-modal-title">
               <FiSearch /> Tìm kiếm tác giả
             </h3>
             <p className="auth-subtitle modal-subtitle-small">Tìm kiếm từ toàn bộ danh sách tác giả</p>
@@ -349,18 +291,10 @@ const BookDetailsForm = ({
               </div>
             </div>
 
-            <div className="search-results-list" style={{
-              maxHeight: '240px',
-              overflowY: 'auto',
-              marginTop: '16px',
-              border: '1px solid var(--border-color)',
-              borderRadius: '8px',
-              background: 'rgba(0, 0, 0, 0.2)',
-              padding: '4px'
-            }}>
+            <div className="search-results-list bdf-results-list">
               {authorLoading ? (
-                <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <FiLoader style={{ animation: 'spin 1s linear infinite' }} /> Đang tìm kiếm...
+                <div className="bdf-loading-spinner-box">
+                  <FiLoader className="bdf-loading-spin-icon" /> Đang tìm kiếm...
                 </div>
               ) : authorResults.length > 0 ? (
                 authorResults.map(auth => (
@@ -371,23 +305,14 @@ const BookDetailsForm = ({
                       setSelectedAuthorId(auth.id);
                       setAuthorModalOpen(false);
                     }}
-                    style={{
-                      padding: '10px 16px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      borderRadius: '4px'
-                    }}
-                    className="search-result-item"
+                    className="search-result-item bdf-result-item"
                   >
-                    <span style={{ color: '#fff', fontWeight: '500' }}>{auth.name}</span>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--accent-purple)' }}>Chọn</span>
+                    <span className="bdf-result-name">{auth.name}</span>
+                    <span className="bdf-result-action">Chọn</span>
                   </div>
                 ))
               ) : (
-                <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)' }}>
+                <div className="bdf-empty-result-msg">
                   {authorSearchQuery.trim() ? `Không tìm thấy tác giả nào khớp với "${authorSearchQuery}"` : 'Không có dữ liệu tác giả'}
                 </div>
               )}
@@ -395,39 +320,23 @@ const BookDetailsForm = ({
 
             {/* Pagination for Authors */}
             {authorTotalPages > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '16px' }}>
+              <div className="bdf-modal-pagination">
                 <button
                   type="button"
                   disabled={authorPage === 0}
                   onClick={() => setAuthorPage(prev => prev - 1)}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '0.8rem',
-                    borderRadius: '6px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
+                  className="bdf-modal-page-btn"
                 >
                   Trang trước
                 </button>
-                <span style={{ color: 'var(--text-muted, #6b6f80)', fontSize: '0.85rem' }}>
+                <span className="bdf-modal-page-info">
                   Trang {authorPage + 1} / {authorTotalPages}
                 </span>
                 <button
                   type="button"
                   disabled={authorPage === authorTotalPages - 1 || authorTotalPages === 0}
                   onClick={() => setAuthorPage(prev => prev + 1)}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '0.8rem',
-                    borderRadius: '6px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
+                  className="bdf-modal-page-btn"
                 >
                   Trang sau
                 </button>
@@ -441,7 +350,7 @@ const BookDetailsForm = ({
       {/* Publisher Search Modal - API-based */}
       {isPublisherModalOpen && (
         <div className="author-modal-overlay" onClick={() => setPublisherModalOpen(false)}>
-          <div className="auth-card modal-card-small" style={{ width: '450px', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+          <div className="auth-card modal-card-small bdf-modal-450" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setPublisherModalOpen(false)}
               className="modal-close-btn"
@@ -451,7 +360,7 @@ const BookDetailsForm = ({
               <FiX />
             </button>
             
-            <h3 className="auth-title modal-title-small" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 className="auth-title modal-title-small bdf-modal-title">
               <FiSearch /> Tìm kiếm nhà xuất bản
             </h3>
             <p className="auth-subtitle modal-subtitle-small">Tìm kiếm từ toàn bộ danh sách nhà xuất bản</p>
@@ -472,18 +381,10 @@ const BookDetailsForm = ({
               </div>
             </div>
 
-            <div className="search-results-list" style={{
-              maxHeight: '240px',
-              overflowY: 'auto',
-              marginTop: '16px',
-              border: '1px solid var(--border-color)',
-              borderRadius: '8px',
-              background: 'rgba(0, 0, 0, 0.2)',
-              padding: '4px'
-            }}>
+            <div className="search-results-list bdf-results-list">
               {publisherLoading ? (
-                <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <FiLoader style={{ animation: 'spin 1s linear infinite' }} /> Đang tìm kiếm...
+                <div className="bdf-loading-spinner-box">
+                  <FiLoader className="bdf-loading-spin-icon" /> Đang tìm kiếm...
                 </div>
               ) : publisherResults.length > 0 ? (
                 publisherResults.map(pub => (
@@ -494,23 +395,14 @@ const BookDetailsForm = ({
                       setSelectedPublisherId(pub.id);
                       setPublisherModalOpen(false);
                     }}
-                    style={{
-                      padding: '10px 16px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      borderRadius: '4px'
-                    }}
-                    className="search-result-item"
+                    className="search-result-item bdf-result-item"
                   >
-                    <span style={{ color: '#fff', fontWeight: '500' }}>{pub.name}</span>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--accent-purple)' }}>Chọn</span>
+                    <span className="bdf-result-name">{pub.name}</span>
+                    <span className="bdf-result-action">Chọn</span>
                   </div>
                 ))
               ) : (
-                <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)' }}>
+                <div className="bdf-empty-result-msg">
                   {publisherSearchQuery.trim() ? `Không tìm thấy nhà xuất bản nào khớp với "${publisherSearchQuery}"` : 'Không có dữ liệu nhà xuất bản'}
                 </div>
               )}
@@ -518,39 +410,23 @@ const BookDetailsForm = ({
 
             {/* Pagination for Publishers */}
             {publisherTotalPages > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '16px' }}>
+              <div className="bdf-modal-pagination">
                 <button
                   type="button"
                   disabled={publisherPage === 0}
                   onClick={() => setPublisherPage(prev => prev - 1)}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '0.8rem',
-                    borderRadius: '6px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
+                  className="bdf-modal-page-btn"
                 >
                   Trang trước
                 </button>
-                <span style={{ color: 'var(--text-muted, #6b6f80)', fontSize: '0.85rem' }}>
+                <span className="bdf-modal-page-info">
                   Trang {publisherPage + 1} / {publisherTotalPages}
                 </span>
                 <button
                   type="button"
                   disabled={publisherPage === publisherTotalPages - 1 || publisherTotalPages === 0}
                   onClick={() => setPublisherPage(prev => prev + 1)}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '0.8rem',
-                    borderRadius: '6px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
+                  className="bdf-modal-page-btn"
                 >
                   Trang sau
                 </button>
@@ -560,10 +436,11 @@ const BookDetailsForm = ({
           </div>
         </div>
       )}
+
       {/* Category Search Modal (offline filtering - small dataset) */}
       {isCategoryModalOpen && (
         <div className="author-modal-overlay" onClick={() => setCategoryModalOpen(false)}>
-          <div className="auth-card modal-card-small" style={{ width: '500px', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+          <div className="auth-card modal-card-small bdf-modal-500" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setCategoryModalOpen(false)}
               className="modal-close-btn"
@@ -573,7 +450,7 @@ const BookDetailsForm = ({
               <FiX />
             </button>
             
-            <h3 className="auth-title modal-title-small" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 className="auth-title modal-title-small bdf-modal-title">
               <FiSearch /> Tìm kiếm & Chọn thể loại
             </h3>
             <p className="auth-subtitle modal-subtitle-small">Chọn các thể loại phù hợp cho tác phẩm của bạn</p>
@@ -594,18 +471,7 @@ const BookDetailsForm = ({
               </div>
             </div>
 
-            <div className="search-results-list" style={{
-              maxHeight: '280px',
-              overflowY: 'auto',
-              marginTop: '16px',
-              border: '1px solid var(--border-color)',
-              borderRadius: '8px',
-              background: 'rgba(0, 0, 0, 0.2)',
-              padding: '8px',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '8px'
-            }}>
+            <div className="search-results-list bdf-category-grid">
               {displayedCategories.length > 0 ? (
                 displayedCategories.map(cat => {
                   const isChecked = Array.isArray(categoryIds) && categoryIds.includes(cat.id);
@@ -619,34 +485,22 @@ const BookDetailsForm = ({
                           setCategoryIds([...categoryIds, cat.id]);
                         }
                       }}
-                      style={{
-                        padding: '10px 12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        background: isChecked ? 'rgba(139, 92, 246, 0.1)' : 'transparent',
-                        border: isChecked ? '1px solid rgba(139, 92, 246, 0.3)' : '1px solid transparent',
-                        borderRadius: '6px',
-                        transition: 'all 0.2s',
-                        userSelect: 'none'
-                      }}
-                      className="category-search-item"
+                      className={`category-search-item bdf-cat-item ${isChecked ? 'active' : ''}`}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => {}} // Controlled via onClick on the parent div
-                        style={{ cursor: 'pointer' }}
+                        className="bdf-cat-checkbox"
                       />
-                      <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: isChecked ? '600' : 'normal' }}>
+                      <span className={`bdf-cat-name ${isChecked ? 'bold' : ''}`}>
                         {cat.name}
                       </span>
                     </div>
                   );
                 })
               ) : (
-                <div style={{ gridColumn: 'span 2', padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)' }}>
+                <div className="bdf-empty-result-msg bdf-grid-span-2">
                   Không tìm thấy thể loại nào khớp với "{categorySearchQuery}"
                 </div>
               )}
@@ -654,39 +508,23 @@ const BookDetailsForm = ({
 
             {/* Pagination for Categories */}
             {categoryTotalPages > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '16px' }}>
+              <div className="bdf-modal-pagination">
                 <button
                   type="button"
                   disabled={categoryPage === 0}
                   onClick={() => setCategoryPage(prev => prev - 1)}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '0.8rem',
-                    borderRadius: '6px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
+                  className="bdf-modal-page-btn"
                 >
                   Trang trước
                 </button>
-                <span style={{ color: 'var(--text-muted, #6b6f80)', fontSize: '0.85rem' }}>
+                <span className="bdf-modal-page-info">
                   Trang {categoryPage + 1} / {categoryTotalPages}
                 </span>
                 <button
                   type="button"
                   disabled={categoryPage === categoryTotalPages - 1 || categoryTotalPages === 0}
                   onClick={() => setCategoryPage(prev => prev + 1)}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '0.8rem',
-                    borderRadius: '6px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
+                  className="bdf-modal-page-btn"
                 >
                   Trang sau
                 </button>
@@ -695,9 +533,8 @@ const BookDetailsForm = ({
 
             <button
               type="button"
-              className="auth-submit-btn modal-submit-btn"
+              className="auth-submit-btn modal-submit-btn bdf-full-btn"
               onClick={() => setCategoryModalOpen(false)}
-              style={{ width: '100%', marginTop: '20px', padding: '12px' }}
             >
               Xác nhận ({categoryIds.length} đã chọn)
             </button>

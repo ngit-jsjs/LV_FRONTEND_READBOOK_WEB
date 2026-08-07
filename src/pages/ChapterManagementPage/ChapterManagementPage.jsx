@@ -110,7 +110,6 @@ function ChapterManagementPage() {
             <button 
               className="btn-add-chapter btn-batch-update" 
               onClick={() => openBatchModal(selectedIds)}
-              style={{ backgroundColor: '#2563eb', color: '#ffffff' }}
             >
               Cập nhật hàng loạt
             </button>
@@ -118,7 +117,6 @@ function ChapterManagementPage() {
               <button 
                 className="btn-add-chapter btn-delete-all" 
                 onClick={handleDeleteAll} 
-                style={{ backgroundColor: '#dc2626', color: '#ffffff' }}
               >
                 Xóa tất cả
               </button>
@@ -128,25 +126,14 @@ function ChapterManagementPage() {
 
         {/* Selection Actions Bar */}
         {selectedIds.length > 0 && (
-          <div className="selection-action-bar" style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            backgroundColor: 'rgba(37, 99, 235, 0.08)',
-            border: '1px solid rgba(37, 99, 235, 0.2)',
-            borderRadius: '8px',
-            padding: '12px 20px',
-            marginBottom: '16px',
-            animation: 'fadeIn 0.2s ease-in-out'
-          }}>
-            <span style={{ color: '#1e3a8a', fontWeight: '600', fontSize: '14px' }}>
+          <div className="selection-action-bar">
+            <span className="selection-action-text">
               Đã chọn {selectedIds.length} chương. Hãy bấm "Cập nhật hàng loạt" để sửa đổi.
             </span>
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div className="selection-action-buttons">
               <button 
-                className="btn-add-chapter" 
+                className="btn-add-chapter btn-cancel-selection" 
                 onClick={() => setSelectedIds([])}
-                style={{ backgroundColor: '#64748b', color: '#ffffff', padding: '6px 12px', fontSize: '14px' }}
               >
                 Hủy chọn
               </button>
@@ -171,7 +158,7 @@ function ChapterManagementPage() {
                           setSelectedIds([]);
                         }
                       }}
-                      style={{ width: '18px', height: '18px', cursor: 'pointer', verticalAlign: 'middle' }}
+                      className="table-checkbox"
                     />
                   </th>
                   <th width="15%" className="col-center">Số chương</th>
@@ -194,7 +181,7 @@ function ChapterManagementPage() {
                             setSelectedIds(selectedIds.filter(id => id !== chapter.id));
                           }
                         }}
-                        style={{ width: '18px', height: '18px', cursor: 'pointer', verticalAlign: 'middle' }}
+                        className="table-checkbox"
                       />
                     </td>
                     <td className="col-center">
@@ -360,7 +347,7 @@ function ChapterManagementPage() {
       {/* Batch Update Chapters Modal */}
       {isBatchUpdating && (
         <div className="author-modal-overlay" onClick={closeBatchModal}>
-          <div className="auth-card modal-card-small" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+          <div className="auth-card modal-card-small batch-modal-card" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={closeBatchModal}
               title="Đóng"
@@ -401,19 +388,8 @@ function ChapterManagementPage() {
               {/* Danh sách chương (khi chọn 'selected') */}
               {batchTarget === 'selected' && (
                 <div className="auth-form-group modal-form-group">
-                  <div style={{
-                    padding: '12px 16px',
-                    backgroundColor: 'rgba(37, 99, 235, 0.06)',
-                    border: '1px dashed rgba(37, 99, 235, 0.2)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    color: 'var(--text-secondary, #cbd5e1)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    marginTop: '8px'
-                  }}>
-                    <FiCheck style={{ color: '#22c55e', fontSize: '18px', flexShrink: 0 }} />
+                  <div className="batch-selected-info-box">
+                    <FiCheck className="batch-selected-check-icon" />
                     <span>Đang áp dụng cho <strong>{batchIds.length} chương</strong> đã tích chọn trong bảng.</span>
                   </div>
                 </div>
@@ -440,10 +416,10 @@ function ChapterManagementPage() {
               {/* Giá chương (Premium) */}
               {(batchIsFreeMode === 'premium' || batchIsFreeMode === 'keep') && (
                 <div className="auth-form-group modal-form-group">
-                  <label className="auth-label modal-label-small" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="auth-label modal-label-small modal-label-flex">
                     <span>Giá chương (Xu)</span>
                     {batchIsFreeMode === 'keep' && (
-                      <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 'normal' }}>
+                      <span className="modal-label-hint">
                         (Chỉ áp dụng cho chương Premium)
                       </span>
                     )}
@@ -461,7 +437,7 @@ function ChapterManagementPage() {
                 </div>
               )}
 
-              <div className="auth-form-group modal-actions-row" style={{ marginTop: '24px', display: 'flex', gap: '10px' }}>
+              <div className="auth-form-group modal-actions-row margin-top-24">
                 <button
                   type="button"
                   className="auth-social-btn modal-cancel-btn"
@@ -472,9 +448,8 @@ function ChapterManagementPage() {
                 </button>
                 <button
                   type="submit"
-                  className="auth-submit-btn modal-submit-btn"
+                  className="auth-submit-btn modal-submit-btn btn-primary-blue"
                   disabled={batchSubmitting}
-                  style={{ backgroundColor: '#2563eb', flex: 1 }}
                 >
                   {batchSubmitting ? 'Đang thực hiện...' : 'Cập nhật'}
                 </button>

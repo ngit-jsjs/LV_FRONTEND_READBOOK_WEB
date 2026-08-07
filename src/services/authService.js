@@ -34,6 +34,18 @@ const authService = {
     });
   },
 
+  introspect: async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.INTROSPECT, { token });
+      return !!(response && response.result && response.result.valid === true);
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra token (introspect):", error);
+      return false;
+    }
+  },
+
   login: async (email, password) => {
     const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
       email,

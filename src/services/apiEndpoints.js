@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
     RESEND_OTP: '/auth/resend-otp',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
+    INTROSPECT: '/auth/introspect',
   },
   BOOKS: {
     CREATE_BOOK: '/books',

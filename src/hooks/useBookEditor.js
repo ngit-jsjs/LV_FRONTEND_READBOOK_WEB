@@ -119,7 +119,6 @@ export const useBookEditor = () => {
     try {
       const bookData = {
         title: title.trim(),
-        author: author.trim(),
         authorId: selectedAuthorId || null,
         status,
         description: description.trim(),

@@ -120,11 +120,7 @@ function BookCard({
                 <FiCalendar className="meta-icon" /> {book.year}
               </span>
             )}
-            {book.totalChapters !== undefined && book.totalChapters !== null && (
-              <span className="book-meta-item chapters" title={`Số chương: ${book.totalChapters}`}>
-                <FiBookOpen className="meta-icon" /> {book.totalChapters} chương
-              </span>
-            )}
+
             {book.averageRating && Number(book.averageRating) > 0 && (
               <span className="book-meta-item rating" title={`Đánh giá: ${Number(book.averageRating).toFixed(1)} sao`}>
                 <FiStar className="meta-icon star-filled" /> {Number(book.averageRating).toFixed(1)}

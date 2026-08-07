@@ -40,7 +40,7 @@ function NotFoundPage() {
       <h1 style={{ fontSize: '6rem', fontWeight: '800', margin: '0', color: 'var(--accent-purple, #8b5cf6)' }}>404</h1>
       <h2 style={{ fontSize: '1.8rem', fontWeight: '700', margin: '12px 0 8px' }}>Trang không tồn tại</h2>
       <p style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '1rem', marginBottom: '32px' }}>
-        Đường dẫn bạn truy cập không hợp lệ hoặc đã bị xóa.
+        Đường dẫn bạn truy cập không hợp lệ .
       </p>
       <Link
         to={ROUTES.HOME}

@@ -7,7 +7,7 @@ export const useBookRatings = (bookId, user, refetchBook, activeTab) => {
   const [ratingsPage, setRatingsPage] = useState(0);
   const [ratingsTotalPages, setRatingsTotalPages] = useState(0);
   const [ratingsTotalElements, setRatingsTotalElements] = useState(0);
-  
+
   // Form state for writing/editing rating
   const [userRatingScore, setUserRatingScore] = useState(5);
   const [userComment, setUserComment] = useState('');

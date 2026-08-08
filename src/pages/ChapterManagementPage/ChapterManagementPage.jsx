@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useChapterManagement } from '../../hooks/useChapterManagement';
 import { ROUTES } from '../../config/routes';
 import { FiPlus, FiArrowLeft, FiLock, FiCheck, FiClock, FiX } from 'react-icons/fi';
@@ -89,7 +89,18 @@ function ChapterManagementPage() {
               <FiArrowLeft /> Quay lại Dashboard
             </button>
             <h1 className="header-title-author">Quản lý chương</h1>
-            {book && <h2 className="header-subtitle">Tác phẩm: {book.title}</h2>}
+            {book && (
+              <h2 className="header-subtitle">
+                Tác phẩm:{' '}
+                <Link
+                  to={ROUTES.BOOK_DETAIL.replace(':id', book.id || bookId)}
+                  className="book-title-header-link"
+                  title="Xem chi tiết tác phẩm"
+                >
+                  {book.title}
+                </Link>
+              </h2>
+            )}
           </div>
           
           <div className="header-right studio-header-right-actions">
@@ -168,46 +179,67 @@ function ChapterManagementPage() {
                 </tr>
               </thead>
               <tbody>
-                {chapters.map((chapter) => (
-                  <tr key={chapter.id}>
-                    <td className="col-center">
-                      <input 
-                        type="checkbox"
-                        checked={selectedIds.includes(chapter.id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedIds([...selectedIds, chapter.id]);
-                          } else {
-                            setSelectedIds(selectedIds.filter(id => id !== chapter.id));
-                          }
-                        }}
-                        className="table-checkbox"
-                      />
-                    </td>
-                    <td className="col-center">
-                      <span className="chapter-number-badge" style={{ whiteSpace: 'nowrap' }}>Chương {chapter.chapterNumber}</span>
-                    </td>
-                    <td>
-                      <span className="chapter-title">{chapter.title}</span>
-                    </td>
-                    <td className="col-center">
-                      {chapter.isFree !== false ? (
-                        <span className="type-badge free" style={{ whiteSpace: 'nowrap' }}>Miễn phí</span>
-                      ) : (
-                        <span className="type-badge premium" style={{ whiteSpace: 'nowrap' }}><FiLock /> {chapter.price} Xu</span>
-                      )}
-                    </td>
-                    <td className="col-center actions-cell">
-                      <ActionButtons
-                        onEdit={() => handleEditClick(chapter)}
-                        onDelete={() => handleDelete(chapter.id)}
-                        showText={false}
-                        editTitle="Sửa chương"
-                        deleteTitle="Xóa chương"
-                      />
-                    </td>
-                  </tr>
-                ))}
+                {chapters.map((chapter) => {
+                  const chapterReadUrl = ROUTES.CHAPTER_READ.replace(':bookId', bookId).replace(':chapterId', chapter.id);
+                  return (
+                    <tr key={chapter.id}>
+                      <td className="col-center">
+                        <input 
+                          type="checkbox"
+                          checked={selectedIds.includes(chapter.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedIds([...selectedIds, chapter.id]);
+                            } else {
+                              setSelectedIds(selectedIds.filter(id => id !== chapter.id));
+                            }
+                          }}
+                          className="table-checkbox"
+                        />
+                      </td>
+                      <td className="col-center">
+                        <Link
+                          to={chapterReadUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="chapter-number-link"
+                          title="Đọc/Xem nội dung chương"
+                        >
+                          <span className="chapter-number-badge" style={{ whiteSpace: 'nowrap' }}>Chương {chapter.chapterNumber}</span>
+                        </Link>
+                      </td>
+                      <td>
+                        <Link
+                          to={chapterReadUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="chapter-title-link"
+                          title="Đọc/Xem nội dung chương"
+                        >
+                          <span className="chapter-title">{chapter.title}</span>
+                        </Link>
+                      </td>
+                      <td className="col-center">
+                        {chapter.isFree !== false ? (
+                          <span className="type-badge free" style={{ whiteSpace: 'nowrap' }}>Miễn phí</span>
+                        ) : (
+                          <span className="type-badge premium" style={{ whiteSpace: 'nowrap' }}><FiLock /> {chapter.price} Xu</span>
+                        )}
+                      </td>
+                      <td className="col-center actions-cell">
+                        <ActionButtons
+                          viewLink={chapterReadUrl}
+                          viewTitle="Đọc / Xem nội dung chương"
+                          onEdit={() => handleEditClick(chapter)}
+                          onDelete={() => handleDelete(chapter.id)}
+                          showText={false}
+                          editTitle="Sửa thông tin chương"
+                          deleteTitle="Xóa chương"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           ) : (

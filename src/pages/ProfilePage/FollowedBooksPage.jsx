@@ -162,6 +162,8 @@ function FollowedBooksPage() {
                   showActions={true}
                   showEdit={false}
                   showManageChapters={false}
+                  deleteTitle="Bỏ theo dõi"
+                  deleteIcon={<FiHeart />}
                   onDelete={() => handleUnfollow(book.id, book.title)}
                 />
               ))}

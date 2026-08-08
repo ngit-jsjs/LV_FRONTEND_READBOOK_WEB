@@ -109,7 +109,7 @@ function BookManagementPage({ isSubComponent = false }) {
                   key={book.id}
                   book={book}
                   showActions={true}
-                  onDelete={() => handleDeleteBook(book.id, book.title)}
+                  onDelete={() => handleDeleteBook(book.id, book.title, book.status)}
                 />
               ))
             ) : (

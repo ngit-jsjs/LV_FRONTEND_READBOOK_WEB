@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiEdit3, FiClock, FiImage, FiTrash2, FiBookOpen, FiUser, FiCalendar, FiTag, FiStar } from 'react-icons/fi';
+import { FiEdit3, FiClock, FiImage, FiBookOpen, FiUser, FiCalendar, FiTag, FiStar, FiEye, FiEyeOff } from 'react-icons/fi';
 import { getFormattedImageUrl } from '../../utils/imageUtils';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../config/routes';
@@ -14,7 +14,9 @@ function BookCard({
   showActions = false,
   showEdit = true,
   showDelete = true,
-  showManageChapters = true
+  showManageChapters = true,
+  deleteTitle,
+  deleteIcon
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,6 +28,14 @@ function BookCard({
   const isAdmin = user?.isAdmin;
   const isManageMode = showActions || location.pathname.startsWith('/author') || location.pathname.startsWith('/admin');
 
+  const isHidden = book.status === 'UNAVAILABLE';
+  const defaultTitle = deleteTitle || (isHidden ? 'Hiển thị sách' : 'Ẩn sách');
+  const defaultIcon = deleteIcon || (isHidden ? <FiEye /> : <FiEyeOff />);
+
+  const bookDetailUrl = ROUTES.BOOK_DETAIL.replace(':id', book.id);
+  const editBookUrl = ROUTES.EDIT_BOOK.replace(':id', book.id);
+  const manageChaptersUrl = ROUTES.CHAPTER_MANAGEMENT.replace(':bookId', book.id);
+
   const handleDelete = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -35,22 +45,24 @@ function BookCard({
     }
   };
 
-  const handleEdit = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onEdit) {
-      onEdit();
-    } else {
-      navigate(ROUTES.EDIT_BOOK.replace(':id', book.id));
+  const handleCardClick = (e) => {
+    if (e.target.closest('a, button')) {
+      return;
     }
+    navigate(bookDetailUrl);
   };
 
   return (
-    <Link
-      to={ROUTES.BOOK_DETAIL.replace(':id', book.id)}
+    <div
+      onClick={handleCardClick}
       className={`book-card-minimal status-${book.status ? book.status.toLowerCase() : ''}`}
+      style={{ cursor: 'pointer' }}
     >
-      <div className="book-card-cover-wrapper">
+      <Link
+        to={bookDetailUrl}
+        className="book-card-cover-wrapper"
+        onClick={(e) => e.stopPropagation()}
+      >
         {rank !== undefined && (
           <div className={`book-rank-badge rank-${rank}`}>
             {rank}
@@ -67,30 +79,49 @@ function BookCard({
             <FiImage size={32} />
           </div>
         )}
-      </div>
+      </Link>
+
       <div className="book-card-content">
         <div className="book-card-top">
-          <h3 className="book-title-minimal" title={book.title || 'Untitled'}>
-            {book.title || 'Untitled'}
-          </h3>
+          <Link
+            to={bookDetailUrl}
+            onClick={(e) => e.stopPropagation()}
+            style={{ textDecoration: 'none', flex: 1, minWidth: 0 }}
+          >
+            <h3 className="book-title-minimal" title={book.title || 'Untitled'}>
+              {book.title || 'Untitled'}
+            </h3>
+          </Link>
+
           {isManageMode && (showEdit || showDelete) && (
-            <div className="book-card-actions" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+            <div className="book-card-actions" onClick={(e) => e.stopPropagation()}>
               {showEdit && (
-                <button
-                  className="btn-action-minimal edit"
-                  onClick={handleEdit}
-                  title="Sửa sách"
-                >
-                  <FiEdit3 />
-                </button>
+                onEdit ? (
+                  <button
+                    className="btn-action-minimal edit"
+                    onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                    title="Sửa sách"
+                  >
+                    <FiEdit3 />
+                  </button>
+                ) : (
+                  <Link
+                    to={editBookUrl}
+                    className="btn-action-minimal edit"
+                    title="Sửa sách"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <FiEdit3 />
+                  </Link>
+                )
               )}
               {showDelete && (
                 <button
-                  className="btn-action-minimal delete"
+                  className={`btn-action-minimal ${isHidden ? 'unhide' : 'hide'}`}
                   onClick={handleDelete}
-                  title="Xóa sách"
+                  title={defaultTitle}
                 >
-                  <FiTrash2 />
+                  {defaultIcon}
                 </button>
               )}
             </div>
@@ -152,17 +183,18 @@ function BookCard({
         </div>
 
         {isManageMode && showManageChapters && (
-          <div className="book-card-bottom-actions" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-            <button
+          <div className="book-card-bottom-actions" onClick={(e) => e.stopPropagation()}>
+            <Link
+              to={manageChaptersUrl}
               className="btn-manage-chapters"
-              onClick={() => navigate(ROUTES.CHAPTER_MANAGEMENT.replace(':bookId', book.id))}
+              onClick={(e) => e.stopPropagation()}
             >
               <FiBookOpen /> Quản lý chương
-            </button>
+            </Link>
           </div>
         )}
       </div>
-    </Link>
+    </div>
   );
 }
 

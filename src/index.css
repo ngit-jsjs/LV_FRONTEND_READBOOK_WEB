@@ -1468,6 +1468,7 @@ button {
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  text-decoration: none;
 }
 
 .btn-action-minimal:hover {
@@ -1479,8 +1480,14 @@ button {
   transform: scale(1.1);
 }
 
-.btn-action-minimal.delete:hover {
-  color: #ef4444;
+.btn-action-minimal.delete:hover,
+.btn-action-minimal.hide:hover {
+  color: #f59e0b;
+  transform: scale(1.1);
+}
+
+.btn-action-minimal.unhide:hover {
+  color: #10b981;
   transform: scale(1.1);
 }
 
@@ -1748,6 +1755,7 @@ button {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-decoration: none;
 }
 
 .btn-manage-chapters:hover {
@@ -3589,6 +3597,35 @@ input[type="password"]::-ms-clear {
   font-weight: 400;
   color: var(--studio-text-muted);
   margin: 0;
+}
+
+.book-title-header-link {
+  color: #a78bfa;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.book-title-header-link:hover {
+  color: #c4b5fd;
+  text-decoration: underline;
+}
+
+.chapter-number-link,
+.chapter-title-link {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.chapter-number-link:hover .chapter-number-badge {
+  filter: brightness(1.25);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+}
+
+.chapter-title-link:hover .chapter-title {
+  color: #a78bfa;
+  text-decoration: underline;
 }
 
 .btn-add-chapter {

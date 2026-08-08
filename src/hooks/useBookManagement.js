@@ -65,9 +65,17 @@ export const useBookManagement = () => {
     setSearchKeyword(keyword);
   };
 
-  const handleDeleteBook = async (id, title) => {
-    const confirmDelete = window.confirm(`Bạn có chắc chắn muốn ẩn tác phẩm "${title}" không?`);
-    if (!confirmDelete) return;
+  const handleDeleteBook = async (id, title, status) => {
+    if (status === 'UNAVAILABLE') {
+      const confirmEdit = window.confirm(`Tác phẩm "${title}" hiện đang bị ẩn. Bạn có muốn đến trang chỉnh sửa để chuyển sang trạng thái "Hiển thị" không?`);
+      if (confirmEdit) {
+        navigate(ROUTES.EDIT_BOOK.replace(':id', id));
+      }
+      return;
+    }
+
+    const confirmHide = window.confirm(`Bạn có chắc chắn muốn ẩn tác phẩm "${title}" không? (Sách bị ẩn sẽ tạm dừng hiển thị đối với độc giả)`);
+    if (!confirmHide) return;
 
     try {
       await bookService.deleteBook(id);

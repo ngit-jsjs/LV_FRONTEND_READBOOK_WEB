@@ -1,36 +1,53 @@
 import React from 'react';
-import { FiEdit2, FiTrash2, FiFileText } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { FiEdit2, FiTrash2, FiFileText, FiEye } from 'react-icons/fi';
 
 
 function ActionButtons({
   onView,
+  viewLink,
   onEdit,
   onDelete,
   showText = false,
-  viewTitle = 'Chi tiết',
+  viewTitle = 'Xem chi tiết',
   editTitle = 'Sửa',
-  deleteTitle = 'Xóa'
+  deleteTitle = 'Xóa',
+  viewIcon = null
 }) {
   const btnStyle = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '6px',
     width: showText ? 'auto' : undefined,
-    height: showText ? 'auto' : undefined
+    height: showText ? 'auto' : undefined,
+    textDecoration: 'none'
   };
+
+  const renderViewIcon = viewIcon || <FiEye />;
 
   return (
     <div className="action-buttons-group" style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
-      {onView && (
+      {viewLink ? (
+        <Link
+          to={viewLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="um-action-btn action-btn detail-btn"
+          title={viewTitle}
+          style={btnStyle}
+        >
+          {showText ? viewTitle : renderViewIcon}
+        </Link>
+      ) : onView ? (
         <button
           className="um-action-btn action-btn detail-btn"
           onClick={onView}
           title={viewTitle}
           style={btnStyle}
         >
-          {showText ? viewTitle : <FiFileText />}
+          {showText ? viewTitle : renderViewIcon}
         </button>
-      )}
+      ) : null}
 
       {onEdit && (
         <button

@@ -20,7 +20,7 @@ function UserManagementPage({ isSubComponent = false }) {
   const navigate = useNavigate();
 
   return (
-    <div className={isSubComponent ? '' : 'admin-page-wrapper'}>
+    <div className={isSubComponent ? 'admin-sub-page' : 'admin-page-wrapper'}>
       {editingUser ? (
         <div className="admin-edit-user-container">
           <h3 className="admin-heading-large">Cập nhật tài khoản</h3>
@@ -35,23 +35,30 @@ function UserManagementPage({ isSubComponent = false }) {
         <>
           {/* SECTION 1: USER MANAGEMENT */}
           <div className="admin-section">
-            <div className="admin-section-header">
-              <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: 0, color: '#fff', fontFamily: '"Noto Serif SC", serif' }}>
-                Quản lý người dùng
-              </h1>
-              <form className="um-search-form admin-search-form" onSubmit={handleSearchSubmit}>
-                <div className="um-search-input-wrapper">
-                  <FiSearch className="um-search-icon" />
-                  <input
-                    type="text"
-                    className="um-search-input"
-                    placeholder="Tìm kiếm theo tên..."
-                    value={keyword}
-                    onChange={(e) => setKeyword(e.target.value)}
-                  />
-                </div>
-                <button type="submit" className="um-search-btn">Tìm kiếm</button>
-              </form>
+            <div className="admin-page-header">
+              <div className="admin-page-title-group">
+                <h1 className="admin-page-title">
+                  Quản lý người dùng
+                </h1>
+                <p className="admin-page-subtitle">
+                  Danh sách người dùng và phân quyền tài khoản
+                </p>
+              </div>
+              <div className="admin-header-actions">
+                <form className="admin-search-form" onSubmit={handleSearchSubmit}>
+                  <div className="admin-search-input-wrapper">
+                    <FiSearch className="admin-search-icon" />
+                    <input
+                      type="text"
+                      className="admin-search-input"
+                      placeholder="Tìm kiếm theo tên..."
+                      value={keyword}
+                      onChange={(e) => setKeyword(e.target.value)}
+                    />
+                  </div>
+                  <button type="submit" className="admin-search-btn">Tìm kiếm</button>
+                </form>
+              </div>
             </div>
 
             <div className="um-content">
@@ -78,9 +85,7 @@ function UserManagementPage({ isSubComponent = false }) {
                             <td>{user.email || 'Chưa có email'}</td>
                             <td className="user-name-cell">{user.name}</td>
                             <td>
-                              <span className={`ud-badge ${user.active !== false ? 'role-user' : 'role-admin'}`} style={{ textTransform: 'none' }}>
-                                {user.active !== false ? 'Hoạt động' : 'Bị khóa'}
-                              </span>
+                              {user.active !== false ? 'Hoạt động' : 'Bị khóa'}
                             </td>
                             <td>
                               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -118,7 +123,7 @@ function UserManagementPage({ isSubComponent = false }) {
                               <ActionButtons
                                 onEdit={() => handleEditClick(user)}
                                 onDelete={() => handleDelete(user)}
-                                deleteTitle={user.active !== false ? 'Khóa' : 'Mở khóa'}
+                                deleteTitle={user.active !== false ? 'Ẩn' : 'Hiện'}
                                 showText={true}
                               />
                             </td>

@@ -164,7 +164,7 @@ function ChapterReadPage() {
               </button>
               {nextChapterId === null ? (
                 <button
-                  className="cr-nav-btn"
+                  className="cr-nav-btn finish-btn"
                   onClick={() => {
                     readingHistoryService.saveOrUpdate(bookId, chapterId, true)
                       .then(() => {
@@ -176,7 +176,6 @@ function ChapterReadPage() {
                       });
                   }}
                   title="Đánh dấu đã đọc xong & Đánh giá"
-                  style={{ background: 'rgba(234, 179, 8, 0.15)', color: '#facc15', border: '1px solid rgba(234, 179, 8, 0.3)' }}
                 >
                   Đọc xong & Đánh giá
                 </button>
@@ -195,47 +194,19 @@ function ChapterReadPage() {
       </div>
 
       {showRatingModal && (
-        <div className="cr-modal-overlay" style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'rgba(0, 0, 0, 0.75)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-        }} onClick={() => navigate(ROUTES.BOOK_DETAIL.replace(':id', bookId))}>
-          <div className="cr-modal" style={{
-            background: 'var(--bg-secondary, #111328)',
-            border: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
-            width: '100%',
-            maxWidth: '450px',
-            borderRadius: '12px',
-            padding: '30px',
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: '600', marginBottom: '20px', textAlign: 'center', color: '#fff' }}>
+        <div className="cr-modal-overlay" onClick={() => navigate(ROUTES.BOOK_DETAIL.replace(':id', bookId))}>
+          <div className="cr-modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3 className="cr-modal-title">
               Đánh giá & Bình luận tác phẩm
             </h3>
             
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '20px' }}>
+            <div className="cr-stars-group">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   type="button"
                   onClick={() => setRatingScore(star)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '2.5rem',
-                    color: star <= ratingScore ? '#ffb300' : 'var(--text-muted, #64748b)',
-                    padding: '4px',
-                    transition: 'transform 0.1s'
-                  }}
+                  className={`cr-star-btn ${star <= ratingScore ? 'active' : ''}`}
                 >
                   ★
                 </button>
@@ -243,52 +214,31 @@ function ChapterReadPage() {
             </div>
 
             <textarea
+              className="cr-rating-textarea"
               placeholder="Nhập cảm nhận của bạn về cuốn sách này..."
               value={ratingComment}
               onChange={(e) => setRatingComment(e.target.value)}
-              maxLength={500}
-              style={{
-                width: '100%',
-                height: '120px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
-                borderRadius: '8px',
-                padding: '12px',
-                color: 'var(--text-primary, #fff)',
-                fontSize: '0.95rem',
-                resize: 'none',
-                outline: 'none',
-                marginBottom: '20px',
-                fontFamily: 'inherit'
-              }}
+              maxLength={3000}
             />
 
             {ratingError && (
-              <div style={{ color: '#ef4444', fontSize: '0.9rem', marginBottom: '16px', textAlign: 'center' }}>
+              <div className="cr-rating-error-msg">
                 {ratingError}
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div className="cr-modal-actions">
               <button
                 type="button"
+                className="cr-modal-btn cancel"
                 onClick={() => navigate(ROUTES.BOOK_DETAIL.replace(':id', bookId))}
-                style={{
-                  flex: 1,
-                  padding: '12px',
-                  borderRadius: '8px',
-                  background: 'transparent',
-                  border: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
-                  color: 'var(--text-secondary, #94a3b8)',
-                  cursor: 'pointer',
-                  fontWeight: '600'
-                }}
               >
                 Bỏ qua
               </button>
               <button
                 type="button"
                 disabled={submittingRating}
+                className="cr-modal-btn submit"
                 onClick={async () => {
                   setSubmittingRating(true);
                   setRatingError('');
@@ -306,17 +256,6 @@ function ChapterReadPage() {
                   } finally {
                     setSubmittingRating(false);
                   }
-                }}
-                style={{
-                  flex: 1,
-                  padding: '12px',
-                  borderRadius: '8px',
-                  background: 'var(--accent-gradient, linear-gradient(135deg, #8b5cf6, #ec4899))',
-                  border: 'none',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  opacity: submittingRating ? 0.6 : 1
                 }}
               >
                 {submittingRating ? "Đang gửi..." : "Gửi đánh giá"}

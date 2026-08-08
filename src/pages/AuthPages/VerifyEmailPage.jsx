@@ -100,7 +100,7 @@ function VerifyEmailPage() {
       <h1 className="auth-title">Xác thực Email</h1>
       <p className="auth-subtitle">
         Chúng tôi đã gửi một mã OTP gồm 6 chữ số đến email: <br />
-        <strong style={{ color: '#a78bfa' }}>{email}</strong>
+        <strong className="auth-email-highlight">{email}</strong>
       </p>
 
       <div className="auth-card">
@@ -131,20 +131,12 @@ function VerifyEmailPage() {
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <div className="auth-resend-wrapper">
           <button
+            type="button"
+            className="auth-resend-btn"
             onClick={handleResendOtp}
             disabled={countdown > 0 || isLoading}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: countdown > 0 ? '#64748b' : '#8b5cf6',
-              cursor: countdown > 0 ? 'not-allowed' : 'pointer',
-              fontWeight: '600',
-              textDecoration: countdown > 0 ? 'none' : 'underline',
-              fontSize: '0.95rem',
-              transition: 'color 0.2s'
-            }}
           >
             {countdown > 0 ? `Gửi lại mã sau (${countdown}s)` : 'Gửi lại mã OTP'}
           </button>

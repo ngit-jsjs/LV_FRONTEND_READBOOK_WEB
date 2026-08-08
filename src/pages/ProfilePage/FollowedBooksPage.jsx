@@ -162,6 +162,8 @@ function FollowedBooksPage() {
                   showActions={true}
                   showEdit={false}
                   showManageChapters={false}
+                  deleteTitle="Bỏ theo dõi"
+                  deleteIcon={<FiHeart />}
                   onDelete={() => handleUnfollow(book.id, book.title)}
                 />
               ))}
@@ -191,11 +193,11 @@ function FollowedBooksPage() {
             )}
           </div>
         ) : (
-          <div className="followed-books-empty">
-            <FiHeart size={48} className="followed-books-empty-icon" />
-            <h3 className="followed-books-empty-title">Chưa theo dõi tác phẩm nào</h3>
-            <p className="followed-books-empty-desc">Danh sách theo dõi này của bạn hiện đang trống. Hãy thêm các tác phẩm bạn thích vào đây.</p>
-            <Link to={ROUTES.HOME} className="bd-btn primary followed-books-discover-btn">Khám phá sách ngay</Link>
+          <div className="empty-state">
+            <FiHeart size={48} />
+            <h3>Chưa theo dõi tác phẩm nào</h3>
+            <p>Danh sách theo dõi này của bạn hiện đang trống. Hãy thêm các tác phẩm bạn thích vào đây.</p>
+            <Link to={ROUTES.HOME} className="profile-btn primary">Khám phá sách ngay</Link>
           </div>
         )
       ) : (
@@ -262,23 +264,22 @@ function FollowedBooksPage() {
             )}
           </div>
         ) : (
-          <div className="followed-books-empty">
-            <FiFolder size={64} className="followed-books-empty-icon" style={{ color: 'var(--accent-purple, #a78bfa)', marginBottom: '20px' }} />
-            <h3 className="followed-books-empty-title" style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '10px' }}>Chưa có danh sách theo dõi nào</h3>
-            <p className="followed-books-empty-desc" style={{ maxWidth: '480px', margin: '0 auto 24px', color: 'var(--text-muted, #94a3b8)', lineHeight: '1.6' }}>
+          <div className="empty-state">
+            <FiFolder size={64} style={{ color: 'var(--accent-purple, #a78bfa)' }} />
+            <h3>Chưa có danh sách theo dõi nào</h3>
+            <p>
               Bạn chưa tạo danh sách theo dõi nào để lưu trữ tác phẩm. Hãy tạo một danh sách mới hoặc quay lại trang chủ để khám phá sách!
             </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
               <button 
                 onClick={openCreateModal}
-                className="bd-btn primary followed-books-discover-btn"
-                style={{ cursor: 'pointer', border: 'none', fontWeight: '700' }}
+                className="profile-btn primary"
               >
                 Tạo danh sách mới
               </button>
               <Link 
                 to={ROUTES.HOME} 
-                className="bd-btn secondary followed-books-discover-btn"
+                className="profile-btn secondary"
               >
                 Khám phá sách ngay
               </Link>
@@ -290,42 +291,26 @@ function FollowedBooksPage() {
       {/* Modal tạo/đổi tên danh sách */}
       {modalOpen && (
         <div className="author-modal-overlay" onClick={closeModal}>
-          <div className="auth-card modal-card-small" onClick={(e) => e.stopPropagation()} style={{ width: '400px', padding: '30px', position: 'relative' }}>
+          <div className="auth-card modal-card-small" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={closeModal}
               className="modal-close-btn"
               title="Đóng"
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: 'none',
-                color: '#a0a3b1',
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
             >
               <FiX />
             </button>
             
-            <h3 className="auth-title modal-title-small" style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '8px', color: '#fff', fontFamily: 'Outfit, sans-serif' }}>
+            <h3 className="auth-title modal-title-small">
               {modalType === 'create' ? 'Tạo danh sách theo dõi mới' : 'Đổi tên danh sách'}
             </h3>
-            <p className="auth-subtitle modal-subtitle-small" style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.9rem', marginBottom: '24px' }}>
+            <p className="auth-subtitle modal-subtitle-small">
               {modalType === 'create' ? 'Tạo danh sách để lưu các tác phẩm yêu thích của bạn' : 'Nhập tên mới cho danh sách này'}
             </p>
 
             <form onSubmit={handleModalSubmit}>
-              <div className="auth-form-group modal-form-group-last" style={{ marginBottom: '24px' }}>
-                <label className="auth-label modal-label-small" style={{ display: 'block', fontSize: '0.85rem', color: '#fff', marginBottom: '8px', textAlign: 'left', fontWeight: '500' }}>
-                  Tên danh sách <span className="modal-label-required" style={{ color: 'var(--accent-pink, #ec4899)' }}>*</span>
+              <div className="auth-form-group modal-form-group-last">
+                <label className="auth-label modal-label-small">
+                  Tên danh sách <span className="modal-label-required">*</span>
                 </label>
                 <div className="auth-input-wrapper">
                   <input
@@ -340,20 +325,11 @@ function FollowedBooksPage() {
                 </div>
               </div>
 
-              <div className="auth-form-group modal-actions-row" style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <div className="auth-form-group modal-actions-row">
                 <button
                   type="button"
                   className="auth-social-btn modal-cancel-btn"
                   onClick={closeModal}
-                  style={{
-                    padding: '10px 20px',
-                    borderRadius: '10px',
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    color: '#a0a3b1',
-                    border: 'none',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                  }}
                 >
                   Hủy
                 </button>
@@ -361,15 +337,6 @@ function FollowedBooksPage() {
                   type="submit"
                   className="auth-submit-btn modal-submit-btn"
                   disabled={modalSubmitting}
-                  style={{
-                    padding: '10px 20px',
-                    borderRadius: '10px',
-                    background: 'var(--accent-gradient, linear-gradient(135deg, #8b5cf6, #ec4899))',
-                    color: '#fff',
-                    border: 'none',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                  }}
                 >
                   {modalSubmitting ? 'Đang xử lý...' : (modalType === 'create' ? 'Tạo mới' : 'Lưu thay đổi')}
                 </button>
@@ -383,3 +350,4 @@ function FollowedBooksPage() {
 }
 
 export default FollowedBooksPage;
+

@@ -48,68 +48,52 @@ function BookManagementPage({ isSubComponent = false }) {
   };
 
   return (
-    <div className={`author-dashboard-page ${isSubComponent ? '' : 'container'}`}>
-      <div className="dashboard-header-minimal" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', justifyContent: 'space-between', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: 0, color: '#fff', fontFamily: '"Noto Serif SC", serif' }}>
-          Quản lý sách
-        </h1>
+    <div className={`author-dashboard-page ${isSubComponent ? 'admin-sub-page' : 'container'}`}>
+      <div className="admin-page-header">
+        <div className="admin-page-title-group">
+          <h1 className="admin-page-title">
+            Quản lý sách
+          </h1>
+          <p className="admin-page-subtitle">
+            Danh sách và quản lý các tác phẩm trong hệ thống
+          </p>
+        </div>
 
-        {/* Search bar inside header */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flex: 1, justifyContent: 'flex-end', minWidth: '300px' }}>
-          <form className="um-search-form admin-search-form" onSubmit={handleSearchSubmit} style={{ margin: 0, flex: 1, maxWidth: '400px' }}>
-            <div className="um-search-input-wrapper">
-              <FiSearch className="um-search-icon" />
+        <div className="admin-header-actions">
+          <form className="admin-search-form" onSubmit={handleSearchSubmit}>
+            <div className="admin-search-input-wrapper">
+              <FiSearch className="admin-search-icon" />
               <input
                 type="text"
-                className="um-search-input"
+                className="admin-search-input"
                 placeholder="Tìm kiếm sách..."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
               />
             </div>
-            <button type="submit" className="um-search-btn">Tìm kiếm</button>
+            <button type="submit" className="admin-search-btn">Tìm kiếm</button>
           </form>
 
-          {/* Trạng thái bộ lọc */}
           <select
+            className="admin-select-filter"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              padding: '8px 12px',
-              borderRadius: '12px',
-              color: '#fff',
-              outline: 'none',
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-              height: '42px',
-              boxSizing: 'border-box'
-            }}
           >
-            <option value="" style={{ background: '#1e1b4b', color: '#fff' }}>Tất cả trạng thái</option>
-            <option value="AVAILABLE" style={{ background: '#1e1b4b', color: '#fff' }}>Hiển thị (AVAILABLE)</option>
-            <option value="UNAVAILABLE" style={{ background: '#1e1b4b', color: '#fff' }}>Đã ẩn (UNAVAILABLE)</option>
+            <option value="">Tất cả trạng thái</option>
+            <option value="AVAILABLE">Hiển thị (AVAILABLE)</option>
+            <option value="UNAVAILABLE">Đã ẩn (UNAVAILABLE)</option>
           </select>
 
-          <button className="btn-create-minimal" onClick={() => navigate(ROUTES.CREATE_BOOK)}>
+          <button className="admin-action-btn primary" onClick={() => navigate(ROUTES.CREATE_BOOK)}>
             <FiPlus /> Mới
           </button>
 
           <button 
-            className="btn-create-minimal" 
+            className="admin-action-btn warning" 
             onClick={handleTrainRecommender} 
             disabled={isTraining}
-            style={{ 
-              backgroundColor: '#e67e22', 
-              borderColor: '#e67e22', 
-              color: '#fff',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
           >
-            <FiRefreshCw /> {isTraining ? 'Đang tính toán...' : 'Cập nhật gợi ý'}
+            <FiRefreshCw className={isTraining ? 'spin' : ''} /> {isTraining ? 'Đang tính toán...' : 'Cập nhật gợi ý'}
           </button>
         </div>
       </div>
@@ -125,7 +109,7 @@ function BookManagementPage({ isSubComponent = false }) {
                   key={book.id}
                   book={book}
                   showActions={true}
-                  onDelete={() => handleDeleteBook(book.id, book.title)}
+                  onDelete={() => handleDeleteBook(book.id, book.title, book.status)}
                 />
               ))
             ) : (

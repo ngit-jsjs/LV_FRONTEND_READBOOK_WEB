@@ -5,12 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext'
 
-/**
- * Entry point - Điểm khởi đầu ứng dụng
- * 
- * BrowserRouter bọc ngoài App để react-router-dom hoạt động.
- * AuthProvider quản lý state đăng nhập toàn cục.
- */
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>

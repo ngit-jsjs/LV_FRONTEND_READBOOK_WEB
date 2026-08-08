@@ -117,30 +117,32 @@ function PublishersPage({ isSubComponent = false }) {
   };
 
   return (
-    <div className={isSubComponent ? '' : 'categories-page'}>
+    <div className={isSubComponent ? 'admin-sub-page' : 'categories-page'}>
       {/* Header */}
-      <div style={{ marginBottom: '30px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: '0 0 8px 0', color: '#fff', fontFamily: '"Noto Serif SC", serif' }}>
+      <div className="admin-page-header">
+        <div className="admin-page-title-group">
+          <h1 className="admin-page-title">
             Quản lý nhà xuất bản
           </h1>
-          <p style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.95rem', margin: 0 }}>
-            Thêm, sửa, xóa và cấu hình các nhà xuất bản trong hệ thống.
+          <p className="admin-page-subtitle">
+            Thêm, sửa, xóa và cấu hình các nhà xuất bản trong hệ thống
           </p>
         </div>
-        <form className="um-search-form admin-search-form" onSubmit={handleSearchSubmit}>
-          <div className="um-search-input-wrapper">
-            <FiSearch className="um-search-icon" />
-            <input
-              type="text"
-              className="um-search-input"
-              placeholder="Tìm kiếm nhà xuất bản..."
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-            />
-          </div>
-          <button type="submit" className="um-search-btn">Tìm kiếm</button>
-        </form>
+        <div className="admin-header-actions">
+          <form className="admin-search-form" onSubmit={handleSearchSubmit}>
+            <div className="admin-search-input-wrapper">
+              <FiSearch className="admin-search-icon" />
+              <input
+                type="text"
+                className="admin-search-input"
+                placeholder="Tìm kiếm nhà xuất bản..."
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+              />
+            </div>
+            <button type="submit" className="admin-search-btn">Tìm kiếm</button>
+          </form>
+        </div>
       </div>
 
       {user?.isAdmin && (

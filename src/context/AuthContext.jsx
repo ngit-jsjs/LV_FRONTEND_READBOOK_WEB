@@ -13,11 +13,18 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       if (authService.isLoggedIn()) {
         try {
+          const isValid = await authService.introspect();
+          if (!isValid) {
+            await authService.logout();
+            setUser(null);
+            setLoading(false);
+            return;
+          }
           const res = await authService.getMyInfo();
           const tokenData = authService.getUserFromToken();
           const roles = tokenData?.scope ? tokenData.scope.split(' ') : [];
           const isAdmin = roles.includes('ADMIN');
-          setUser({ ...res.result, userId: tokenData?.userId || tokenData?.id, roles, isAdmin });
+          setUser({ ...res.result, userId: Number(tokenData?.sub), roles, isAdmin });
         } catch (error) {
           console.error("Lỗi lấy thông tin user:", error);
           await authService.logout();
@@ -35,7 +42,7 @@ export const AuthProvider = ({ children }) => {
     const tokenData = authService.getUserFromToken();
     const roles = tokenData?.scope ? tokenData.scope.split(' ') : [];
     const isAdmin = roles.includes('ADMIN');
-    setUser({ ...userRes.result, userId: tokenData?.userId || tokenData?.id, roles, isAdmin });
+    setUser({ ...userRes.result, userId: Number(tokenData?.sub), roles, isAdmin });
     return res;
   };
 
@@ -51,7 +58,7 @@ export const AuthProvider = ({ children }) => {
         const tokenData = authService.getUserFromToken();
         const roles = tokenData?.scope ? tokenData.scope.split(' ') : [];
         const isAdmin = roles.includes('ADMIN');
-        setUser({ ...res.result, userId: tokenData?.userId || tokenData?.id, roles, isAdmin });
+        setUser({ ...res.result, userId: Number(tokenData?.sub), roles, isAdmin });
       } catch (error) {
         console.error("Lỗi refresh user:", error);
       }

@@ -7,6 +7,7 @@ import { FiArrowLeft, FiActivity, FiCheckCircle, FiXCircle } from 'react-icons/f
 import { FaCoins } from 'react-icons/fa';
 
 import { getErrorMessage } from '../../services/apiClient';
+import { formatCurrency, formatDateTime, formatNumber } from '../../utils/formatUtils';
 
 function SubscriptionHistoryPage() {
   const { user } = useAuth();
@@ -85,13 +86,13 @@ function SubscriptionHistoryPage() {
                   <td className="tx-id-cell">#{sub.id}</td>
                   <td className="tx-pkg-cell">{sub.planName}</td>
                   <td>
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sub.planPrice)}
+                    {formatCurrency(sub.planPrice)}
                   </td>
                   <td className="tx-coins-cell">
-                    +{new Intl.NumberFormat('vi-VN').format(sub.planAmount)} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
+                    +{formatNumber(sub.planAmount)} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
                   </td>
                   <td className="tx-date-cell">
-                    {new Date(sub.createdAt).toLocaleDateString('vi-VN')} {new Date(sub.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                    {formatDateTime(sub.createdAt)}
                   </td>
                   <td>
                     {sub.status === 'COMPLETED' || sub.status === 'SUCCESS' ? (

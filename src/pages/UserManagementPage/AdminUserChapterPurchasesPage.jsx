@@ -7,6 +7,7 @@ import { FiArrowLeft, FiBookOpen, FiBook, FiShoppingCart, FiUser } from 'react-i
 import { FaCoins } from 'react-icons/fa';
 import { getErrorMessage } from '../../services/apiClient';
 import Pagination from '../../components/Pagination/Pagination';
+import { formatDateTime, formatNumber } from '../../utils/formatUtils';
 
 function AdminUserChapterPurchasesPage() {
   const { userId } = useParams();
@@ -133,7 +134,7 @@ function AdminUserChapterPurchasesPage() {
             </div>
             <div>
               <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#fbbf24' }}>
-                {new Intl.NumberFormat('vi-VN').format(totalCoinsSpent)}
+                {formatNumber(totalCoinsSpent)}
               </div>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-muted, #94a3b8)' }}>Xu đã chi tiêu</div>
             </div>
@@ -187,12 +188,10 @@ function AdminUserChapterPurchasesPage() {
                       </span>
                     </td>
                     <td style={{ padding: '16px 20px', color: '#fbbf24', fontWeight: '700' }}>
-                      -{new Intl.NumberFormat('vi-VN').format(item.price || 0)} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
+                      -{formatNumber(item.price || 0)} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
                     </td>
                     <td style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.9rem' }}>
-                      {item.createdAt 
-                        ? `${new Date(item.createdAt).toLocaleDateString('vi-VN')} ${new Date(item.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}` 
-                        : 'N/A'}
+                      {formatDateTime(item.createdAt, 'N/A')}
                     </td>
                   </tr>
                 ))}

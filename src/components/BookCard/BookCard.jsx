@@ -4,6 +4,7 @@ import { FiEdit3, FiClock, FiImage, FiBookOpen, FiUser, FiCalendar, FiTag, FiSta
 import { getFormattedImageUrl } from '../../utils/imageUtils';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../config/routes';
+import { formatDate } from '../../utils/formatUtils';
 
 
 function BookCard({
@@ -171,13 +172,13 @@ function BookCard({
 
         <div className="book-card-bottom">
           {book.createdAt && (
-            <span className="book-time-minimal" title={`Ngày tạo: ${new Date(book.createdAt).toLocaleDateString('vi-VN')}`}>
-              Tạo: {new Date(book.createdAt).toLocaleDateString('vi-VN')}
+            <span className="book-time-minimal" title={`Ngày tạo: ${formatDate(book.createdAt)}`}>
+              Tạo: {formatDate(book.createdAt)}
             </span>
           )}
           {book.updatedAt && (
-            <span className="book-time-minimal" title={`Cập nhật gần nhất: ${new Date(book.updatedAt).toLocaleDateString('vi-VN')}`}>
-              <FiClock /> {new Date(book.updatedAt).toLocaleDateString('vi-VN')}
+            <span className="book-time-minimal" title={`Cập nhật gần nhất: ${formatDate(book.updatedAt)}`}>
+              <FiClock /> {formatDate(book.updatedAt)}
             </span>
           )}
         </div>

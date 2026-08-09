@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import bookListService from '../services/bookListService';
 import { ROUTES } from '../config/routes';
 import { getErrorMessage } from '../services/apiClient';
+import { confirmAction, notifyError, notifySuccess, notifyWarning } from '../utils/feedback';
 
 export const useFollowedBooks = (user) => {
   const navigate = useNavigate();
@@ -72,20 +73,19 @@ export const useFollowedBooks = (user) => {
 
   const handleUnfollow = async (bookId, bookTitle) => {
     if (!selectedListId) return;
-    if (!window.confirm(`Bạn có chắc chắn muốn hủy theo dõi tác phẩm "${bookTitle}"?`)) {
+    if (!confirmAction(`Bạn có chắc chắn muốn hủy theo dõi tác phẩm "${bookTitle}"?`)) {
       return;
     }
     try {
       await bookListService.removeBookFromBookList(selectedListId, bookId);
-      alert("Đã hủy theo dõi tác phẩm.");
+      notifySuccess("Đã hủy theo dõi tác phẩm.");
       if (books.length === 1 && page > 0) {
         setPage(prev => prev - 1);
       } else {
         fetchFollowedBooks();
       }
     } catch (err) {
-      console.error("Hủy theo dõi thất bại:", err);
-      alert(getErrorMessage(err));
+      notifyError(err);
     }
   };
 
@@ -94,12 +94,11 @@ export const useFollowedBooks = (user) => {
     try {
       setLoading(true);
       await bookListService.createBookList({ name: name.trim() });
-      alert("Đã tạo danh sách mới thành công.");
+      notifySuccess("Đã tạo danh sách mới thành công.");
       await fetchFollowedBooks();
       return true;
     } catch (err) {
-      console.error("Tạo danh sách thất bại:", err);
-      alert(getErrorMessage(err));
+      notifyError(err);
       return false;
     } finally {
       setLoading(false);
@@ -114,12 +113,11 @@ export const useFollowedBooks = (user) => {
     try {
       setLoading(true);
       await bookListService.updateBookList(targetId, { name: newName.trim() });
-      alert("Đã đổi tên danh sách thành công.");
+      notifySuccess("Đã đổi tên danh sách thành công.");
       await fetchFollowedBooks();
       return true;
     } catch (err) {
-      console.error("Đổi tên thất bại:", err);
-      alert(getErrorMessage(err));
+      notifyError(err);
       return false;
     } finally {
       setLoading(false);
@@ -130,25 +128,24 @@ export const useFollowedBooks = (user) => {
     const targetId = listId || selectedListId;
     if (!targetId) return;
     if (bookLists.length <= 1) {
-      alert("Bạn phải giữ lại ít nhất một danh sách theo dõi.");
+      notifyWarning("Bạn phải giữ lại ít nhất một danh sách theo dõi.");
       return;
     }
     const currentList = bookLists.find(l => l.id === targetId);
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa toàn bộ danh sách "${currentList?.name}"? Các sách đang theo dõi trong danh sách này sẽ bị bỏ theo dõi.`)) {
+    if (!confirmAction(`Bạn có chắc chắn muốn xóa toàn bộ danh sách "${currentList?.name}"? Các sách đang theo dõi trong danh sách này sẽ bị bỏ theo dõi.`)) {
       return;
     }
 
     try {
       setLoading(true);
       await bookListService.deleteBookList(targetId);
-      alert("Đã xóa danh sách thành công.");
+      notifySuccess("Đã xóa danh sách thành công.");
       if (targetId === selectedListId) {
         setSelectedListId(null);
       }
       await fetchFollowedBooks();
     } catch (err) {
-      console.error("Xóa danh sách thất bại:", err);
-      alert(getErrorMessage(err));
+      notifyError(err);
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,7 @@ import { FiArrowLeft, FiActivity, FiCheckCircle, FiXCircle, FiUser, FiBookOpen }
 import { FaCoins } from 'react-icons/fa';
 import { getErrorMessage } from '../../services/apiClient';
 import Pagination from '../../components/Pagination/Pagination';
+import { formatCurrency, formatDateTime, formatNumber } from '../../utils/formatUtils';
 
 function AdminUserPaymentHistoryPage() {
   const { userId } = useParams();
@@ -138,7 +139,7 @@ function AdminUserPaymentHistoryPage() {
             </div>
             <div>
               <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#3b82f6' }}>
-                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalAmount)}
+                {formatCurrency(totalAmount)}
               </div>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-muted, #94a3b8)' }}>Tổng tiền nạp (thành công)</div>
             </div>
@@ -154,7 +155,7 @@ function AdminUserPaymentHistoryPage() {
             </div>
             <div>
               <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#fbbf24' }}>
-                {new Intl.NumberFormat('vi-VN').format(totalCoins)}
+                {formatNumber(totalCoins)}
               </div>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-muted, #94a3b8)' }}>Tổng xu nhận (thành công)</div>
             </div>
@@ -195,13 +196,13 @@ function AdminUserPaymentHistoryPage() {
                     <td style={{ padding: '16px 20px', fontFamily: 'monospace', color: 'var(--text-muted, #94a3b8)' }}>#{sub.id}</td>
                     <td style={{ padding: '16px 20px', fontWeight: '600' }}>{sub.planName}</td>
                     <td style={{ padding: '16px 20px' }}>
-                      {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(getPrice(sub))}
+                      {formatCurrency(getPrice(sub))}
                     </td>
                     <td style={{ padding: '16px 20px', color: '#fbbf24', fontWeight: '700' }}>
-                      +{new Intl.NumberFormat('vi-VN').format(getCoins(sub))} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
+                      +{formatNumber(getCoins(sub))} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
                     </td>
                     <td style={{ padding: '16px 20px', color: 'var(--text-muted, #94a3b8)', fontSize: '0.9rem' }}>
-                      {new Date(sub.createdAt).toLocaleDateString('vi-VN')} {new Date(sub.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                      {formatDateTime(sub.createdAt)}
                     </td>
                     <td style={{ padding: '16px 20px' }}>
                       {sub.status === 'SUCCESS' ? (

@@ -8,6 +8,7 @@ import { FiArrowLeft, FiCheckCircle, FiXCircle, FiBookOpen, FiBook, FiShoppingCa
 import { FaCoins } from 'react-icons/fa';
 import { getErrorMessage } from '../../services/apiClient';
 import Pagination from '../../components/Pagination/Pagination';
+import { formatCurrency, formatDateTime, formatNumber } from '../../utils/formatUtils';
 
 function TransactionHistoryPage() {
   const { user } = useAuth();
@@ -144,13 +145,13 @@ function TransactionHistoryPage() {
                             <td className="tx-id-cell">#{sub.id}</td>
                             <td className="tx-pkg-cell">{sub.planName}</td>
                             <td>
-                              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sub.planPrice)}
+                              {formatCurrency(sub.planPrice)}
                             </td>
                             <td className="tx-coins-cell">
-                              +{new Intl.NumberFormat('vi-VN').format(sub.planAmount)} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
+                              +{formatNumber(sub.planAmount)} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
                             </td>
                             <td className="tx-date-cell">
-                              {new Date(sub.createdAt).toLocaleDateString('vi-VN')} {new Date(sub.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                              {formatDateTime(sub.createdAt)}
                             </td>
                             <td>
                               {sub.status === 'SUCCESS' ? (
@@ -211,7 +212,7 @@ function TransactionHistoryPage() {
                     </div>
                     <div className="tx-stat-val-wrapper">
                       <div className="tx-stat-val spent">
-                        {new Intl.NumberFormat('vi-VN').format(totalCoinsSpent)}
+                        {formatNumber(totalCoinsSpent)}
                       </div>
                       <div className="tx-stat-label">Xu đã chi tiêu</div>
                     </div>
@@ -255,12 +256,10 @@ function TransactionHistoryPage() {
                               </span>
                             </td>
                             <td className="tx-coins-cell">
-                              -{new Intl.NumberFormat('vi-VN').format(item.price || 0)} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
+                              -{formatNumber(item.price || 0)} <FaCoins style={{ marginLeft: '4px', verticalAlign: 'middle' }} />
                             </td>
                             <td className="tx-date-cell">
-                              {item.createdAt 
-                                ? `${new Date(item.createdAt).toLocaleDateString('vi-VN')} ${new Date(item.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}` 
-                                : 'N/A'}
+                              {formatDateTime(item.createdAt, 'N/A')}
                             </td>
                           </tr>
                         ))}

@@ -1,4 +1,4 @@
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+import { API_BASE_URL } from '../config/env';
 
 export const getErrorMessage = (error) => {
   const data = error?.response?.data;
@@ -11,7 +11,7 @@ export const getErrorMessage = (error) => {
 };
 
 const fetchClient = async (endpoint, options = {}) => {
-  const url = `${baseURL}${endpoint}`;
+  const url = `${API_BASE_URL}${endpoint}`;
   
   const token = localStorage.getItem('token');
   const headers = {

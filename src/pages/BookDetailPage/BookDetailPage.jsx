@@ -10,6 +10,7 @@ import { ROUTES } from '../../config/routes';
 import { useAuth } from '../../context/AuthContext';
 import bookListService from '../../services/bookListService';
 import { getErrorMessage } from '../../services/apiClient';
+import { formatDate } from '../../utils/formatUtils';
 
 function BookDetailPage() {
   const { id } = useParams();
@@ -467,7 +468,7 @@ function BookDetailPage() {
                                 </div>
                                 <div className="rating-card-meta">
                                   <span className="rating-date">
-                                    {rating.createdAt ? new Date(rating.createdAt).toLocaleDateString('vi-VN') : 'N/A'}
+                                    {formatDate(rating.createdAt, 'N/A')}
                                   </span>
                                   {(isOwnRating || user?.isAdmin) && !isEditingThisCard && (
                                     <div className="rating-actions-btn-group">
@@ -592,11 +593,11 @@ function BookDetailPage() {
                 </li>
                 <li>
                   <span className="label">Ngày đăng:</span>
-                  <span className="value">{book.createdAt ? new Date(book.createdAt).toLocaleDateString('vi-VN') : 'N/A'}</span>
+                  <span className="value">{formatDate(book.createdAt, 'N/A')}</span>
                 </li>
                 <li>
                   <span className="label">Cập nhật:</span>
-                  <span className="value">{book.updatedAt ? new Date(book.updatedAt).toLocaleDateString('vi-VN') : 'N/A'}</span>
+                  <span className="value">{formatDate(book.updatedAt, 'N/A')}</span>
                 </li>
 
                 {book.publisher && (

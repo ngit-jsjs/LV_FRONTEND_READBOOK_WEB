@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import planService from '../services/planService';
 import paymentService from '../services/paymentService';
 import { getErrorMessage } from '../services/apiClient';
+import { isSafeHttpUrl } from '../utils/urlUtils';
 
 export const usePremium = (user) => {
   const [packages, setPackages] = useState([]);
@@ -53,6 +54,9 @@ export const usePremium = (user) => {
       setError('');
       const res = await paymentService.buyPackage(pkg.id);
       if (res.result) {
+        if (!isSafeHttpUrl(res.result)) {
+          throw new Error("Link thanh toán không hợp lệ");
+        }
         window.location.href = res.result;
       } else {
         throw new Error("Không nhận được link thanh toán từ VNPay");

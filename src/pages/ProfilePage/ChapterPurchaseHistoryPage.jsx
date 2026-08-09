@@ -36,7 +36,10 @@ function ChapterPurchaseHistoryPage() {
       // Fetch both current page and all unlocks (for calculating overall stats)
       const [pageRes, allRes] = await Promise.all([
         chapterService.getMyUnlocks(page - 1, 10),
-        chapterService.getMyUnlocks(0, 1000).catch(() => ({ result: { content: [] } }))
+        chapterService.getMyUnlocks(0, 1000).catch((statsErr) => {
+          console.error("Không thể tải dữ liệu thống kê tổng hợp:", statsErr);
+          return { result: { content: [] } };
+        })
       ]);
 
       if (pageRes.result) {

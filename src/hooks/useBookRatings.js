@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import ratingService from '../services/ratingService';
+import { getErrorMessage } from '../services/apiClient';
 
 export const useBookRatings = (bookId, user, refetchBook, activeTab) => {
   const [ratings, setRatings] = useState([]);
@@ -28,7 +29,7 @@ export const useBookRatings = (bookId, user, refetchBook, activeTab) => {
       }
     } catch (err) {
       console.error("Lỗi khi tải đánh giá:", err);
-      setRatingError("Không thể tải danh sách đánh giá.");
+      setRatingError(`Không thể tải danh sách đánh giá: ${getErrorMessage(err)}`);
     } finally {
       setRatingsLoading(false);
     }
@@ -68,8 +69,7 @@ export const useBookRatings = (bookId, user, refetchBook, activeTab) => {
       fetchRatings();
     } catch (err) {
       console.error("Lỗi khi gửi đánh giá:", err);
-      const errorMsg = err.response?.data?.result || err.response?.data?.message || "Đã xảy ra lỗi khi gửi đánh giá.";
-      alert(errorMsg);
+      alert(getErrorMessage(err));
     } finally {
       setSubmittingRating(false);
     }
@@ -96,7 +96,7 @@ export const useBookRatings = (bookId, user, refetchBook, activeTab) => {
       }
     } catch (err) {
       console.error("Lỗi khi xóa đánh giá:", err);
-      alert("Không thể xóa đánh giá.");
+      alert(`Không thể xóa đánh giá: ${getErrorMessage(err)}`);
     }
   };
 

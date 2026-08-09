@@ -79,7 +79,12 @@ function ChapterReadPage() {
       await chapterService.unlockChapter(chapterId);
       await refreshChapter();
       if (refreshUser) {
-        await refreshUser();
+        // Chương đã mở khóa thành công, lỗi đồng bộ số dư không được coi là lỗi mở khóa.
+        try {
+          await refreshUser();
+        } catch (refreshErr) {
+          console.error("Không thể cập nhật số dư người dùng:", refreshErr);
+        }
       }
     } catch (err) {
       console.error("Unlock failed", err);
@@ -172,7 +177,7 @@ function ChapterReadPage() {
                       })
                       .catch(err => {
                         console.error("Lỗi hoàn thành:", err);
-                        alert("Lỗi: " + JSON.stringify(err.response?.data || err.message));
+                        alert(`Không thể đánh dấu đã đọc xong: ${getErrorMessage(err)}`);
                       });
                   }}
                   title="Đánh dấu đã đọc xong & Đánh giá"
@@ -251,8 +256,7 @@ function ChapterReadPage() {
                     navigate(ROUTES.BOOK_DETAIL.replace(':id', bookId));
                   } catch (err) {
                     console.error("Failed to submit rating:", err);
-                    const msg = err.response?.data?.result || err.response?.data?.message || "Không thể gửi đánh giá.";
-                    setRatingError(msg);
+                    setRatingError(getErrorMessage(err));
                   } finally {
                     setSubmittingRating(false);
                   }

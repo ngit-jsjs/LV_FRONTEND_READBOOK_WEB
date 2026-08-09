@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FiInfo, FiSearch, FiX, FiLoader } from 'react-icons/fi';
 import authorService from '../../services/authorService';
 import publisherService from '../../services/publisherService';
+import { getErrorMessage } from '../../services/apiClient';
 
 const BookDetailsForm = ({
   title, setTitle,
@@ -32,12 +33,14 @@ const BookDetailsForm = ({
   const [authorPage, setAuthorPage] = useState(0);
   const [authorTotalPages, setAuthorTotalPages] = useState(0);
   const [authorLoading, setAuthorLoading] = useState(false);
+  const [authorError, setAuthorError] = useState('');
 
   // API-based publisher search state
   const [publisherResults, setPublisherResults] = useState([]);
   const [publisherPage, setPublisherPage] = useState(0);
   const [publisherTotalPages, setPublisherTotalPages] = useState(0);
   const [publisherLoading, setPublisherLoading] = useState(false);
+  const [publisherError, setPublisherError] = useState('');
 
   // Debounced API search for authors
   useEffect(() => {
@@ -45,6 +48,7 @@ const BookDetailsForm = ({
 
     const timer = setTimeout(async () => {
       setAuthorLoading(true);
+      setAuthorError('');
       try {
         let res;
         if (authorSearchQuery.trim()) {
@@ -59,6 +63,7 @@ const BookDetailsForm = ({
         console.error('Error searching authors:', err);
         setAuthorResults([]);
         setAuthorTotalPages(0);
+        setAuthorError(getErrorMessage(err));
       } finally {
         setAuthorLoading(false);
       }
@@ -73,6 +78,7 @@ const BookDetailsForm = ({
 
     const timer = setTimeout(async () => {
       setPublisherLoading(true);
+      setPublisherError('');
       try {
         let res;
         if (publisherSearchQuery.trim()) {
@@ -87,6 +93,7 @@ const BookDetailsForm = ({
         console.error('Error searching publishers:', err);
         setPublisherResults([]);
         setPublisherTotalPages(0);
+        setPublisherError(getErrorMessage(err));
       } finally {
         setPublisherLoading(false);
       }
@@ -296,6 +303,10 @@ const BookDetailsForm = ({
                 <div className="bdf-loading-spinner-box">
                   <FiLoader className="bdf-loading-spin-icon" /> Đang tìm kiếm...
                 </div>
+              ) : authorError ? (
+                <div className="error-message">
+                  Không thể tải danh sách tác giả: {authorError}
+                </div>
               ) : authorResults.length > 0 ? (
                 authorResults.map(auth => (
                   <div
@@ -385,6 +396,10 @@ const BookDetailsForm = ({
               {publisherLoading ? (
                 <div className="bdf-loading-spinner-box">
                   <FiLoader className="bdf-loading-spin-icon" /> Đang tìm kiếm...
+                </div>
+              ) : publisherError ? (
+                <div className="error-message">
+                  Không thể tải danh sách nhà xuất bản: {publisherError}
                 </div>
               ) : publisherResults.length > 0 ? (
                 publisherResults.map(pub => (

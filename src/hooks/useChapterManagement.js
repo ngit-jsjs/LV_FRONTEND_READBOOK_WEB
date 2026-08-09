@@ -154,7 +154,8 @@ export const useChapterManagement = () => {
       await chapterService.deleteChapter(chapterId);
       fetchData(page);
     } catch (err) {
-      alert("Xóa thất bại");
+      console.error("Xóa chương thất bại:", err);
+      alert(`Xóa thất bại: ${getErrorMessage(err)}`);
     }
   };
 

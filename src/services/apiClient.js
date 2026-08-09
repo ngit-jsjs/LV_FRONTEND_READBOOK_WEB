@@ -1,5 +1,7 @@
 const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
+const EXPIRED_TOKEN_CODE = 1012;
+
 export const getErrorMessage = (error) => {
   const data = error?.response?.data;
   if (data) {
@@ -10,9 +12,43 @@ export const getErrorMessage = (error) => {
   return 'Đã xảy ra lỗi hệ thống';
 };
 
+// Lỗi do không kết nối được máy chủ (khác với lỗi máy chủ trả về)
+export const isNetworkError = (error) => Boolean(error?.isNetworkError);
+
+// Lỗi xác thực: token hết hạn, không hợp lệ hoặc không đủ quyền
+export const isAuthError = (error) => {
+  if (error?.response?.data?.code === EXPIRED_TOKEN_CODE) return true;
+  const status = error?.status ?? error?.response?.status;
+  return status === 401 || status === 403;
+};
+
+const createApiError = (message, { status, data, cause, isNetworkError: network } = {}) => {
+  const error = new Error(message);
+  error.status = status;
+  error.response = { status, data };
+  if (cause !== undefined) error.cause = cause;
+  if (network) error.isNetworkError = true;
+  return error;
+};
+
+const parseBody = (text) => {
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { message: text };
+  }
+};
+
+const redirectToLogin = () => {
+  const currentPath = window.location.pathname + window.location.search;
+  if (window.location.pathname === '/login') return;
+  window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+};
+
 const fetchClient = async (endpoint, options = {}) => {
   const url = `${baseURL}${endpoint}`;
-  
+
   const token = localStorage.getItem('token');
   const headers = {
     ...options.headers,
@@ -31,40 +67,40 @@ const fetchClient = async (endpoint, options = {}) => {
     headers,
   };
 
+  let response;
+  let text;
   try {
-    const response = await fetch(url, config);
-    
-    const text = await response.text();
-    let data;
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch (e) {
-      data = { message: text };
-    }
-
-    if (data && data.code === 1012) {
-      console.error("Token lỗi hoặc hết hạn. Vui lòng đăng nhập lại.");
-      localStorage.removeItem('token');
-      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
-      return Promise.reject(data);
-    }
-
-    if (!response.ok) {
-      const error = new Error(data.message || 'HTTP Error');
-      error.response = { data };
-      throw error;
-    }
-
-    return data;
+    response = await fetch(url, config);
+    text = await response.text();
   } catch (error) {
-    if (error.response) {
-      return Promise.reject(error);
-    }
-    
-    const fallbackError = new Error('Lỗi mạng hoặc máy chủ không phản hồi');
-    fallbackError.response = { data: { message: 'Đã xảy ra lỗi hệ thống' } };
-    return Promise.reject(fallbackError);
+    // Chỉ lỗi mạng/máy chủ không phản hồi mới đi vào nhánh này,
+    // các lỗi khác được ném lên nguyên vẹn để không che giấu bug.
+    throw createApiError('Lỗi mạng hoặc máy chủ không phản hồi', {
+      data: { message: 'Lỗi mạng hoặc máy chủ không phản hồi' },
+      cause: error,
+      isNetworkError: true,
+    });
   }
+
+  const data = parseBody(text);
+
+  if (data && data.code === EXPIRED_TOKEN_CODE) {
+    localStorage.removeItem('token');
+    redirectToLogin();
+    throw createApiError(data.message || 'Phiên đăng nhập đã hết hạn', {
+      status: response.status,
+      data,
+    });
+  }
+
+  if (!response.ok) {
+    throw createApiError(data.message || `HTTP ${response.status}`, {
+      status: response.status,
+      data,
+    });
+  }
+
+  return data;
 };
 
 const apiClient = {
@@ -84,7 +120,7 @@ const apiClient = {
     const isFormData = body instanceof FormData;
     return fetchClient(endpoint, { ...options, method: 'PUT', body: isFormData ? body : JSON.stringify(body) });
   },
-  delete: (endpoint, options) => 
+  delete: (endpoint, options) =>
     fetchClient(endpoint, { ...options, method: 'DELETE' }),
 };
 

@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { getErrorMessage } from '../../services/apiClient';
 import { ROUTES } from '../../config/routes';
 import { FiCheckCircle, FiXCircle, FiHome, FiClock } from 'react-icons/fi';
 
@@ -11,9 +12,13 @@ function PaymentResultPage() {
   
   const status = searchParams.get('status');
   const errorCode = searchParams.get('error');
+  const [refreshError, setRefreshError] = useState('');
 
   useEffect(() => {
-    refreshUser();
+    refreshUser().catch(err => {
+      console.error("Không thể cập nhật số dư sau thanh toán:", err);
+      setRefreshError(getErrorMessage(err));
+    });
   }, [refreshUser]);
 
   const isSuccess = status === 'success';
@@ -37,6 +42,12 @@ function PaymentResultPage() {
               Đã có lỗi xảy ra trong quá trình thanh toán (Mã lỗi: {errorCode || 'UNKNOWN'}). Vui lòng thử lại hoặc liên hệ quản trị viên.
             </p>
           </>
+        )}
+
+        {refreshError && (
+          <div className="error-message">
+            Không thể cập nhật số dư tài khoản: {refreshError}
+          </div>
         )}
 
         <div className="payment-result-actions">

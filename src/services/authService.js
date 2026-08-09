@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import apiClient, { isNetworkError } from './apiClient';
 import { API_ENDPOINTS } from './apiEndpoints';
 import { parseJwt } from '../utils/jwtUtils';
 
@@ -34,6 +34,8 @@ const authService = {
     });
   },
 
+  // Trả về false khi máy chủ xác nhận token không hợp lệ.
+  // Lỗi mạng được ném lên để phía gọi không nhầm là token hỏng và đăng xuất người dùng.
   introspect: async () => {
     const token = localStorage.getItem('token');
     if (!token) return false;
@@ -41,6 +43,9 @@ const authService = {
       const response = await apiClient.post(API_ENDPOINTS.AUTH.INTROSPECT, { token });
       return !!(response && response.result && response.result.valid === true);
     } catch (error) {
+      if (isNetworkError(error)) {
+        throw error;
+      }
       console.error("Lỗi khi kiểm tra token (introspect):", error);
       return false;
     }
@@ -69,6 +74,7 @@ const authService = {
       try {
         await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT, { token });
       } catch (error) {
+        // Đăng xuất phía máy chủ là best-effort: token cục bộ vẫn phải bị xóa.
         console.error("Lỗi khi đăng xuất từ server:", error);
       }
     }

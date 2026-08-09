@@ -4,6 +4,7 @@ import { useBookManagement } from '../../hooks/useBookManagement';
 import BookCard from '../../components/BookCard/BookCard';
 import Pagination from '../../components/Pagination/Pagination';
 import recommendationService from '../../services/recommendationService';
+import { getErrorMessage } from '../../services/apiClient';
 
 
 function BookManagementPage({ isSubComponent = false }) {
@@ -11,6 +12,7 @@ function BookManagementPage({ isSubComponent = false }) {
   const {
     books,
     isLoading,
+    error,
     page,
     setPage,
     totalPages,
@@ -32,15 +34,7 @@ function BookManagementPage({ isSubComponent = false }) {
         alert("Cập nhật hệ thống gợi ý thành công!");
       } catch (error) {
         console.error("Recommender training error:", error);
-        // Bóc tách lỗi chi tiết từ apiClient hoặc response
-        let errorMsg = "Không thể kết nối tới máy chủ";
-        if (error.response?.data) {
-          const data = error.response.data;
-          errorMsg = data.message || data.result || JSON.stringify(data);
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-        alert("Lỗi khi cập nhật gợi ý: " + errorMsg);
+        alert("Lỗi khi cập nhật gợi ý: " + getErrorMessage(error));
       } finally {
         setIsTraining(false);
       }
@@ -100,6 +94,8 @@ function BookManagementPage({ isSubComponent = false }) {
 
       {isLoading ? (
         <div style={{ textAlign: 'center', marginTop: '50px' }}>Đang tải dữ liệu...</div>
+      ) : error ? (
+        <div className="error-message">Không thể tải danh sách sách: {error}</div>
       ) : (
         <>
           <div className="books-grid-minimal">

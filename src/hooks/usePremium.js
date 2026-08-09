@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import planService from '../services/planService';
 import paymentService from '../services/paymentService';
 import { getErrorMessage } from '../services/apiClient';
+import { formatCurrency, formatNumber } from '../utils/formatUtils';
 
 export const usePremium = (user) => {
   const [packages, setPackages] = useState([]);
@@ -19,8 +20,8 @@ export const usePremium = (user) => {
             id: plan.id,
             name: plan.name,
             description: plan.description,
-            price: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(plan.price),
-            coins: new Intl.NumberFormat('vi-VN').format(plan.amount),
+            price: formatCurrency(plan.price),
+            coins: formatNumber(plan.amount),
             bonus: '0',
           }));
           setPackages(formatted);

@@ -7,6 +7,7 @@ import { ROUTES } from '../../config/routes';
 import { FiStar, FiBook, FiMessageSquare, FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { getFormattedImageUrl } from '../../utils/imageUtils';
 import { getErrorMessage } from '../../services/apiClient';
+import { formatDate } from '../../utils/formatUtils';
 
 function ReviewedBooksPage() {
   const { user } = useAuth();
@@ -282,7 +283,7 @@ function ReviewedBooksPage() {
                           {!isEditingThisItem && (
                             <div className="profile-history-actions">
                               <span className="profile-history-time">
-                                {item.createdAt ? `Đánh giá ngày: ${new Date(item.createdAt).toLocaleDateString('vi-VN')}` : ''}
+                                {item.createdAt ? `Đánh giá ngày: ${formatDate(item.createdAt)}` : ''}
                               </span>
                               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                                 <button

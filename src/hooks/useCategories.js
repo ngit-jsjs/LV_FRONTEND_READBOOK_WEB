@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import categoryService from '../services/categoryService';
 import { getErrorMessage } from '../services/apiClient';
+import { confirmAction, notifyError, notifySuccess, notifyWarning } from '../utils/feedback';
 
 export const useCategories = (paged = false) => {
   const [categories, setCategories] = useState([]);
@@ -50,14 +51,13 @@ export const useCategories = (paged = false) => {
   }, [fetchCategories]);
 
   const handleDeleteCat = async (id, name) => {
-    if (window.confirm(`Bạn có chắc chắn muốn xóa thể loại "${name}" không?`)) {
+    if (confirmAction(`Bạn có chắc chắn muốn xóa thể loại "${name}" không?`)) {
       try {
         await categoryService.deleteCategory(id);
-        alert('Xóa thể loại thành công!');
+        notifySuccess('Xóa thể loại thành công!');
         fetchCategories();
       } catch (err) {
-        console.error(err);
-        alert(`Lỗi khi xóa thể loại: ${getErrorMessage(err)}`);
+        notifyError(err, 'Lỗi khi xóa thể loại');
       }
     }
   };
@@ -71,7 +71,7 @@ export const useCategories = (paged = false) => {
   const handleUpdateCategory = async (e) => {
     e.preventDefault();
     if (!editName.trim()) {
-      alert("Vui lòng điền tên thể loại!");
+      notifyWarning("Vui lòng điền tên thể loại!");
       return;
     }
     setEditSubmitting(true);
@@ -81,12 +81,11 @@ export const useCategories = (paged = false) => {
         description: editDesc.trim()
       };
       await categoryService.updateCategory(editingCategory.id, payload);
-      alert('Cập nhật thể loại thành công!');
+      notifySuccess('Cập nhật thể loại thành công!');
       setEditingCategory(null);
       fetchCategories();
     } catch (err) {
-      console.error(err);
-      alert(`Lỗi khi cập nhật thể loại: ${getErrorMessage(err)}`);
+      notifyError(err, 'Lỗi khi cập nhật thể loại');
     } finally {
       setEditSubmitting(false);
     }
@@ -99,7 +98,7 @@ export const useCategories = (paged = false) => {
   const handleSaveCategory = async (e) => {
     e.preventDefault();
     if (!catName.trim()) {
-      alert("Vui lòng điền tên thể loại!");
+      notifyWarning("Vui lòng điền tên thể loại!");
       return;
     }
     setCatSubmitting(true);
@@ -109,13 +108,12 @@ export const useCategories = (paged = false) => {
         description: catDesc.trim()
       };
       await categoryService.createCategory(payload);
-      alert('Thêm thể loại thành công!');
+      notifySuccess('Thêm thể loại thành công!');
       setCatName('');
       setCatDesc('');
       fetchCategories();
     } catch (err) {
-      console.error(err);
-      alert(`Lỗi khi lưu thể loại: ${getErrorMessage(err)}`);
+      notifyError(err, 'Lỗi khi lưu thể loại');
     } finally {
       setCatSubmitting(false);
     }

@@ -7,6 +7,7 @@ import { FiArrowLeft, FiClock, FiBookOpen, FiBook } from 'react-icons/fi';
 import { getFormattedImageUrl } from '../../utils/imageUtils';
 
 import { getErrorMessage } from '../../services/apiClient';
+import { formatDateTime } from '../../utils/formatUtils';
 
 function RecentlyReadPage() {
   const { user } = useAuth();
@@ -92,7 +93,7 @@ function RecentlyReadPage() {
                   {/* Time & Action Button */}
                   <div className="profile-history-actions">
                     <span className="profile-history-time">
-                      {item.updatedAt ? `Đọc lúc: ${new Date(item.updatedAt).toLocaleDateString('vi-VN')} ${new Date(item.updatedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                      {item.updatedAt ? `Đọc lúc: ${formatDateTime(item.updatedAt)}` : ''}
                     </span>
                     {item.lastChapterId && (
                       <Link 

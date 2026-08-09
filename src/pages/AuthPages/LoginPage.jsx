@@ -6,6 +6,7 @@ import { HiSparkles } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../config/routes';
 import { getErrorMessage } from '../../services/apiClient';
+import { getSafeRedirectPath } from '../../utils/urlUtils';
 
 
 function LoginPage() {
@@ -20,7 +21,7 @@ function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const redirect = searchParams.get('redirect');
+  const redirect = getSafeRedirectPath(searchParams.get('redirect'), ROUTES.HOME);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +35,7 @@ function LoginPage() {
     setIsLoading(true);
     try {
       await login(email, password);
-      navigate(redirect || ROUTES.HOME);
+      navigate(redirect);
     } catch (error) {
       const errCode = error?.response?.data?.code;
       if (errCode === 1080) {

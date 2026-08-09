@@ -8,6 +8,7 @@ import { ROUTES } from '../../config/routes';
 import { useAuth } from '../../context/AuthContext';
 import { getErrorMessage } from '../../services/apiClient';
 import { FiArrowLeft, FiUnlock, FiAlertCircle } from 'react-icons/fi';
+import DOMPurify from 'dompurify';
 
 function ChapterContent({ html }) {
   const hostRef = useRef(null);
@@ -36,7 +37,7 @@ function ChapterContent({ html }) {
       </style>
     `;
 
-    shadow.innerHTML = overrideStyle + html;
+    shadow.innerHTML = overrideStyle + DOMPurify.sanitize(html || '');
   }, [html]);
 
   return (

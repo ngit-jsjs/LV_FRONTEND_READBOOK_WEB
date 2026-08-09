@@ -34,7 +34,10 @@ function AdminUserChapterPurchasesPage() {
     try {
       const [unlockRes, userRes] = await Promise.all([
         chapterService.getAdminUserUnlocks(userId, page - 1, 10),
-        userService.getUserById(userId).catch(() => null)
+        userService.getUserById(userId).catch((userErr) => {
+          console.error("Không thể tải thông tin người dùng:", userErr);
+          return null;
+        })
       ]);
 
       if (unlockRes.result) {

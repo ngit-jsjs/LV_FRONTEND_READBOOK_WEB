@@ -35,7 +35,12 @@ export const useProfileEdit = (user, refreshUser) => {
       
       setMessage('Cập nhật thông tin thành công!');
       if (refreshUser) {
-        await refreshUser();
+        // Cập nhật đã thành công, lỗi đồng bộ lại user không được báo là lỗi cập nhật.
+        try {
+          await refreshUser();
+        } catch (refreshErr) {
+          console.error("Không thể làm mới thông tin người dùng:", refreshErr);
+        }
       }
       
       setTimeout(() => {

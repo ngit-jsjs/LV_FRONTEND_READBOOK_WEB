@@ -60,7 +60,8 @@ export const useChapterEditor = () => {
         setPrice(0);
       }
     } catch (err) {
-      setError('Lỗi khi tải dữ liệu');
+      console.error("Không thể tải dữ liệu chương:", err);
+      setError(`Lỗi khi tải dữ liệu: ${getErrorMessage(err)}`);
     } finally {
       setLoading(false);
     }
@@ -121,7 +122,8 @@ export const useChapterEditor = () => {
       alert("Xóa thành công!");
       navigate(ROUTES.CHAPTER_MANAGEMENT.replace(':bookId', bookId));
     } catch (err) {
-      alert("Xóa thất bại");
+      console.error("Xóa chương thất bại:", err);
+      alert(`Xóa thất bại: ${getErrorMessage(err)}`);
     }
   };
 

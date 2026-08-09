@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import bookService from '../services/bookService';
+import { getErrorMessage } from '../services/apiClient';
 
 export const useSearchPage = () => {
   const [searchParams] = useSearchParams();
@@ -15,6 +16,7 @@ export const useSearchPage = () => {
 
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -26,6 +28,7 @@ export const useSearchPage = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       setLoading(true);
+      setError('');
       try {
         const hasFilter = Boolean(keyword || author || publisher || year || (categoryIds && categoryIds.length > 0));
         let res;
@@ -51,10 +54,11 @@ export const useSearchPage = () => {
           setBooks([]);
           setTotalPages(0);
         }
-      } catch (error) {
-        console.error("Lỗi khi tìm kiếm sách:", error);
+      } catch (err) {
+        console.error("Lỗi khi tìm kiếm sách:", err);
         setBooks([]);
         setTotalPages(0);
+        setError(getErrorMessage(err));
       } finally {
         setLoading(false);
       }
@@ -71,6 +75,7 @@ export const useSearchPage = () => {
     categoryIds,
     books,
     loading,
+    error,
     page,
     setPage,
     totalPages

@@ -8,6 +8,7 @@ export const useBookManagement = () => {
   const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [keyword, setKeyword] = useState('');
@@ -29,6 +30,7 @@ export const useBookManagement = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       setIsLoading(true);
+      setError('');
       try {
         const res = await bookService.getMyUploadBooks(
           searchKeyword,
@@ -48,9 +50,11 @@ export const useBookManagement = () => {
           setBooks([]);
           setTotalPages(0);
         }
-      } catch (error) {
-        console.error("Failed to fetch published books", error);
+      } catch (err) {
+        console.error("Failed to fetch published books", err);
         setBooks([]);
+        setTotalPages(0);
+        setError(getErrorMessage(err));
       } finally {
         setIsLoading(false);
       }
@@ -90,6 +94,7 @@ export const useBookManagement = () => {
   return {
     books,
     isLoading,
+    error,
     page,
     setPage,
     totalPages,

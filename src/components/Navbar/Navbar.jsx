@@ -6,6 +6,7 @@ import { FiUser, FiUserPlus, FiLogOut, FiSearch, FiFilter, FiRefreshCw, FiChevro
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../config/routes';
 import categoryService from '../../services/categoryService';
+import { getErrorMessage } from '../../services/apiClient';
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -22,6 +23,7 @@ function Navbar() {
 
   const [showFilters, setShowFilters] = useState(false);
   const [categoriesList, setCategoriesList] = useState([]);
+  const [categoriesError, setCategoriesError] = useState('');
   const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
   const [categorySearchQuery, setCategorySearchQuery] = useState('');
   const [modalPage, setModalPage] = useState(0);
@@ -35,6 +37,7 @@ function Navbar() {
         setCategoriesList(cats);
       } catch (error) {
         console.error("Lỗi khi tải danh mục:", error);
+        setCategoriesError(getErrorMessage(error));
       }
     };
     fetchCategories();
@@ -331,6 +334,12 @@ function Navbar() {
                 autoFocus
               />
             </div>
+
+            {categoriesError && (
+              <div className="error-message">
+                Không thể tải thể loại: {categoriesError}
+              </div>
+            )}
 
             <div className="search-results-list bdf-category-grid">
               {displayedCategories.length > 0 ? (

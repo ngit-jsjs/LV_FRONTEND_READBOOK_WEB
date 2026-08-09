@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiFrown, FiCompass, FiChevronLeft, FiChevronRight, FiImage, FiStar } from 'react-icons/fi';
+import { FiFrown, FiCompass, FiChevronLeft, FiChevronRight, FiImage, FiStar, FiAlertCircle } from 'react-icons/fi';
 import BookCard from '../../components/BookCard/BookCard';
 import Pagination from '../../components/Pagination/Pagination';
 import { useSearchPage } from '../../hooks/useSearchPage';
@@ -11,7 +11,7 @@ import { ROUTES } from '../../config/routes';
 
 function HomePage() {
   const { user } = useAuth();
-  const { recs, recsLoading } = useRecommendations();
+  const { recs, recsLoading, recsError } = useRecommendations();
   const scrollRef = React.useRef(null);
   const {
     keyword,
@@ -19,7 +19,7 @@ function HomePage() {
     publisher,
     year,
     categoryIds,
-    books, loading,
+    books, loading, error,
     page, setPage, totalPages
   } = useSearchPage();
 
@@ -50,6 +50,10 @@ function HomePage() {
               <div className="recs-loading-container">
                 <div className="recs-loading-spinner" />
                 <p className="recs-loading-text">Đang tải sách gợi ý...</p>
+              </div>
+            ) : recsError ? (
+              <div className="error-message">
+                Không thể tải sách gợi ý: {recsError}
               </div>
             ) : recs.length > 0 && (
               <div className="recommendations-slider-wrapper">
@@ -130,6 +134,12 @@ function HomePage() {
             <div className="search-empty">
               <div className="search-loading-spinner" />
               <p className="search-loading-text">Đang tìm kiếm...</p>
+            </div>
+          ) : error ? (
+            <div className="search-error">
+              <FiAlertCircle className="search-empty-icon-custom" />
+              <h3 className="search-empty-title">Không thể tải danh sách tác phẩm</h3>
+              <p className="search-empty-desc">{error}</p>
             </div>
           ) : books.length > 0 ? (
             <>
